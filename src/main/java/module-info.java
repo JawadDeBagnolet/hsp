@@ -1,9 +1,10 @@
 module com.example.hsp {
     requires javafx.controls;
     requires javafx.fxml;
-
-    requires org.kordamp.bootstrapfx.core;
+    requires java.sql;
 
     opens appli.example.hsp to javafx.fxml;
-    exports appli.example.hsp;
+    opens appli to javafx.graphics;
+    exports appli.hsp;
+    exports appli;
 }
