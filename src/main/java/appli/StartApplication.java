@@ -13,7 +13,7 @@ public class StartApplication extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         mainStage=stage;
-        FXMLLoader fxmlLoader = new FXMLLoader(StartApplication.class.getResource("hsp/hello-view.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(StartApplication.class.getResource("/appli/hsp/helloView.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 320, 240);
         mainStage.setTitle("Hello!");
         mainStage.setScene(scene);
@@ -26,7 +26,7 @@ public class StartApplication extends Application {
 
     public static void changeScene(String nomDuFichierFxml ) throws IOException {
         FXMLLoader fxmlLoader = new
-                FXMLLoader(StartApplication.class.getResource("/appli/example/hsp/" + nomDuFichierFxml + ".fxml"));
+                FXMLLoader(StartApplication.class.getResource("/appli/hsp/" + nomDuFichierFxml + ".fxml"));
         Scene scene = new Scene(fxmlLoader.load());
         mainStage.setScene(scene);
     }
