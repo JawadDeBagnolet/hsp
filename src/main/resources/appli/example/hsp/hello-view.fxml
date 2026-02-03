@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="appli.auteur.HelloController"
+      alignment="CENTER"
+      spacing="30"
+      style="-fx-background-color: linear-gradient(to bottom, #1a1a2e, #0f0f1e); -fx-padding: 50;">
+
+    <padding>
+        <Insets top="40" right="40" bottom="40" left="40"/>
+    </padding>
+
+    <!-- Titre -->
+    <Text text="Bienvenue sur le logiciel"
+          style="-fx-font-size: 32px; -fx-fill: #e8e8e8; -fx-font-weight: bold;" />
+
+    <!-- Formulaire de connexion -->
+    <VBox spacing="20" alignment="CENTER" style="-fx-background-color: #2d2d3d; -fx-padding: 40; -fx-background-radius: 10; -fx-border-color: #404050; -fx-border-width: 1;">
+        <Text text="Connexion"
+              style="-fx-font-size: 24px; -fx-fill: #e8e8e8; -fx-font-weight: bold;" />
+
+        <VBox spacing="15">
+            <!-- Champ identifiant -->
+            <VBox spacing="5">
+                <Label text="Identifiant :" style="-fx-font-size: 14px; -fx-fill: #ffffff; -fx-font-weight: bold;" />
+                <TextField fx:id="identifiantField"
+                           promptText="Entrez votre identifiant"
+                           style="-fx-pref-width: 250; -fx-pref-height: 35; -fx-background-color: #3d3d4d; -fx-text-fill: #e8e8e8; -fx-border-color: #505060; -fx-border-radius: 5;" />
+            </VBox>
+
+            <!-- Champ mot de passe -->
+            <VBox spacing="5">
+                <Label text="Mot de passe :" style="-fx-font-size: 14px; -fx-fill: #ffffff; -fx-font-weight: bold;" />
+                <PasswordField fx:id="motDePasseField"
+                               promptText="Entrez votre mot de passe"
+                               style="-fx-pref-width: 250; -fx-pref-height: 35; -fx-background-color: #3d3d4d; -fx-text-fill: #e8e8e8; -fx-border-color: #505060; -fx-border-radius: 5;" />
+            </VBox>
+        </VBox>
+
+        <!-- Bouton de connexion -->
+        <Button text="Se connecter"
+                onAction="#handleConnexion"
+                style="-fx-background-color: #4a4a6a; -fx-text-fill: #e8e8e8; -fx-font-size: 16px; -fx-font-weight: bold; -fx-pref-width: 250; -fx-pref-height: 40; -fx-background-radius: 5; -fx-border-color: #606080; -fx-border-width: 1;" />
+
+        <!-- Message d'erreur -->
+        <Label fx:id="erreurLabel"
+               text=""
+               style="-fx-text-fill: #ff6b6b; -fx-font-size: 12px; -fx-wrap-text: true;" />
+    </VBox>
+
+</VBox>

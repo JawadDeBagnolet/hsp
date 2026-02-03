@@ -4,6 +4,6 @@ module com.example.hsp {
 
     requires org.kordamp.bootstrapfx.core;
 
-    opens com.example.hsp to javafx.fxml;
-    exports com.example.hsp;
+    opens appli.example.hsp to javafx.fxml;
+    exports appli.example.hsp;
 }
