@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="appli.hsp.PatientsController"
+            style="-fx-background-color: linear-gradient(to bottom, #2c3e50, #3498db);">
+
+    <!-- Barre de navigation en haut -->
+    <top>
+        <HBox style="-fx-background-color: #34495e; -fx-padding: 15; -fx-border-color: #2c3e50; -fx-border-width: 0 0 2 0;">
+            <padding>
+                <Insets top="10" right="20" bottom="10" left="20"/>
+            </padding>
+            
+            <!-- Logo/Titre -->
+            <VBox spacing="5" HBox.hgrow="ALWAYS">
+                <Text text="HSP" 
+                      style="-fx-font-size: 24px; -fx-fill: #3498db; -fx-font-weight: bold;" />
+                <Text text="Hôpital de Santé Publique" 
+                      style="-fx-font-size: 12px; -fx-fill: #ecf0f1;" />
+            </VBox>
+            
+            <!-- Menu de navigation -->
+            <HBox spacing="20" alignment="CENTER">
+                <Button text="Accueil"
+                        style="-fx-background-color: transparent; -fx-text-fill: #ecf0f1; -fx-font-size: 14px; -fx-border-color: transparent; -fx-cursor: hand;"
+                        onAction="#versAccueil" />
+                
+                <Separator orientation="VERTICAL" style="-fx-background-color: #7f8c8d;" />
+                
+                <Button text="Patients"
+                        style="-fx-background-color: #3498db; -fx-text-fill: #ffffff; -fx-font-size: 14px; -fx-border-color: #2980b9; -fx-border-width: 1; -fx-border-radius: 5; -fx-background-radius: 5; -fx-cursor: hand;" />
+                
+                <Separator orientation="VERTICAL" style="-fx-background-color: #7f8c8d;" />
+                
+                <Button text="Commandes"
+                        style="-fx-background-color: transparent; -fx-text-fill: #ecf0f1; -fx-font-size: 14px; -fx-border-color: transparent; -fx-cursor: hand;"
+                        onAction="#versCommandes" />
+                
+                <Separator orientation="VERTICAL" style="-fx-background-color: #7f8c8d;" />
+                
+                <Button text="Utilisateurs"
+                        style="-fx-background-color: transparent; -fx-text-fill: #ecf0f1; -fx-font-size: 14px; -fx-border-color: transparent; -fx-cursor: hand;"
+                        onAction="#versUtilisateurs" />
+                
+                <Separator orientation="VERTICAL" style="-fx-background-color: #7f8c8d;" />
+                
+                <Button text="Mon espace"
+                        style="-fx-background-color: transparent; -fx-text-fill: #ecf0f1; -fx-font-size: 14px; -fx-border-color: transparent; -fx-cursor: hand;"
+                        onAction="#versMonEspace" />
+                
+                <Button text="Déconnexion"
+                        style="-fx-background-color: #e74c3c; -fx-text-fill: #ffffff; -fx-font-size: 14px; -fx-border-color: #c0392b; -fx-border-width: 1; -fx-border-radius: 5; -fx-background-radius: 5; -fx-cursor: hand;"
+                        onAction="#deconnexion" />
+            </HBox>
+        </HBox>
+    </top>
+
+    <!-- Contenu principal -->
+    <center>
+        <VBox alignment="CENTER" spacing="30" style="-fx-padding: 40;">
+            <padding>
+                <Insets top="30" right="40" bottom="30" left="40"/>
+            </padding>
+
+            <!-- Titre de la page -->
+            <VBox spacing="15" alignment="CENTER">
+                <Text text="📋 Liste des Patients"
+                      style="-fx-font-size: 42px; -fx-fill: #ffffff; -fx-font-weight: bold; -fx-font-family: 'Arial Black';" />
+                
+                <Text text="Gestion complète des patients de l'hôpital"
+                      style="-fx-font-size: 20px; -fx-fill: #ecf0f1; -fx-font-weight: 500;" />
+            </VBox>
+
+            <!-- Panneau de statistiques -->
+            <HBox spacing="20" alignment="CENTER">
+                <VBox spacing="10" alignment="CENTER" style="-fx-background-color: rgba(255, 255, 255, 0.1); -fx-padding: 25; -fx-background-radius: 15; -fx-border-color: rgba(255, 255, 255, 0.3); -fx-border-width: 1; -fx-border-radius: 15; -fx-pref-width: 200;">
+                    <Text text="Total Patients" style="-fx-font-size: 16px; -fx-fill: #ffffff; -fx-font-weight: bold;" />
+                    <Label fx:id="totalPatientsLabel" text="0" style="-fx-font-size: 36px; -fx-fill: #3498db; -fx-font-weight: bold;" />
+                </VBox>
+
+                <VBox spacing="10" alignment="CENTER" style="-fx-background-color: rgba(255, 255, 255, 0.1); -fx-padding: 25; -fx-background-radius: 15; -fx-border-color: rgba(255, 255, 255, 0.3); -fx-border-width: 1; -fx-border-radius: 15; -fx-pref-width: 200;">
+                    <Text text="Actualiser" style="-fx-font-size: 16px; -fx-fill: #ffffff; -fx-font-weight: bold;" />
+                    <Button text="🔄" onAction="#handleRefresh" 
+                            style="-fx-background-color: #27ae60; -fx-text-fill: #ffffff; -fx-font-size: 24px; -fx-background-radius: 30; -fx-pref-width: 60; -fx-pref-height: 60; -fx-cursor: hand;" />
+                </VBox>
+            </HBox>
+
+            <!-- Liste des patients (plus simple que TableView) -->
+            <ListView fx:id="patientsListView" prefHeight="400" VBox.vgrow="ALWAYS" 
+                      style="-fx-background-color: rgba(255, 255, 255, 0.95); -fx-background-radius: 15; -fx-border-color: rgba(255, 255, 255, 0.3); -fx-border-width: 1; -fx-border-radius: 15;" />
+
+            <!-- Boutons d'action -->
+            <HBox spacing="20" alignment="CENTER">
+                <Button text="🏠 Retour Accueil" onAction="#handleBack" 
+                        style="-fx-background-color: #95a5a6; -fx-text-fill: #ffffff; -fx-font-size: 16px; -fx-font-weight: bold; -fx-padding: 15 30; -fx-background-radius: 25; -fx-cursor: hand;" />
+            </HBox>
+        </VBox>
+    </center>
+</BorderPane>

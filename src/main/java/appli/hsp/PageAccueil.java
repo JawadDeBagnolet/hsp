@@ -25,7 +25,7 @@ public class PageAccueil {
     @FXML
     public void versPatients(ActionEvent event) {
         try {
-            StartApplication.changeScene("pagePatients");
+            StartApplication.changeScene("patientsView");
         } catch (Exception e) {
             System.err.println("Erreur lors de la redirection vers patients: " + e.getMessage());
         }
