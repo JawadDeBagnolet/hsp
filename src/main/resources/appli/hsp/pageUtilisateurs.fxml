@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="appli.hsp.PageUtilisateurs"
+            style="-fx-background-color: linear-gradient(to bottom, #2c3e50, #3498db);">
+
+    <!-- Barre de navigation en haut -->
+    <top>
+        <HBox style="-fx-background-color: #34495e; -fx-padding: 15; -fx-border-color: #2c3e50; -fx-border-width: 0 0 2 0;">
+            <padding>
+                <Insets top="10" right="20" bottom="10" left="20"/>
+            </padding>
+            
+            <!-- Logo/Titre -->
+            <VBox spacing="5" HBox.hgrow="ALWAYS">
+                <Text text="HSP" 
+                      style="-fx-font-size: 24px; -fx-fill: #3498db; -fx-font-weight: bold;" />
+                <Text text="Hôpital de Santé Publique" 
+                      style="-fx-font-size: 12px; -fx-fill: #ecf0f1;" />
+            </VBox>
+            
+            <!-- Menu de navigation -->
+            <HBox spacing="20" alignment="CENTER">
+                <Button text="Accueil"
+                        style="-fx-background-color: transparent; -fx-text-fill: #ecf0f1; -fx-font-size: 14px; -fx-border-color: transparent; -fx-cursor: hand;"
+                        onAction="#versAccueil" />
+                
+                <Separator orientation="VERTICAL" style="-fx-background-color: #7f8c8d;" />
+                
+                <Button text="Patients"
+                        style="-fx-background-color: transparent; -fx-text-fill: #ecf0f1; -fx-font-size: 14px; -fx-border-color: transparent; -fx-cursor: hand;"
+                        onAction="#versPatients" />
+                
+                <Separator orientation="VERTICAL" style="-fx-background-color: #7f8c8d;" />
+                
+                <Button text="Commandes"
+                        style="-fx-background-color: transparent; -fx-text-fill: #ecf0f1; -fx-font-size: 14px; -fx-border-color: transparent; -fx-cursor: hand;"
+                        onAction="#versCommandes" />
+                
+                <Separator orientation="VERTICAL" style="-fx-background-color: #7f8c8d;" />
+                
+                <Button text="Utilisateurs"
+                        style="-fx-background-color: #3498db; -fx-text-fill: #ffffff; -fx-font-size: 14px; -fx-border-color: #2980b9; -fx-border-width: 1; -fx-border-radius: 5; -fx-background-radius: 5; -fx-cursor: hand;"
+                        onAction="#versUtilisateurs" />
+                
+                <Separator orientation="VERTICAL" style="-fx-background-color: #7f8c8d;" />
+                
+                <Button text="Mon espace"
+                        style="-fx-background-color: transparent; -fx-text-fill: #ecf0f1; -fx-font-size: 14px; -fx-border-color: transparent; -fx-cursor: hand;"
+                        onAction="#versMonEspace" />
+                
+                <Button text="Déconnexion"
+                        style="-fx-background-color: #e74c3c; -fx-text-fill: #ffffff; -fx-font-size: 14px; -fx-border-color: #c0392b; -fx-border-width: 1; -fx-border-radius: 5; -fx-background-radius: 5; -fx-cursor: hand;"
+                        onAction="#deconnexion" />
+            </HBox>
+        </HBox>
+    </top>
+
+    <!-- Contenu principal -->
+    <center>
+        <VBox spacing="20" style="-fx-padding: 20;">
+            <padding>
+                <Insets top="20" right="20" bottom="20" left="20"/>
+            </padding>
+
+            <!-- Titre de la page -->
+            <HBox alignment="CENTER_LEFT">
+                <Text text="Gestion des Utilisateurs"
+                      style="-fx-font-size: 32px; -fx-fill: #ffffff; -fx-font-weight: bold;" />
+                <Region HBox.hgrow="ALWAYS" />
+                <TextField fx:id="rechercheField" 
+                           promptText="Rechercher un utilisateur..." 
+                           prefWidth="300"
+                           style="-fx-background-color: rgba(255, 255, 255, 0.9); -fx-border-color: #3498db; -fx-border-width: 1; -fx-border-radius: 5; -fx-background-radius: 5;" />
+            </HBox>
+
+            <!-- Tableau des utilisateurs -->
+            <VBox spacing="10" style="-fx-background-color: rgba(255, 255, 255, 0.95); -fx-padding: 20; -fx-background-radius: 10; -fx-border-color: rgba(255, 255, 255, 0.3); -fx-border-width: 1; -fx-border-radius: 10;">
+                <TableView fx:id="utilisateursTable" 
+                          prefHeight="300"
+                          style="-fx-background-color: transparent; -fx-border-color: #34495e;">
+                    <columns>
+                        <TableColumn fx:id="idColumn" text="ID" prefWidth="60" />
+                        <TableColumn fx:id="nomColumn" text="Nom" prefWidth="120" />
+                        <TableColumn fx:id="prenomColumn" text="Prénom" prefWidth="120" />
+                        <TableColumn fx:id="emailColumn" text="Email" prefWidth="200" />
+                        <TableColumn fx:id="roleColumn" text="Rôle" prefWidth="100" />
+                    </columns>
+                </TableView>
+            </VBox>
+
+            <!-- Formulaire d'ajout/modification -->
+            <VBox spacing="15" style="-fx-background-color: rgba(255, 255, 255, 0.95); -fx-padding: 20; -fx-background-radius: 10; -fx-border-color: rgba(255, 255, 255, 0.3); -fx-border-width: 1; -fx-border-radius: 10;">
+                <Text text="Formulaire Utilisateur"
+                      style="-fx-font-size: 20px; -fx-fill: #2c3e50; -fx-font-weight: bold;" />
+                
+                <GridPane hgap="15" vgap="10">
+                    <Label text="Nom:" GridPane.rowIndex="0" GridPane.columnIndex="0" 
+                           style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" />
+                    <TextField fx:id="nomField" GridPane.rowIndex="0" GridPane.columnIndex="1"
+                               style="-fx-background-color: #ecf0f1; -fx-border-color: #3498db; -fx-border-width: 1; -fx-border-radius: 5; -fx-background-radius: 5;" />
+                    
+                    <Label text="Prénom:" GridPane.rowIndex="1" GridPane.columnIndex="0"
+                           style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" />
+                    <TextField fx:id="prenomField" GridPane.rowIndex="1" GridPane.columnIndex="1"
+                               style="-fx-background-color: #ecf0f1; -fx-border-color: #3498db; -fx-border-width: 1; -fx-border-radius: 5; -fx-background-radius: 5;" />
+                    
+                    <Label text="Email:" GridPane.rowIndex="2" GridPane.columnIndex="0"
+                           style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" />
+                    <TextField fx:id="emailField" GridPane.rowIndex="2" GridPane.columnIndex="1"
+                               style="-fx-background-color: #ecf0f1; -fx-border-color: #3498db; -fx-border-width: 1; -fx-border-radius: 5; -fx-background-radius: 5;" />
+                    
+                    <Label text="Mot de passe:" GridPane.rowIndex="3" GridPane.columnIndex="0"
+                           style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" />
+                    <PasswordField fx:id="mdpField" GridPane.rowIndex="3" GridPane.columnIndex="1"
+                                  promptText="Laisser vide pour ne pas modifier"
+                                  style="-fx-background-color: #ecf0f1; -fx-border-color: #3498db; -fx-border-width: 1; -fx-border-radius: 5; -fx-background-radius: 5;" />
+                    
+                    <Label text="Rôle:" GridPane.rowIndex="4" GridPane.columnIndex="0"
+                           style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" />
+                    <ComboBox fx:id="roleComboBox" GridPane.rowIndex="4" GridPane.columnIndex="1"
+                              style="-fx-background-color: #ecf0f1; -fx-border-color: #3498db; -fx-border-width: 1; -fx-border-radius: 5; -fx-background-radius: 5;" />
+                </GridPane>
+
+                <!-- Boutons d'action -->
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Button fx:id="ajouterButton" text="Ajouter" onAction="#ajouterUtilisateur"
+                            style="-fx-background-color: #27ae60; -fx-text-fill: #ffffff; -fx-font-size: 14px; -fx-border-color: #229954; -fx-border-width: 1; -fx-border-radius: 5; -fx-background-radius: 5; -fx-cursor: hand; -fx-pref-width: 100;" />
+                    
+                    <Button fx:id="modifierButton" text="Modifier" onAction="#modifierUtilisateur" disable="true"
+                            style="-fx-background-color: #f39c12; -fx-text-fill: #ffffff; -fx-font-size: 14px; -fx-border-color: #e67e22; -fx-border-width: 1; -fx-border-radius: 5; -fx-background-radius: 5; -fx-cursor: hand; -fx-pref-width: 100;" />
+                    
+                    <Button fx:id="supprimerButton" text="Supprimer" onAction="#supprimerUtilisateur" disable="true"
+                            style="-fx-background-color: #e74c3c; -fx-text-fill: #ffffff; -fx-font-size: 14px; -fx-border-color: #c0392b; -fx-border-width: 1; -fx-border-radius: 5; -fx-background-radius: 5; -fx-cursor: hand; -fx-pref-width: 100;" />
+                    
+                    <Region HBox.hgrow="ALWAYS" />
+                    
+                    <Button fx:id="viderButton" text="Vider les champs" onAction="#viderChamps"
+                            style="-fx-background-color: #95a5a6; -fx-text-fill: #ffffff; -fx-font-size: 14px; -fx-border-color: #7f8c8d; -fx-border-width: 1; -fx-border-radius: 5; -fx-background-radius: 5; -fx-cursor: hand; -fx-pref-width: 120;" />
+                </HBox>
+            </VBox>
+
+            <!-- Message d'information -->
+            <Label fx:id="messageLabel" 
+                   style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-wrap-text: true;" />
+
+        </VBox>
+    </center>
+
+</BorderPane>
