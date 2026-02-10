@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="appli.hsp.CommandeController"
+      alignment="TOP_CENTER"
+      spacing="20"
+      style="-fx-background-color: linear-gradient(to bottom, #1a1a2e, #0f0f1e); -fx-padding: 30;">
+
+    <padding>
+        <Insets top="30" right="30" bottom="30" left="30"/>
+    </padding>
+
+    <!-- Header avec navigation -->
+    <HBox spacing="20" alignment="CENTER_LEFT" style="-fx-background-color: #2d2d3d; -fx-padding: 15; -fx-background-radius: 8;">
+        <Button text="← Retour" 
+                onAction="#handleRetour"
+                style="-fx-background-color: #4a4a6a; -fx-text-fill: #e8e8e8; -fx-font-size: 14px; -fx-pref-width: 80; -fx-pref-height: 35; -fx-background-radius: 5;" />
+        <Text text="Gestion des Commandes"
+              style="-fx-font-size: 24px; -fx-fill: #e8e8e8; -fx-font-weight: bold;" />
+    </HBox>
+
+    <!-- Zone principale -->
+    <VBox spacing="25" style="-fx-background-color: #2d2d3d; -fx-padding: 30; -fx-background-radius: 10; -fx-border-color: #404050; -fx-border-width: 1;">
+
+        <!-- Section recherche -->
+        <VBox spacing="10">
+            <Text text="Rechercher une commande"
+                  style="-fx-font-size: 18px; -fx-fill: #e8e8e8; -fx-font-weight: bold;" />
+            <HBox spacing="15" alignment="CENTER_LEFT">
+                <TextField fx:id="rechercheField"
+                           promptText="Numéro de commande, nom du patient..."
+                           style="-fx-pref-width: 300; -fx-pref-height: 35; -fx-background-color: #3d3d4d; -fx-text-fill: #e8e8e8; -fx-border-color: #505060; -fx-border-radius: 5;" />
+                <Button text="Rechercher"
+                        onAction="#handleRecherche"
+                        style="-fx-background-color: #4a4a6a; -fx-text-fill: #e8e8e8; -fx-font-size: 14px; -fx-pref-width: 120; -fx-pref-height: 35; -fx-background-radius: 5;" />
+            </HBox>
+        </VBox>
+
+        <!-- Tableau des commandes -->
+        <VBox spacing="10">
+            <Text text="Liste des commandes"
+                  style="-fx-font-size: 18px; -fx-fill: #e8e8e8; -fx-font-weight: bold;" />
+            
+            <TableView fx:id="commandesTable" 
+                      style="-fx-pref-height: 300; -fx-background-color: #3d3d4d; -fx-border-color: #505060; -fx-border-radius: 5;">
+                <columns>
+                    <TableColumn fx:id="idColumn" text="ID" prefWidth="80" />
+                    <TableColumn fx:id="dateColumn" text="Date" prefWidth="120" />
+                    <TableColumn fx:id="patientColumn" text="Patient" prefWidth="150" />
+                    <TableColumn fx:id="medecinColumn" text="Médecin" prefWidth="150" />
+                    <TableColumn fx:id="statutColumn" text="Statut" prefWidth="100" />
+                    <TableColumn fx:id="actionsColumn" text="Actions" prefWidth="120" />
+                </columns>
+            </TableView>
+        </VBox>
+
+        <!-- Section actions -->
+        <HBox spacing="15" alignment="CENTER">
+            <Button text="Nouvelle commande"
+                    onAction="#handleNouvelleCommande"
+                    style="-fx-background-color: #5a6a4a; -fx-text-fill: #e8e8e8; -fx-font-size: 14px; -fx-pref-width: 150; -fx-pref-height: 40; -fx-background-radius: 5;" />
+            <Button text="Rafraîchir"
+                    onAction="#handleRafraichir"
+                    style="-fx-background-color: #4a4a6a; -fx-text-fill: #e8e8e8; -fx-font-size: 14px; -fx-pref-width: 120; -fx-pref-height: 40; -fx-background-radius: 5;" />
+        </HBox>
+
+        <!-- Zone de détails -->
+        <VBox fx:id="detailsPane" 
+              spacing="15" 
+              style="-fx-background-color: #3d3d4d; -fx-padding: 20; -fx-background-radius: 8; -fx-border-color: #505060; -fx-border-width: 1;"
+              visible="false">
+            <Text text="Détails de la commande"
+                  style="-fx-font-size: 16px; -fx-fill: #e8e8e8; -fx-font-weight: bold;" />
+            <GridPane hgap="15" vgap="10">
+                <Label text="Numéro :" style="-fx-text-fill: #ffffff; -fx-font-weight: bold;" GridPane.rowIndex="0" GridPane.columnIndex="0" />
+                <Label fx:id="numeroLabel" text="" style="-fx-text-fill: #e8e8e8;" GridPane.rowIndex="0" GridPane.columnIndex="1" />
+                
+                <Label text="Date :" style="-fx-text-fill: #ffffff; -fx-font-weight: bold;" GridPane.rowIndex="1" GridPane.columnIndex="0" />
+                <Label fx:id="dateLabel" text="" style="-fx-text-fill: #e8e8e8;" GridPane.rowIndex="1" GridPane.columnIndex="1" />
+                
+                <Label text="Patient :" style="-fx-text-fill: #ffffff; -fx-font-weight: bold;" GridPane.rowIndex="2" GridPane.columnIndex="0" />
+                <Label fx:id="patientLabel" text="" style="-fx-text-fill: #e8e8e8;" GridPane.rowIndex="2" GridPane.columnIndex="1" />
+                
+                <Label text="Médecin :" style="-fx-text-fill: #ffffff; -fx-font-weight: bold;" GridPane.rowIndex="3" GridPane.columnIndex="0" />
+                <Label fx:id="medecinLabel" text="" style="-fx-text-fill: #e8e8e8;" GridPane.rowIndex="3" GridPane.columnIndex="1" />
+                
+                <Label text="Statut :" style="-fx-text-fill: #ffffff; -fx-font-weight: bold;" GridPane.rowIndex="4" GridPane.columnIndex="0" />
+                <Label fx:id="statutLabel" text="" style="-fx-text-fill: #e8e8e8;" GridPane.rowIndex="4" GridPane.columnIndex="1" />
+            </GridPane>
+            
+            <HBox spacing="10">
+                <Button text="Modifier"
+                        onAction="#handleModifier"
+                        style="-fx-background-color: #6a6a4a; -fx-text-fill: #e8e8e8; -fx-font-size: 14px; -fx-pref-width: 100; -fx-pref-height: 35; -fx-background-radius: 5;" />
+                <Button text="Supprimer"
+                        onAction="#handleSupprimer"
+                        style="-fx-background-color: #6a4a4a; -fx-text-fill: #e8e8e8; -fx-font-size: 14px; -fx-pref-width: 100; -fx-pref-height: 35; -fx-background-radius: 5;" />
+            </HBox>
+        </VBox>
+
+    </VBox>
+
+</VBox>
