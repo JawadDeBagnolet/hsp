@@ -10,10 +10,10 @@ public class Database {
     private static final String NOM_BDD = "hsp";
     private static final String UTILISATEUR = "root";
 
-    // {port, motDePasse}
+    // {port, motDePasse, description}
     private static final String[][] CONFIGS = {
-            { "8889", "root" }, // MAMP reda
-            { "3306", "" }      // WAMP vous
+            { "3306", "", "WAMP" },      // WAMP - priorité
+            { "8889", "root", "MAMP" }    // MAMP
     };
 
     public static Connection getConnexion() {
@@ -21,6 +21,7 @@ public class Database {
         for (String[] config : CONFIGS) {
             String port = config[0];
             String mdp  = config[1];
+            String type = config.length > 2 ? config[2] : "";
 
             try {
                 String url = "jdbc:mysql://" + SERVEUR + ":" + port + "/" + NOM_BDD
@@ -30,11 +31,11 @@ public class Database {
                         url, UTILISATEUR, mdp
                 );
 
-                System.out.println("Connexion réussie (port " + port + ")");
+                System.out.println("Connexion réussie - " + type + " (port " + port + ")");
                 return cnx;
 
             } catch (SQLException e) {
-                System.out.println("Échec connexion (port " + port + ")");
+                System.out.println("Échec connexion - " + type + " (port " + port + ")");
             }
         }
 
