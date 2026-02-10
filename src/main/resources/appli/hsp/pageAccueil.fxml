@@ -5,64 +5,107 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<VBox xmlns="http://javafx.com/javafx"
-      xmlns:fx="http://javafx.com/fxml"
-      fx:controller="appli.hsp.PageAccueil"
-      alignment="TOP_CENTER"
-      spacing="30"
-      style="-fx-background-color: linear-gradient(to bottom, #1a1a2e, #0f0f1e); -fx-padding: 50;">
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="appli.hsp.PageAccueil"
+            style="-fx-background-color: linear-gradient(to bottom, #2c3e50, #3498db);">
 
-    <padding>
-        <Insets top="40" right="40" bottom="40" left="40"/>
-    </padding>
-
-    <!-- Titre -->
-    <Text text="HSP - Système de Gestion"
-          style="-fx-font-size: 32px; -fx-fill: #e8e8e8; -fx-font-weight: bold;" />
-
-    <!-- Navigation -->
-    <HBox spacing="20" alignment="CENTER" style="-fx-background-color: #2d2d3d; -fx-padding: 20; -fx-background-radius: 10; -fx-border-color: #404050; -fx-border-width: 1;">
-        <Button text="Accueil"
-                style="-fx-background-color: #4a4a6a; -fx-text-fill: #e8e8e8; -fx-font-size: 16px; -fx-pref-width: 120; -fx-pref-height: 40; -fx-background-radius: 5;" />
-        <Button text="Commandes"
-                onAction="#handleCommandes"
-                style="-fx-background-color: #5a6a4a; -fx-text-fill: #e8e8e8; -fx-font-size: 16px; -fx-pref-width: 120; -fx-pref-height: 40; -fx-background-radius: 5;" />
-        <Button text="Patients"
-                style="-fx-background-color: #4a4a6a; -fx-text-fill: #e8e8e8; -fx-font-size: 16px; -fx-pref-width: 120; -fx-pref-height: 40; -fx-background-radius: 5;" />
-        <Button text="Ordonnances"
-                style="-fx-background-color: #4a4a6a; -fx-text-fill: #e8e8e8; -fx-font-size: 16px; -fx-pref-width: 120; -fx-pref-height: 40; -fx-background-radius: 5;" />
-    </HBox>
+    <!-- Barre de navigation en haut -->
+    <top>
+        <HBox style="-fx-background-color: #34495e; -fx-padding: 15; -fx-border-color: #2c3e50; -fx-border-width: 0 0 2 0;">
+            <padding>
+                <Insets top="10" right="20" bottom="10" left="20"/>
+            </padding>
+            
+            <!-- Logo/Titre -->
+            <VBox spacing="5" HBox.hgrow="ALWAYS">
+                <Text text="HSP" 
+                      style="-fx-font-size: 24px; -fx-fill: #3498db; -fx-font-weight: bold;" />
+                <Text text="Hôpital de Santé Publique" 
+                      style="-fx-font-size: 12px; -fx-fill: #ecf0f1;" />
+            </VBox>
+            
+            <!-- Menu de navigation -->
+            <HBox spacing="20" alignment="CENTER">
+                <Button text="Accueil"
+                        style="-fx-background-color: transparent; -fx-text-fill: #ecf0f1; -fx-font-size: 14px; -fx-border-color: transparent; -fx-cursor: hand;"
+                        onAction="#versAccueil" />
+                
+                <Separator orientation="VERTICAL" style="-fx-background-color: #7f8c8d;" />
+                
+                <Button text="Patients"
+                        style="-fx-background-color: transparent; -fx-text-fill: #ecf0f1; -fx-font-size: 14px; -fx-border-color: transparent; -fx-cursor: hand;"
+                        onAction="#versPatients" />
+                
+                <Separator orientation="VERTICAL" style="-fx-background-color: #7f8c8d;" />
+                
+                <Button text="Commandes"
+                        style="-fx-background-color: transparent; -fx-text-fill: #ecf0f1; -fx-font-size: 14px; -fx-border-color: transparent; -fx-cursor: hand;"
+                        onAction="#versCommandes" />
+                
+                <Separator orientation="VERTICAL" style="-fx-background-color: #7f8c8d;" />
+                
+                <Button text="Utilisateurs"
+                        style="-fx-background-color: transparent; -fx-text-fill: #ecf0f1; -fx-font-size: 14px; -fx-border-color: transparent; -fx-cursor: hand;"
+                        onAction="#versUtilisateurs" />
+                
+                <Separator orientation="VERTICAL" style="-fx-background-color: #7f8c8d;" />
+                
+                <Button text="Mon espace"
+                        style="-fx-background-color: #3498db; -fx-text-fill: #ffffff; -fx-font-size: 14px; -fx-border-color: #2980b9; -fx-border-width: 1; -fx-border-radius: 5; -fx-background-radius: 5; -fx-cursor: hand;"
+                        onAction="#versMonEspace" />
+                
+                <Button text="Déconnexion"
+                        style="-fx-background-color: #e74c3c; -fx-text-fill: #ffffff; -fx-font-size: 14px; -fx-border-color: #c0392b; -fx-border-width: 1; -fx-border-radius: 5; -fx-background-radius: 5; -fx-cursor: hand;"
+                        onAction="#deconnexion" />
+            </HBox>
+        </HBox>
+    </top>
 
     <!-- Contenu principal -->
-    <VBox spacing="25" alignment="CENTER" style="-fx-background-color: #2d2d3d; -fx-padding: 40; -fx-background-radius: 10; -fx-border-color: #404050; -fx-border-width: 1;">
-        <Text text="Tableau de bord"
-              style="-fx-font-size: 24px; -fx-fill: #e8e8e8; -fx-font-weight: bold;" />
-        
-        <GridPane hgap="20" vgap="20" alignment="CENTER">
-            <VBox spacing="10" alignment="CENTER" style="-fx-background-color: #3d3d4d; -fx-padding: 20; -fx-background-radius: 8;" GridPane.rowIndex="0" GridPane.columnIndex="0">
-                <Text text="Commandes du jour"
-                      style="-fx-font-size: 18px; -fx-fill: #e8e8e8; -fx-font-weight: bold;" />
-                <Label text="12" style="-fx-font-size: 36px; -fx-fill: #5a6a4a; -fx-font-weight: bold;" />
-            </VBox>
-            
-            <VBox spacing="10" alignment="CENTER" style="-fx-background-color: #3d3d4d; -fx-padding: 20; -fx-background-radius: 8;" GridPane.rowIndex="0" GridPane.columnIndex="1">
-                <Text text="Patients actifs"
-                      style="-fx-font-size: 18px; -fx-fill: #e8e8e8; -fx-font-weight: bold;" />
-                <Label text="156" style="-fx-font-size: 36px; -fx-fill: #4a6a5a; -fx-font-weight: bold;" />
-            </VBox>
-            
-            <VBox spacing="10" alignment="CENTER" style="-fx-background-color: #3d3d4d; -fx-padding: 20; -fx-background-radius: 8;" GridPane.rowIndex="1" GridPane.columnIndex="0">
-                <Text text="Ordonnances en attente"
-                      style="-fx-font-size: 18px; -fx-fill: #e8e8e8; -fx-font-weight: bold;" />
-                <Label text="8" style="-fx-font-size: 36px; -fx-fill: #6a5a4a; -fx-font-weight: bold;" />
-            </VBox>
-            
-            <VBox spacing="10" alignment="CENTER" style="-fx-background-color: #3d3d4d; -fx-padding: 20; -fx-background-radius: 8;" GridPane.rowIndex="1" GridPane.columnIndex="1">
-                <Text text="Rendez-vous aujourd'hui"
-                      style="-fx-font-size: 18px; -fx-fill: #e8e8e8; -fx-font-weight: bold;" />
-                <Label text="24" style="-fx-font-size: 36px; -fx-fill: #5a4a6a; -fx-font-weight: bold;" />
-            </VBox>
-        </GridPane>
-    </VBox>
+    <center>
+        <VBox alignment="CENTER" spacing="40" style="-fx-padding: 60;">
+            <padding>
+                <Insets top="50" right="50" bottom="50" left="50"/>
+            </padding>
 
-</VBox>
+            <!-- Message de bienvenue -->
+            <VBox spacing="15" alignment="CENTER">
+                <Text text="Tableau de bord"
+                      style="-fx-font-size: 48px; -fx-fill: #ffffff; -fx-font-weight: bold; -fx-font-family: 'Arial Black';" />
+                
+                <Text text="Bienvenue dans votre espace de travail"
+                      style="-fx-font-size: 24px; -fx-fill: #ecf0f1; -fx-font-weight: 500;" />
+                
+                <Text text="Gérez efficacement votre hôpital"
+                      style="-fx-font-size: 18px; -fx-fill: #bdc3c7; -fx-font-style: italic;" />
+            </VBox>
+
+            <!-- Zone d'accès rapide -->
+            <HBox spacing="30" alignment="CENTER">
+                <!-- Carte Patients -->
+                <VBox spacing="15" alignment="CENTER" style="-fx-background-color: rgba(255, 255, 255, 0.1); -fx-padding: 30; -fx-background-radius: 15; -fx-border-color: rgba(255, 255, 255, 0.3); -fx-border-width: 1; -fx-border-radius: 15; -fx-pref-width: 200;">
+                    <Text text="Patients" style="-fx-font-size: 18px; -fx-fill: #ffffff; -fx-font-weight: bold;" />
+                    <Button text="Gérer" onAction="#versPatients" 
+                            style="-fx-background-color: #3498db; -fx-text-fill: #ffffff; -fx-font-size: 14px; -fx-background-radius: 20; -fx-cursor: hand;" />
+                </VBox>
+
+                <!-- Carte Commandes -->
+                <VBox spacing="15" alignment="CENTER" style="-fx-background-color: rgba(255, 255, 255, 0.1); -fx-padding: 30; -fx-background-radius: 15; -fx-border-color: rgba(255, 255, 255, 0.3); -fx-border-width: 1; -fx-border-radius: 15; -fx-pref-width: 200;">
+                    <Text text="Commandes" style="-fx-font-size: 18px; -fx-fill: #ffffff; -fx-font-weight: bold;" />
+                    <Button text="Gérer" onAction="#versCommandes" 
+                            style="-fx-background-color: #27ae60; -fx-text-fill: #ffffff; -fx-font-size: 14px; -fx-background-radius: 20; -fx-cursor: hand;" />
+                </VBox>
+            </HBox>
+
+            <!-- Pied de page -->
+            <VBox spacing="5" alignment="CENTER">
+                <Text text="Version 1.0 | 2025"
+                      style="-fx-font-size: 12px; -fx-fill: #95a5a6;" />
+                
+                <Text text="© Tous droits réservés - HSP"
+                      style="-fx-font-size: 12px; -fx-fill: #95a5a6;" />
+            </VBox>
+        </VBox>
+    </center>
+
+</BorderPane>
