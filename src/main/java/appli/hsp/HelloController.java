@@ -1,11 +1,14 @@
 package appli.hsp;
 
+import appli.SessionManager;
 import appli.StartApplication;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import modele.User;
+import repository.UserRepository;
 
 public class HelloController {
 
@@ -20,20 +23,31 @@ public class HelloController {
 
     @FXML
     void handleConnexion(ActionEvent event) {
-        String identifiant = identifiantField.getText();
+        String email = identifiantField.getText();
         String motDePasse = motDePasseField.getText();
         
         // Validation simple des champs
-        if (identifiant.isEmpty() || motDePasse.isEmpty()) {
+        if (email.isEmpty() || motDePasse.isEmpty()) {
             erreurLabel.setText("Veuillez remplir tous les champs");
             return;
         }
         
         // Vérification des identifiants en base de données
-        if (VerifConnexion.verifierConnexion(identifiantField.getText(), motDePasseField.getText())) {
+        if (VerifConnexion.verifierConnexion(email, motDePasse)) {
             try {
-                // Redirection vers la page d'accueil
-                StartApplication.changeScene("pageAccueil");
+                // Récupérer l'utilisateur connecté
+                UserRepository userRepository = new UserRepository();
+                User utilisateur = userRepository.trouverUtilisateurParEmail(email);
+                
+                if (utilisateur != null) {
+                    // Stocker l'utilisateur dans la session
+                    SessionManager.setUtilisateurConnecte(utilisateur);
+                    
+                    // Redirection vers la page d'accueil
+                    StartApplication.changeScene("pageAccueil");
+                } else {
+                    erreurLabel.setText("Erreur: Utilisateur non trouvé");
+                }
             } catch (Exception e) {
                 erreurLabel.setText("Erreur lors de la redirection");
                 e.printStackTrace();
@@ -42,5 +56,4 @@ public class HelloController {
             erreurLabel.setText("Identifiant ou mot de passe incorrect");
         }
     }
-
 }

@@ -32,7 +32,7 @@ public class UserRepository {
     }
     
     public User trouverUtilisateurParId(int id) {
-        String sql = "SELECT * FROM user WHERE idUser = ?";
+        String sql = "SELECT * FROM user WHERE id_user = ?";
         
         try (Connection cnx = Database.getConnexion();
              PreparedStatement stmt = cnx.prepareStatement(sql)) {
@@ -42,7 +42,7 @@ public class UserRepository {
             
             if (rs.next()) {
                 return new User(
-                    rs.getInt("idUser"),
+                    rs.getInt("id_user"),
                     rs.getString("nom"),
                     rs.getString("prenom"),
                     rs.getString("email"),
@@ -67,7 +67,7 @@ public class UserRepository {
             
             if (rs.next()) {
                 return new User(
-                    rs.getInt("idUser"),
+                    rs.getInt("id_user"),
                     rs.getString("nom"),
                     rs.getString("prenom"),
                     rs.getString("email"),
@@ -91,7 +91,7 @@ public class UserRepository {
             
             while (rs.next()) {
                 users.add(new User(
-                    rs.getInt("idUser"),
+                    rs.getInt("id_user"),
                     rs.getString("nom"),
                     rs.getString("prenom"),
                     rs.getString("email"),
@@ -106,7 +106,7 @@ public class UserRepository {
     }
     
     public boolean modifierUtilisateur(User utilisateur) {
-        String sql = "UPDATE user SET nom = ?, prenom = ?, email = ?, mdp = ?, role = ? WHERE idUser = ?";
+        String sql = "UPDATE user SET nom = ?, prenom = ?, email = ?, mdp = ?, role = ? WHERE id_user = ?";
         
         try (Connection cnx = Database.getConnexion();
              PreparedStatement stmt = cnx.prepareStatement(sql)) {
@@ -126,7 +126,7 @@ public class UserRepository {
     }
     
     public boolean supprimerUtilisateur(int id) {
-        String sql = "DELETE FROM user WHERE idUser = ?";
+        String sql = "DELETE FROM user WHERE id_user = ?";
         
         try (Connection cnx = Database.getConnexion();
              PreparedStatement stmt = cnx.prepareStatement(sql)) {
