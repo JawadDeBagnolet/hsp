@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="appli.hsp.FournisseursController">
+
+    <!-- Barre de navigation en haut -->
+    <top>
+        <HBox style="-fx-background-color: #34495e; -fx-padding: 15;">
+            <padding>
+                <Insets top="10" right="20" bottom="10" left="20"/>
+            </padding>
+            
+            <!-- Logo/Titre -->
+            <VBox spacing="5" HBox.hgrow="ALWAYS">
+                <Text text="HSP" style="-fx-font-size: 24px; -fx-fill: #3498db; -fx-font-weight: bold;" />
+                <Text text="Hopital de Sante Publique" style="-fx-font-size: 12px; -fx-fill: #ecf0f1;" />
+            </VBox>
+            
+            <!-- Menu de navigation -->
+            <HBox spacing="20" alignment="CENTER">
+                <Button text="Accueil" onAction="#versAccueil" />
+                <Separator orientation="VERTICAL" />
+                <Button text="Patients" onAction="#versPatients" />
+                <Separator orientation="VERTICAL" />
+                <Button text="Dossiers" onAction="#versDossiers" />
+                <Separator orientation="VERTICAL" />
+                <Button text="Commandes" onAction="#versCommandes" />
+                <Separator orientation="VERTICAL" />
+                <Button text="Fournisseurs" style="-fx-background-color: #3498db; -fx-text-fill: white;" onAction="#versFournisseurs" />
+                <Separator orientation="VERTICAL" />
+                <Button text="Utilisateurs" onAction="#versUtilisateurs" />
+                <Separator orientation="VERTICAL" />
+                <Button text="Mon espace" onAction="#versMonEspace" />
+                <Button text="Deconnexion" style="-fx-background-color: #e74c3c; -fx-text-fill: white;" onAction="#deconnexion" />
+            </HBox>
+        </HBox>
+    </top>
+
+    <!-- Contenu principal -->
+    <center>
+        <ScrollPane fitToWidth="true" fitToHeight="true">
+            <VBox alignment="CENTER" spacing="25" style="-fx-padding: 40;">
+                <padding>
+                    <Insets top="30" right="40" bottom="30" left="40"/>
+                </padding>
+
+                <!-- Titre de la page -->
+                <VBox spacing="15" alignment="CENTER">
+                    <Text text="Gestion des Fournisseurs" style="-fx-font-size: 36px; -fx-fill: white; -fx-font-weight: bold;" />
+                    <Text text="Ajouter des fournisseurs et gerer leurs produits" style="-fx-font-size: 18px; -fx-fill: #ecf0f1;" />
+                </VBox>
+
+                <!-- Formulaire d'ajout de fournisseur -->
+                <VBox spacing="20" alignment="CENTER" style="-fx-background-color: white; -fx-padding: 30; -fx-background-radius: 15; -fx-pref-width: 600;">
+                    
+                    <Text text="Ajouter un Fournisseur" style="-fx-font-size: 20px; -fx-fill: #2c3e50; -fx-font-weight: bold;" />
+                    
+                    <Separator style="-fx-pref-width: 100%;" />
+                    
+                    <!-- Nom du fournisseur -->
+                    <VBox spacing="8" alignment="CENTER_LEFT" style="-fx-pref-width: 100%;">
+                        <Label text="Nom du fournisseur *" style="-fx-font-size: 16px; -fx-font-weight: bold;" />
+                        <TextField fx:id="nomFournisseurField" promptText="Entrez le nom du fournisseur..." style="-fx-pref-width: 100%;" />
+                    </VBox>
+
+                    <!-- Email -->
+                    <VBox spacing="8" alignment="CENTER_LEFT" style="-fx-pref-width: 100%;">
+                        <Label text="Email *" style="-fx-font-size: 16px; -fx-font-weight: bold;" />
+                        <TextField fx:id="emailFournisseurField" promptText="Entrez l'email du fournisseur..." style="-fx-pref-width: 100%;" />
+                    </VBox>
+
+                    <!-- Telephone -->
+                    <VBox spacing="8" alignment="CENTER_LEFT" style="-fx-pref-width: 100%;">
+                        <Label text="Telephone *" style="-fx-font-size: 16px; -fx-font-weight: bold;" />
+                        <TextField fx:id="telephoneFournisseurField" promptText="Entrez le numero de telephone..." style="-fx-pref-width: 100%;" />
+                    </VBox>
+
+                    <!-- Message de statut -->
+                    <Label fx:id="messageLabel" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #e74c3c;" />
+
+                    <!-- Boutons d'action -->
+                    <HBox spacing="15" alignment="CENTER">
+                        <Button text="Ajouter le fournisseur" onAction="#handleAjouterFournisseur" style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-pref-width: 200;" />
+                        <Button text="Vider les champs" onAction="#handleViderChamps" style="-fx-background-color: #f39c12; -fx-text-fill: white; -fx-pref-width: 200;" />
+                    </HBox>
+                </VBox>
+
+                <!-- Liste des fournisseurs -->
+                <VBox spacing="15" alignment="CENTER" style="-fx-background-color: white; -fx-padding: 25; -fx-background-radius: 15; -fx-pref-width: 800;">
+                    <Text text="Liste des Fournisseurs" style="-fx-font-size: 20px; -fx-fill: #2c3e50; -fx-font-weight: bold;" />
+                    
+                    <Separator style="-fx-pref-width: 100%;" />
+                    
+                    <ListView fx:id="fournisseursListView" prefHeight="300" style="-fx-pref-width: 100%;" />
+                </VBox>
+
+                <!-- Section produits du fournisseur -->
+                <VBox spacing="15" alignment="CENTER" style="-fx-background-color: white; -fx-padding: 25; -fx-background-radius: 15; -fx-pref-width: 800;">
+                    <Text text="Produits du Fournisseur" style="-fx-font-size: 20px; -fx-fill: #2c3e50; -fx-font-weight: bold;" />
+                    
+                    <Separator style="-fx-pref-width: 100%;" />
+                    
+                    <Text fx:id="fournisseurSelectionneLabel" text="Veuillez selectionner un fournisseur pour voir ses produits" style="-fx-font-size: 16px; -fx-font-style: italic;" />
+                    
+                    <ListView fx:id="produitsListView" prefHeight="250" style="-fx-pref-width: 100%;" />
+                </VBox>
+                
+                <!-- Espace supplementaire -->
+                <VBox style="-fx-pref-height: 100;">
+                </VBox>
+            </VBox>
+        </ScrollPane>
+    </center>
+</BorderPane>
