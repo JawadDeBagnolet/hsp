@@ -1,5 +1,6 @@
 package appli.hsp;
 
+import appli.StartApplication;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -88,18 +89,7 @@ public class CommandeController {
     @FXML
     void handleRetour(ActionEvent event) {
         try {
-            // Charger la vue de la page d'accueil
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/appli/hsp/pageAccueil.fxml"));
-            VBox pageAccueil = loader.load();
-            
-            // Créer une nouvelle scène
-            Scene scene = new Scene(pageAccueil);
-            
-            // Obtenir la stage actuelle et changer la scène
-            Stage stage = (Stage) detailsPane.getScene().getWindow();
-            stage.setScene(scene);
-            stage.setTitle("HSP - Système de Gestion");
-            
+            StartApplication.changeScene("pageAccueil");
             System.out.println("Retour à la page d'accueil");
             
         } catch (IOException e) {

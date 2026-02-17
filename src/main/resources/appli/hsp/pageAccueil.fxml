@@ -38,6 +38,12 @@
                 
                 <Separator orientation="VERTICAL" style="-fx-background-color: #7f8c8d;" />
                 
+                <Button text="Dossiers"
+                        style="-fx-background-color: transparent; -fx-text-fill: #ecf0f1; -fx-font-size: 14px; -fx-border-color: transparent; -fx-cursor: hand;"
+                        onAction="#versDossiers" />
+                
+                <Separator orientation="VERTICAL" style="-fx-background-color: #7f8c8d;" />
+                
                 <Button text="Commandes"
                         style="-fx-background-color: transparent; -fx-text-fill: #ecf0f1; -fx-font-size: 14px; -fx-border-color: transparent; -fx-cursor: hand;"
                         onAction="#versCommandes" />
