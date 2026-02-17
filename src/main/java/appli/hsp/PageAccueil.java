@@ -34,7 +34,7 @@ public class PageAccueil {
     @FXML
     public void versCommandes(ActionEvent event) {
         try {
-            StartApplication.changeScene("pageCommandes");
+            StartApplication.changeScene("commandeView");
         } catch (Exception e) {
             System.err.println("Erreur lors de la redirection vers commandes: " + e.getMessage());
         }
