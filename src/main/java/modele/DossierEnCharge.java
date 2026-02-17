@@ -1,25 +1,31 @@
 package modele;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+
 public class DossierEnCharge {
     private int idDossier;
-    private int dateArrivee;
-    private int heureArrivee;
+    private LocalDate dateArrivee;
+    private LocalTime heureArrivee;
     private String symptomes;
-    private int nivGravite;
+    private int niveauGravite;
+    private int refUser;
 
-    public DossierEnCharge(int idDossier, int dateArrivee, int heureArrivee, String symptomes, int nivGravite) {
+    public DossierEnCharge(int idDossier, LocalDate dateArrivee, LocalTime heureArrivee, String symptomes, int niveauGravite, int refUser) {
         this.idDossier = idDossier;
         this.dateArrivee = dateArrivee;
         this.heureArrivee = heureArrivee;
         this.symptomes = symptomes;
-        this.nivGravite = nivGravite;
+        this.niveauGravite = niveauGravite;
+        this.refUser = refUser;
     }
 
-    public DossierEnCharge( int dateArrivee, int heureArrivee, String symptomes, int nivGravite) {
+    public DossierEnCharge(LocalDate dateArrivee, LocalTime heureArrivee, String symptomes, int niveauGravite, int refUser) {
         this.dateArrivee = dateArrivee;
         this.heureArrivee = heureArrivee;
         this.symptomes = symptomes;
-        this.nivGravite = nivGravite;
+        this.niveauGravite = niveauGravite;
+        this.refUser = refUser;
     }
 
     public int getIdDossier() {
@@ -30,19 +36,19 @@ public class DossierEnCharge {
         this.idDossier = idDossier;
     }
 
-    public int getDateArrivee() {
+    public LocalDate getDateArrivee() {
         return dateArrivee;
     }
 
-    public void setDateArrivee(int dateArrivee) {
+    public void setDateArrivee(LocalDate dateArrivee) {
         this.dateArrivee = dateArrivee;
     }
 
-    public int getHeureArrivee() {
+    public LocalTime getHeureArrivee() {
         return heureArrivee;
     }
 
-    public void setHeureArrivee(int heureArrivee) {
+    public void setHeureArrivee(LocalTime heureArrivee) {
         this.heureArrivee = heureArrivee;
     }
 
@@ -54,11 +60,31 @@ public class DossierEnCharge {
         this.symptomes = symptomes;
     }
 
-    public int getNivGravite() {
-        return nivGravite;
+    public int getNiveauGravite() {
+        return niveauGravite;
     }
 
-    public void setNivGravite(int nivGravite) {
-        this.nivGravite = nivGravite;
+    public void setNiveauGravite(int niveauGravite) {
+        this.niveauGravite = niveauGravite;
+    }
+
+    public int getRefUser() {
+        return refUser;
+    }
+
+    public void setRefUser(int refUser) {
+        this.refUser = refUser;
+    }
+
+    @Override
+    public String toString() {
+        return "DossierEnCharge{" +
+                "idDossier=" + idDossier +
+                ", dateArrivee=" + dateArrivee +
+                ", heureArrivee=" + heureArrivee +
+                ", symptomes='" + symptomes + '\'' +
+                ", niveauGravite=" + niveauGravite +
+                ", refUser=" + refUser +
+                '}';
     }
 }
