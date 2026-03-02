@@ -77,6 +77,8 @@
                 <Region HBox.hgrow="ALWAYS" />
                 <Button text="↻ Actualiser" onAction="#chargerUtilisateurs"
                         style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-size: 12px; -fx-border-radius: 6; -fx-background-radius: 6; -fx-cursor: hand; -fx-padding: 8 16;" />
+                <Button text="🧪 Test" onAction="#chargerUtilisateursTest"
+                        style="-fx-background-color: #9b59b6; -fx-text-fill: white; -fx-font-size: 12px; -fx-border-radius: 6; -fx-background-radius: 6; -fx-cursor: hand; -fx-padding: 8 16;" />
             </HBox>
 
             <!-- Tableau des utilisateurs -->
@@ -89,17 +91,9 @@
                           style="-fx-font-size: 12px; -fx-fill: #7f8c8d;" />
                 </HBox>
                 
-                <TableView fx:id="utilisateursTable" 
+                <VBox fx:id="utilisateursContainer" spacing="5" 
                           prefHeight="400"
-                          style="-fx-background-color: transparent; -fx-border-color: #e1e8ed; -fx-border-width: 1; -fx-border-radius: 8;">
-                    <columns>
-                        <TableColumn fx:id="idColumn" text="ID" prefWidth="80" style="-fx-font-weight: 600; -fx-font-size: 13px; -fx-alignment: CENTER;" />
-                        <TableColumn fx:id="nomColumn" text="Nom" prefWidth="140" style="-fx-font-weight: 600; -fx-font-size: 13px;" />
-                        <TableColumn fx:id="prenomColumn" text="Prénom" prefWidth="140" style="-fx-font-weight: 600; -fx-font-size: 13px;" />
-                        <TableColumn fx:id="emailColumn" text="Email" prefWidth="250" style="-fx-font-weight: 600; -fx-font-size: 13px;" />
-                        <TableColumn fx:id="roleColumn" text="Rôle" prefWidth="160" style="-fx-font-weight: 600; -fx-font-size: 13px; -fx-alignment: CENTER;" />
-                    </columns>
-                </TableView>
+                          style="-fx-background-color: white; -fx-border-color: #e1e8ed; -fx-border-width: 2; -fx-border-radius: 8; -fx-padding: 10;" />
             </VBox>
 
             <!-- Formulaire -->

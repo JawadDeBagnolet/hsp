@@ -1,12 +1,13 @@
 package appli.hsp;
 
 import appli.StartApplication;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import modele.User;
 import repository.UserRepository;
@@ -21,7 +22,10 @@ public class PageUtilisateurs {
     private Text totalUsersLabel;
 
     @FXML
-    private TableView<User> utilisateursTable;
+    private VBox utilisateursContainer;
+    
+    @FXML
+    private ListView<User> utilisateursList;
     
     @FXML
     private TableColumn<User, Integer> idColumn;
@@ -78,7 +82,7 @@ public class PageUtilisateurs {
     private TextField rechercheField;
 
     private UserRepository userRepository;
-    private ObservableList<User> utilisateursList;
+    private ObservableList<User> utilisateursObservable;
     private User utilisateurSelectionne;
 
     @FXML
@@ -87,22 +91,19 @@ public class PageUtilisateurs {
             System.out.println("Initialisation de la page utilisateurs...");
             
             userRepository = new UserRepository();
-            utilisateursList = FXCollections.observableArrayList();
+            utilisateursObservable = FXCollections.observableArrayList();
             
-            // Initialiser les colonnes du tableau
-            configurerTableau();
+            // Initialiser le VBox simple et efficace
+            configurerVBox();
             
             // Initialiser la liste des rôles
             configurerRoles();
             
-            // Charger les utilisateurs
-            chargerUtilisateurs();
-            
-            // Configurer la sélection dans le tableau
-            configurerSelectionTableau();
-            
             // Configurer la recherche
             configurerRecherche();
+            
+            // Charger les utilisateurs EN DERNIER (après que tout soit configuré)
+            chargerUtilisateurs();
             
             // Afficher les utilisateurs en console pour le débogage
             afficherUtilisateursConsole();
@@ -117,125 +118,17 @@ public class PageUtilisateurs {
         }
     }
 
-    private void configurerTableau() {
-        // Configuration des colonnes avec centrage et style
-        idColumn.setCellValueFactory(new PropertyValueFactory<>("idUser"));
-        idColumn.setCellFactory(column -> {
-            TableCell<User, Integer> cell = new TableCell<>() {
-                @Override
-                protected void updateItem(Integer item, boolean empty) {
-                    super.updateItem(item, empty);
-                    if (empty || item == null) {
-                        setText(null);
-                        setStyle("");
-                    } else {
-                        setText(item.toString());
-                        setStyle("-fx-alignment: CENTER; -fx-font-weight: 600; -fx-background-color: #f8f9fa; -fx-border-color: #e9ecef; -fx-border-width: 0 0 1 0;");
-                    }
-                }
-            };
-            return cell;
-        });
+    private void configurerVBox() {
+        System.out.println("Configuration du VBox des utilisateurs...");
         
-        nomColumn.setCellValueFactory(new PropertyValueFactory<>("nom"));
-        nomColumn.setCellFactory(column -> {
-            TableCell<User, String> cell = new TableCell<>() {
-                @Override
-                protected void updateItem(String item, boolean empty) {
-                    super.updateItem(item, empty);
-                    if (empty || item == null) {
-                        setText(null);
-                        setStyle("");
-                    } else {
-                        setText(item);
-                        setStyle("-fx-font-weight: 500; -fx-background-color: #f8f9fa; -fx-border-color: #e9ecef; -fx-border-width: 0 0 1 0; -fx-padding: 5 8;");
-                    }
-                }
-            };
-            return cell;
-        });
+        // Vérifier que le VBox est bien injecté
+        if (utilisateursContainer == null) {
+            System.err.println("❌ utilisateursContainer est null");
+            return;
+        }
         
-        prenomColumn.setCellValueFactory(new PropertyValueFactory<>("prenom"));
-        prenomColumn.setCellFactory(column -> {
-            TableCell<User, String> cell = new TableCell<>() {
-                @Override
-                protected void updateItem(String item, boolean empty) {
-                    super.updateItem(item, empty);
-                    if (empty || item == null) {
-                        setText(null);
-                        setStyle("");
-                    } else {
-                        setText(item);
-                        setStyle("-fx-font-weight: 500; -fx-background-color: #f8f9fa; -fx-border-color: #e9ecef; -fx-border-width: 0 0 1 0; -fx-padding: 5 8;");
-                    }
-                }
-            };
-            return cell;
-        });
-        
-        emailColumn.setCellValueFactory(new PropertyValueFactory<>("email"));
-        emailColumn.setCellFactory(column -> {
-            TableCell<User, String> cell = new TableCell<>() {
-                @Override
-                protected void updateItem(String item, boolean empty) {
-                    super.updateItem(item, empty);
-                    if (empty || item == null) {
-                        setText(null);
-                        setStyle("");
-                    } else {
-                        setText(item);
-                        setStyle("-fx-font-weight: 500; -fx-background-color: #f8f9fa; -fx-border-color: #e9ecef; -fx-border-width: 0 0 1 0; -fx-padding: 5 8;");
-                    }
-                }
-            };
-            return cell;
-        });
-        
-        roleColumn.setCellValueFactory(new PropertyValueFactory<>("role"));
-        roleColumn.setCellFactory(column -> {
-            TableCell<User, String> cell = new TableCell<>() {
-                @Override
-                protected void updateItem(String item, boolean empty) {
-                    super.updateItem(item, empty);
-                    if (empty || item == null) {
-                        setText(null);
-                        setStyle("");
-                    } else {
-                        setText(item);
-                        // Couleur selon le rôle
-                        String bgColor = getRoleColor(item);
-                        setStyle("-fx-alignment: CENTER; -fx-font-weight: 600; -fx-background-color: " + bgColor + "; -fx-text-fill: white; -fx-background-radius: 12; -fx-padding: 4 12;");
-                    }
-                }
-            };
-            return cell;
-        });
-        
-        utilisateursTable.setItems(utilisateursList);
-        
-        // Style du tableau
-        utilisateursTable.setStyle("-fx-background-color: white; -fx-border-color: #e1e8ed; -fx-border-width: 1; -fx-border-radius: 8; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 10, 0, 0, 2);");
-        
-        // Style des rangées paires/impaires
-        utilisateursTable.setRowFactory(tv -> {
-            TableRow<User> row = new TableRow<>() {
-                @Override
-                protected void updateItem(User item, boolean empty) {
-                    super.updateItem(item, empty);
-                    if (empty) {
-                        setStyle("");
-                    } else {
-                        int index = getIndex();
-                        if (index % 2 == 0) {
-                            setStyle("-fx-background-color: #ffffff; -fx-border-color: transparent;");
-                        } else {
-                            setStyle("-fx-background-color: #f8f9fa; -fx-border-color: transparent;");
-                        }
-                    }
-                }
-            };
-            return row;
-        });
+        System.out.println("✅ VBox injecté avec succès");
+        System.out.println("✅ VBox configuré avec succès");
     }
     
     private String getRoleColor(String role) {
@@ -262,7 +155,7 @@ public class PageUtilisateurs {
     }
 
     private void afficherUtilisateursConsole() {
-        if (utilisateursList == null || utilisateursList.isEmpty()) {
+        if (utilisateursObservable == null || utilisateursObservable.isEmpty()) {
             System.out.println("⚠️ Aucun utilisateur trouvé dans la base de données");
             return;
         }
@@ -272,7 +165,7 @@ public class PageUtilisateurs {
         System.out.println("│ ID │     NOM     │    PRÉNOM   │         EMAIL         │      RÔLE       │");
         System.out.println("├────┼──────────────┼──────────────┼──────────────────────────┼──────────────────┤");
         
-        for (User user : utilisateursList) {
+        for (User user : utilisateursObservable) {
             System.out.printf("│ %2d │ %-12s │ %-12s │ %-22s │ %-14s │%n", 
                 user.getIdUser(), 
                 user.getNom() != null ? user.getNom() : "", 
@@ -282,7 +175,7 @@ public class PageUtilisateurs {
         }
         
         System.out.println("└────┴──────────────┴──────────────┴──────────────────────────┴──────────────────┘");
-        System.out.println("Total: " + utilisateursList.size() + " utilisateur" + (utilisateursList.size() > 1 ? "s" : ""));
+        System.out.println("Total: " + utilisateursObservable.size() + " utilisateur" + (utilisateursObservable.size() > 1 ? "s" : ""));
         System.out.println("\n=== 🎭 RÔLES DISPONIBLES ===");
         System.out.println("🔴 ADMIN");
         System.out.println("🔵 MEDECIN");
@@ -295,11 +188,65 @@ public class PageUtilisateurs {
     private void chargerUtilisateurs() {
         try {
             System.out.println("Chargement des utilisateurs depuis la base de données...");
-            List<User> users = userRepository.getAllUsers();
-            utilisateursList.clear();
-            utilisateursList.addAll(users);
             
-            System.out.println("Nombre d'utilisateurs trouvés: " + users.size());
+            // Test de connexion à la BDD
+            System.out.println("Test de connexion à la base de données...");
+            try (java.sql.Connection cnx = database.Database.getConnexion()) {
+                if (cnx != null && !cnx.isClosed()) {
+                    System.out.println("✅ Connexion à la BDD réussie");
+                } else {
+                    System.err.println("❌ Connexion à la BDD échouée");
+                    return;
+                }
+            }
+            
+            List<User> users = userRepository.getAllUsers();
+            System.out.println("Nombre brut d'utilisateurs récupérés: " + users.size());
+            
+            // Afficher les détails en console pour débogage
+            System.out.println("=== DÉTAILS DES UTILISATEURS CHARGÉS ===");
+            for (int i = 0; i < users.size(); i++) {
+                User user = users.get(i);
+                System.out.printf("[%d] ID: %d, Nom: %s, Prénom: %s, Email: %s, Rôle: %s%n", 
+                    i, user.getIdUser(), user.getNom(), user.getPrenom(), user.getEmail(), user.getRole());
+            }
+            System.out.println("========================================");
+            
+            // Vider et recharger la liste observable
+            System.out.println("🔄 Vidage de la liste observable...");
+            utilisateursObservable.clear();
+            System.out.println("🔄 Ajout des " + users.size() + " utilisateurs à la liste observable...");
+            utilisateursObservable.addAll(users);
+            
+            System.out.println("Nombre d'utilisateurs dans la liste observable: " + utilisateursObservable.size());
+            
+            // Vider le VBox et ajouter les utilisateurs sous forme de Labels
+            System.out.println("🔄 Vidage du VBox...");
+            utilisateursContainer.getChildren().clear();
+            
+            System.out.println("🔄 Ajout des utilisateurs au VBox...");
+            for (User user : users) {
+                // Créer un Label pour chaque utilisateur
+                Label userLabel = new Label();
+                String texte = String.format("ID: %d | %s %s | %s | Rôle: %s", 
+                    user.getIdUser(), 
+                    user.getNom(), 
+                    user.getPrenom(), 
+                    user.getEmail(), 
+                    user.getRole());
+                userLabel.setText(texte);
+                
+                // Style selon le rôle
+                String bgColor = getRoleColor(user.getRole());
+                userLabel.setStyle("-fx-background-color: " + bgColor + "; -fx-text-fill: white; -fx-font-weight: 600; -fx-background-radius: 8; -fx-padding: 10; -fx-margin: 2;");
+                
+                // Ajouter au VBox
+                utilisateursContainer.getChildren().add(userLabel);
+                
+                System.out.println("🔍 Ajout utilisateur au VBox: " + texte);
+            }
+            
+            System.out.println("✅ " + utilisateursContainer.getChildren().size() + " utilisateurs ajoutés au VBox");
             
             // Mettre à jour le label de statistiques
             if (totalUsersLabel != null) {
@@ -309,14 +256,6 @@ public class PageUtilisateurs {
                 resultCountLabel.setText("");
             }
             
-            // Afficher les détails en console pour débogage
-            System.out.println("=== DÉTAILS DES UTILISATEURS CHARGÉS ===");
-            for (User user : users) {
-                System.out.printf("ID: %d, Nom: %s, Prénom: %s, Email: %s, Rôle: %s%n", 
-                    user.getIdUser(), user.getNom(), user.getPrenom(), user.getEmail(), user.getRole());
-            }
-            System.out.println("========================================");
-            
             afficherMessage("✅ " + users.size() + " utilisateur" + (users.size() > 1 ? "s" : "") + " chargé" + (users.size() > 1 ? "s" : "") + " avec succès", "#28a745");
         } catch (Exception e) {
             System.err.println("Erreur lors du chargement des utilisateurs: " + e.getMessage());
@@ -325,8 +264,8 @@ public class PageUtilisateurs {
         }
     }
 
-    private void configurerSelectionTableau() {
-        utilisateursTable.getSelectionModel().selectedItemProperty().addListener(
+    private void configurerSelectionListe() {
+        utilisateursList.getSelectionModel().selectedItemProperty().addListener(
             (obs, oldSelection, newSelection) -> {
                 if (newSelection != null) {
                     utilisateurSelectionne = newSelection;
@@ -343,7 +282,7 @@ public class PageUtilisateurs {
 
     private void filtrerUtilisateurs(String recherche) {
         if (recherche == null || recherche.trim().isEmpty()) {
-            utilisateursTable.setItems(utilisateursList);
+            utilisateursList.setItems(utilisateursObservable);
             resultCountLabel.setText("");
             return;
         }
@@ -351,7 +290,7 @@ public class PageUtilisateurs {
         ObservableList<User> utilisateursFiltres = FXCollections.observableArrayList();
         String rechercheLower = recherche.toLowerCase().trim();
         
-        for (User user : utilisateursList) {
+        for (User user : utilisateursObservable) {
             if (user.getNom().toLowerCase().contains(rechercheLower) ||
                 user.getPrenom().toLowerCase().contains(rechercheLower) ||
                 user.getEmail().toLowerCase().contains(rechercheLower) ||
@@ -360,7 +299,7 @@ public class PageUtilisateurs {
             }
         }
         
-        utilisateursTable.setItems(utilisateursFiltres);
+        utilisateursList.setItems(utilisateursFiltres);
         resultCountLabel.setText(utilisateursFiltres.size() + " résultat" + (utilisateursFiltres.size() > 1 ? "s" : ""));
         afficherMessage("Résultats: " + utilisateursFiltres.size(), "#3498db");
     }
@@ -480,13 +419,13 @@ public class PageUtilisateurs {
         if (roleFiltre != null) {
             ObservableList<User> utilisateursFiltres = FXCollections.observableArrayList();
             
-            for (User user : utilisateursList) {
+            for (User user : utilisateursObservable) {
                 if (roleFiltre.equals(user.getRole())) {
                     utilisateursFiltres.add(user);
                 }
             }
             
-            utilisateursTable.setItems(utilisateursFiltres);
+            utilisateursList.setItems(utilisateursFiltres);
             resultCountLabel.setText(utilisateursFiltres.size() + " " + roleFiltre.toLowerCase());
             afficherMessage("Filtre: " + roleFiltre + " (" + utilisateursFiltres.size() + " utilisateur" + (utilisateursFiltres.size() > 1 ? "s" : "") + ")", "#3498db");
         }
@@ -499,7 +438,7 @@ public class PageUtilisateurs {
 
     @FXML
     public void afficherTous(ActionEvent event) {
-        utilisateursTable.setItems(utilisateursList);
+        utilisateursList.setItems(utilisateursObservable);
         resultCountLabel.setText("");
         
         // Réinitialiser les couleurs des boutons de filtre
@@ -511,6 +450,50 @@ public class PageUtilisateurs {
     @FXML
     public void chargerUtilisateurs(ActionEvent event) {
         chargerUtilisateurs();
+    }
+    
+    // Méthode de test pour ajouter des utilisateurs factices
+    @FXML
+    public void chargerUtilisateursTest(ActionEvent event) {
+        try {
+            System.out.println("🧪 Test avec utilisateurs factices...");
+            
+            // Créer des utilisateurs factices pour tester
+            ObservableList<User> testUsers = FXCollections.observableArrayList();
+            testUsers.add(new User(1, "Dupont", "Jean", "jean.dupont@email.com", "mdp123", "ADMIN"));
+            testUsers.add(new User(2, "Martin", "Sophie", "sophie.martin@email.com", "mdp456", "MEDECIN"));
+            testUsers.add(new User(3, "Bernard", "Pierre", "pierre.bernard@email.com", "mdp789", "INFIRMIER"));
+            testUsers.add(new User(4, "Petit", "Marie", "marie.petit@email.com", "mdp012", "SECRETAIRE"));
+            
+            // Vider et recharger avec les données de test
+            utilisateursObservable.clear();
+            utilisateursObservable.addAll(testUsers);
+            
+            System.out.println("🧪 " + testUsers.size() + " utilisateurs factices ajoutés");
+            
+            // Forcer la mise à jour de la ListView (SIMPLE)
+            System.out.println("🧪 Début de la mise à jour de la ListView (TEST)...");
+            System.out.println("   - Nombre d'items dans testUsers: " + testUsers.size());
+            System.out.println("   - Nombre d'items dans ListView avant: " + utilisateursList.getItems().size());
+            
+            utilisateursList.setItems(utilisateursObservable);
+            System.out.println("   - Liste observable réassignée (TEST)");
+            
+            System.out.println("   - Nombre d'items dans ListView après: " + utilisateursList.getItems().size());
+            System.out.println("🧪 ListView mise à jour avec les données de test");
+            
+            // Mettre à jour les labels
+            if (totalUsersLabel != null) {
+                totalUsersLabel.setText("Total (TEST): " + testUsers.size() + " utilisateur" + (testUsers.size() > 1 ? "s" : ""));
+            }
+            
+            afficherMessage("🧪 Mode test activé - " + testUsers.size() + " utilisateurs factices chargés", "#9b59b6");
+            
+        } catch (Exception e) {
+            System.err.println("❌ Erreur lors du test: " + e.getMessage());
+            e.printStackTrace();
+            afficherMessage("❌ Erreur de test: " + e.getMessage(), "#dc3545");
+        }
     }
 
     @FXML
@@ -527,7 +510,7 @@ public class PageUtilisateurs {
         rechercheField.clear();
         
         utilisateurSelectionne = null;
-        utilisateursTable.getSelectionModel().clearSelection();
+        utilisateursList.getSelectionModel().clearSelection();
         
         // Réinitialiser le mode du formulaire
         if (formModeLabel != null) {
@@ -543,7 +526,7 @@ public class PageUtilisateurs {
         supprimerButton.setDisable(true);
         
         // Recharger la liste complète
-        utilisateursTable.setItems(utilisateursList);
+        utilisateursList.setItems(utilisateursObservable);
     }
 
     private boolean validerChamps() {

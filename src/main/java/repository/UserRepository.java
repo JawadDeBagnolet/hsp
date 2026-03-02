@@ -89,18 +89,26 @@ public class UserRepository {
              PreparedStatement stmt = cnx.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
             
+            System.out.println("📡 Exécution de la requête: " + sql);
+            
             while (rs.next()) {
-                users.add(new User(
+                User user = new User(
                     rs.getInt("id_user"),
                     rs.getString("nom"),
                     rs.getString("prenom"),
                     rs.getString("email"),
                     rs.getString("mdp"),
                     rs.getString("role")
-                ));
+                );
+                users.add(user);
+                System.out.println("✅ Utilisateur récupéré: " + user.toString());
             }
+            
+            System.out.println("📊 Total d'utilisateurs récupérés: " + users.size());
+            
         } catch (SQLException e) {
-            System.err.println("Erreur lors de la récupération des utilisateurs: " + e.getMessage());
+            System.err.println("❌ Erreur lors de la récupération des utilisateurs: " + e.getMessage());
+            e.printStackTrace();
         }
         return users;
     }
