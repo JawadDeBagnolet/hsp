@@ -86,12 +86,68 @@ public class DossierEnChargeController {
         }
         System.out.println("ComboBox heures initialisé avec " + heureCombo.getItems().size() + " éléments");
         
+        // Personnaliser l'affichage du ComboBox des heures
+        heureCombo.setCellFactory(param -> new javafx.scene.control.ListCell<String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(item);
+                    setStyle("-fx-text-fill: #2c3e50; -fx-font-size: 14px;");
+                }
+            }
+        });
+        
+        // Personnaliser l'affichage de l'élément sélectionné pour les heures
+        heureCombo.setButtonCell(new javafx.scene.control.ListCell<String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(item);
+                    setStyle("-fx-text-fill: #2c3e50; -fx-font-size: 14px;");
+                }
+            }
+        });
+        
         // Initialiser le ComboBox des minutes (00-55 par pas de 5)
         minuteCombo.getItems().clear();
         for (int i = 0; i < 60; i += 5) {
             minuteCombo.getItems().add(String.format("%02d", i));
         }
         System.out.println("ComboBox minutes initialisé avec " + minuteCombo.getItems().size() + " éléments");
+        
+        // Personnaliser l'affichage du ComboBox des minutes
+        minuteCombo.setCellFactory(param -> new javafx.scene.control.ListCell<String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(item);
+                    setStyle("-fx-text-fill: #2c3e50; -fx-font-size: 14px;");
+                }
+            }
+        });
+        
+        // Personnaliser l'affichage de l'élément sélectionné pour les minutes
+        minuteCombo.setButtonCell(new javafx.scene.control.ListCell<String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(item);
+                    setStyle("-fx-text-fill: #2c3e50; -fx-font-size: 14px;");
+                }
+            }
+        });
         
         // Initialiser le ComboBox de niveau de gravité
         niveauGraviteCombo.getItems().clear();
@@ -102,6 +158,34 @@ public class DossierEnChargeController {
             "4 - Non urgent"
         );
         System.out.println("ComboBox niveau de gravité initialisé avec " + niveauGraviteCombo.getItems().size() + " éléments");
+        
+        // Personnaliser l'affichage du ComboBox de niveau de gravité
+        niveauGraviteCombo.setCellFactory(param -> new javafx.scene.control.ListCell<String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(item);
+                    setStyle("-fx-text-fill: #2c3e50; -fx-font-size: 14px;");
+                }
+            }
+        });
+        
+        // Personnaliser l'affichage de l'élément sélectionné pour niveau de gravité
+        niveauGraviteCombo.setButtonCell(new javafx.scene.control.ListCell<String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(item);
+                    setStyle("-fx-text-fill: #2c3e50; -fx-font-size: 14px;");
+                }
+            }
+        });
         
         // Initialiser le ComboBox des patients
         patientCombo.getItems().clear();
