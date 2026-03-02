@@ -15,6 +15,8 @@ import repository.UserRepository;
 import java.util.List;
 import java.util.Optional;
 
+import appli.util.PasswordUtils;
+
 public class PageUtilisateurs {
 
 
@@ -329,12 +331,13 @@ public class PageUtilisateurs {
         if (!validerChamps()) {
             return;
         }
-        
+        String hash = PasswordUtils.hashPassword(mdpField.getText());
+
         User nouvelUtilisateur = new User(
             nomField.getText().trim(),
             prenomField.getText().trim(),
             emailField.getText().trim(),
-            mdpField.getText(),
+            hash,
             roleComboBox.getValue()
         );
         
@@ -579,7 +582,7 @@ public class PageUtilisateurs {
         messageLabel.setStyle("-fx-text-fill: " + couleur + "; -fx-font-size: 14px; -fx-wrap-text: true; -fx-font-weight: bold;");
     }
 
-    // Méthodes de navigation
+
     @FXML
     public void versAccueil(ActionEvent event) {
         try {
