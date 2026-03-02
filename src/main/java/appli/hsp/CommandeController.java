@@ -1,41 +1,78 @@
 package appli.hsp;
 
 import appli.StartApplication;
+import appli.SessionManager;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
+import modele.Demande;
+import modele.FicheProduit;
+import repository.DemandeProduitRepository;
+import repository.DemandeRepository;
+import repository.FicheProduitRepository;
 
 import java.io.IOException;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 public class CommandeController {
+
+    public static class LigneProduitUI {
+        private final FicheProduit produit;
+        private final int quantite;
+
+        public LigneProduitUI(FicheProduit produit, int quantite) {
+            this.produit = produit;
+            this.quantite = quantite;
+        }
+
+        public FicheProduit getProduit() {
+            return produit;
+        }
+
+        public int getQuantite() {
+            return quantite;
+        }
+
+        public String getProduitLibelle() {
+            return produit != null ? produit.getLibelle() : "";
+        }
+
+        public int getProduitId() {
+            return produit != null ? produit.getIdProduit() : 0;
+        }
+    }
 
     @FXML
     private TextField rechercheField;
 
     @FXML
-    private TableView<?> commandesTable;
+    private TableView<Demande> commandesTable;
 
     @FXML
-    private TableColumn<?, ?> idColumn;
+    private TableColumn<Demande, Integer> idColumn;
 
     @FXML
-    private TableColumn<?, ?> dateColumn;
+    private TableColumn<Demande, String> dateColumn;
 
     @FXML
-    private TableColumn<?, ?> patientColumn;
+    private TableColumn<Demande, Integer> patientColumn;
 
     @FXML
-    private TableColumn<?, ?> medecinColumn;
+    private TableColumn<Demande, Integer> medecinColumn;
 
     @FXML
-    private TableColumn<?, ?> statutColumn;
+    private TableColumn<Demande, Integer> statutColumn;
 
     @FXML
-    private TableColumn<?, ?> actionsColumn;
+    private TableColumn<Demande, Void> actionsColumn;
 
     @FXML
     private VBox detailsPane;
@@ -55,6 +92,13 @@ public class CommandeController {
     @FXML
     private Label statutLabel;
 
+    private final DemandeRepository demandeRepository = new DemandeRepository();
+    private final FicheProduitRepository ficheProduitRepository = new FicheProduitRepository();
+    private final DemandeProduitRepository demandeProduitRepository = new DemandeProduitRepository();
+
+    private final ObservableList<Demande> demandesObservable = FXCollections.observableArrayList();
+    private Demande demandeSelectionnee;
+
     @FXML
     public void initialize() {
         // Initialisation du contrôleur
@@ -65,6 +109,13 @@ public class CommandeController {
         
         // Masquer le panneau de détails au démarrage
         detailsPane.setVisible(false);
+
+        commandesTable.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+            demandeSelectionnee = newVal;
+            if (newVal != null) {
+                afficherDetailsCommande(newVal);
+            }
+        });
     }
 
     private void setupTable() {
@@ -75,15 +126,52 @@ public class CommandeController {
         medecinColumn.setStyle("-fx-alignment: CENTER_LEFT;");
         statutColumn.setStyle("-fx-alignment: CENTER;");
         actionsColumn.setStyle("-fx-alignment: CENTER;");
-        
-        // TODO: Charger les données des commandes depuis la base de données
+
+        idColumn.setCellValueFactory(new PropertyValueFactory<>("idDemande"));
+        dateColumn.setCellValueFactory(cellData -> {
+            if (cellData.getValue() == null || cellData.getValue().getDateDemande() == null) {
+                return new javafx.beans.property.SimpleStringProperty("");
+            }
+            return new javafx.beans.property.SimpleStringProperty(
+                cellData.getValue().getDateDemande().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))
+            );
+        });
+        // `commandeView.fxml` est générique (patient/médecin/statut), on l'utilise pour afficher des infos utiles
+        patientColumn.setCellValueFactory(new PropertyValueFactory<>("idUser"));
+        medecinColumn.setCellValueFactory(new PropertyValueFactory<>("quantite"));
+        statutColumn.setCellValueFactory(new PropertyValueFactory<>("idDemande"));
+
+        actionsColumn.setCellFactory(param -> new TableCell<>() {
+            private final Button voirBtn = new Button("Voir");
+
+            {
+                voirBtn.setOnAction(e -> {
+                    Demande d = getTableView().getItems().get(getIndex());
+                    afficherDetailsCommande(d);
+                });
+            }
+
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                setGraphic(empty ? null : voirBtn);
+            }
+        });
+
+        commandesTable.setItems(demandesObservable);
+
         loadCommandes();
     }
 
     private void loadCommandes() {
-        // TODO: Implémenter le chargement des commandes depuis la base de données
-        // Pour l'instant, le tableau reste vide
-        System.out.println("Chargement des commandes...");
+        System.out.println("Chargement des demandes...");
+        try {
+            List<Demande> demandes = demandeRepository.getAllDemandes();
+            demandesObservable.clear();
+            demandesObservable.addAll(demandes);
+        } catch (Exception e) {
+            System.err.println("Erreur lors du chargement des demandes: " + e.getMessage());
+        }
     }
 
     @FXML
@@ -102,16 +190,164 @@ public class CommandeController {
     void handleRecherche(ActionEvent event) {
         String rechercheText = rechercheField.getText();
         System.out.println("Recherche: " + rechercheText);
-        
-        // TODO: Implémenter la logique de recherche
-        // Filtrer les commandes selon le texte de recherche
+
+        if (rechercheText == null || rechercheText.trim().isEmpty()) {
+            commandesTable.setItems(demandesObservable);
+            return;
+        }
+
+        String r = rechercheText.trim();
+        ObservableList<Demande> filtered = FXCollections.observableArrayList();
+        for (Demande d : demandesObservable) {
+            if (String.valueOf(d.getIdDemande()).contains(r) || String.valueOf(d.getIdUser()).contains(r)) {
+                filtered.add(d);
+            }
+        }
+        commandesTable.setItems(filtered);
     }
 
     @FXML
     void handleNouvelleCommande(ActionEvent event) {
-        // TODO: Ouvrir une fenêtre ou un dialogue pour créer une nouvelle commande
-        System.out.println("Création d'une nouvelle commande");
-        // Ouvrir une nouvelle vue ou un dialogue pour la saisie
+        System.out.println("Création d'une nouvelle demande");
+
+        try {
+            List<FicheProduit> produits = ficheProduitRepository.getAllFicheProduits();
+            if (produits.isEmpty()) {
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Aucun produit");
+                alert.setHeaderText(null);
+                alert.setContentText("Aucun produit n'est disponible dans fiche_produit.");
+                alert.showAndWait();
+                return;
+            }
+
+            Dialog<ButtonType> dialog = new Dialog<>();
+            dialog.setTitle("Nouvelle demande de produit");
+            dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+
+            ObservableList<LigneProduitUI> lignes = FXCollections.observableArrayList();
+
+            TableView<LigneProduitUI> lignesTable = new TableView<>(lignes);
+            lignesTable.setPrefHeight(220);
+
+            TableColumn<LigneProduitUI, Integer> prodIdCol = new TableColumn<>("ID Produit");
+            prodIdCol.setPrefWidth(90);
+            prodIdCol.setCellValueFactory(new PropertyValueFactory<>("produitId"));
+
+            TableColumn<LigneProduitUI, String> prodLibCol = new TableColumn<>("Produit");
+            prodLibCol.setPrefWidth(260);
+            prodLibCol.setCellValueFactory(new PropertyValueFactory<>("produitLibelle"));
+
+            TableColumn<LigneProduitUI, Integer> qteCol = new TableColumn<>("Quantité");
+            qteCol.setPrefWidth(100);
+            qteCol.setCellValueFactory(new PropertyValueFactory<>("quantite"));
+
+            lignesTable.getColumns().addAll(prodIdCol, prodLibCol, qteCol);
+
+            Button ajouterLigneBtn = new Button("Ajouter produit");
+            Button supprimerLigneBtn = new Button("Supprimer ligne");
+            supprimerLigneBtn.disableProperty().bind(lignesTable.getSelectionModel().selectedItemProperty().isNull());
+
+            ajouterLigneBtn.setOnAction(e -> {
+                Dialog<ButtonType> add = new Dialog<>();
+                add.setTitle("Ajouter un produit");
+                add.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+
+                ComboBox<FicheProduit> produitCombo = new ComboBox<>(FXCollections.observableArrayList(produits));
+                produitCombo.setValue(produits.get(0));
+                produitCombo.setCellFactory(param -> new ListCell<>() {
+                    @Override
+                    protected void updateItem(FicheProduit item, boolean empty) {
+                        super.updateItem(item, empty);
+                        setText(empty || item == null ? null : (item.getLibelle() + " (ID: " + item.getIdProduit() + ")"));
+                    }
+                });
+                produitCombo.setButtonCell(new ListCell<>() {
+                    @Override
+                    protected void updateItem(FicheProduit item, boolean empty) {
+                        super.updateItem(item, empty);
+                        setText(empty || item == null ? null : item.getLibelle());
+                    }
+                });
+
+                Spinner<Integer> quantiteSpinner = new Spinner<>(1, 10000, 1);
+                quantiteSpinner.setEditable(true);
+
+                GridPane g = new GridPane();
+                g.setHgap(10);
+                g.setVgap(10);
+                g.add(new Label("Produit:"), 0, 0);
+                g.add(produitCombo, 1, 0);
+                g.add(new Label("Quantité:"), 0, 1);
+                g.add(quantiteSpinner, 1, 1);
+                add.getDialogPane().setContent(g);
+
+                add.showAndWait().ifPresent(r -> {
+                    if (r == ButtonType.OK) {
+                        FicheProduit p = produitCombo.getValue();
+                        Integer q = quantiteSpinner.getValue();
+                        if (p != null && q != null && q > 0) {
+                            lignes.add(new LigneProduitUI(p, q));
+                        }
+                    }
+                });
+            });
+
+            supprimerLigneBtn.setOnAction(e -> {
+                LigneProduitUI selected = lignesTable.getSelectionModel().getSelectedItem();
+                if (selected != null) {
+                    lignes.remove(selected);
+                }
+            });
+
+            HBox actions = new HBox(10, ajouterLigneBtn, supprimerLigneBtn);
+            VBox root = new VBox(10, new Label("Produits demandés:"), lignesTable, actions);
+            VBox.setVgrow(lignesTable, Priority.ALWAYS);
+            HBox.setHgrow(actions, Priority.ALWAYS);
+
+            dialog.getDialogPane().setContent(root);
+
+            dialog.showAndWait().ifPresent(result -> {
+                if (result == ButtonType.OK) {
+                    int idUser = (SessionManager.estConnecte() ? SessionManager.getUtilisateurConnecte().getIdUser() : 1);
+
+                    if (lignes.isEmpty()) {
+                        Alert ko = new Alert(Alert.AlertType.WARNING);
+                        ko.setTitle("Aucun produit");
+                        ko.setHeaderText(null);
+                        ko.setContentText("Ajoute au moins un produit à la demande.");
+                        ko.showAndWait();
+                        return;
+                    }
+
+                    List<DemandeProduitRepository.LigneDemandeProduit> aInserer = new java.util.ArrayList<>();
+                    for (LigneProduitUI l : lignes) {
+                        if (l != null && l.getProduit() != null && l.getQuantite() > 0) {
+                            aInserer.add(new DemandeProduitRepository.LigneDemandeProduit(l.getProduit().getIdProduit(), l.getQuantite()));
+                        }
+                    }
+
+                    int idDemande = demandeProduitRepository.creerDemandeAvecProduits(idUser, aInserer);
+                    if (idDemande > 0) {
+                        Alert ok = new Alert(Alert.AlertType.INFORMATION);
+                        ok.setTitle("Demande envoyée");
+                        ok.setHeaderText(null);
+                        ok.setContentText("Demande créée avec l'ID: " + idDemande);
+                        ok.showAndWait();
+                        loadCommandes();
+                    } else {
+                        Alert ko = new Alert(Alert.AlertType.ERROR);
+                        ko.setTitle("Erreur");
+                        ko.setHeaderText(null);
+                        ko.setContentText("Impossible de créer la demande.");
+                        ko.showAndWait();
+                    }
+                }
+            });
+
+        } catch (Exception e) {
+            System.err.println("Erreur création demande: " + e.getMessage());
+        }
     }
 
     @FXML
@@ -123,28 +359,46 @@ public class CommandeController {
 
     @FXML
     void handleModifier(ActionEvent event) {
-        // TODO: Modifier la commande sélectionnée
-        System.out.println("Modification de la commande");
-        // Ouvrir un dialogue de modification
+        if (demandeSelectionnee == null) {
+            return;
+        }
+
+        TextInputDialog dialog = new TextInputDialog(String.valueOf(demandeSelectionnee.getQuantite()));
+        dialog.setTitle("Modifier quantité");
+        dialog.setHeaderText(null);
+        dialog.setContentText("Nouvelle quantité:");
+        dialog.showAndWait().ifPresent(val -> {
+            try {
+                int qte = Integer.parseInt(val.trim());
+                demandeSelectionnee.setQuantite(qte);
+                if (demandeRepository.modifierDemande(demandeSelectionnee)) {
+                    loadCommandes();
+                }
+            } catch (NumberFormatException ignored) {
+            }
+        });
     }
 
     @FXML
     void handleSupprimer(ActionEvent event) {
-        // TODO: Supprimer la commande sélectionnée avec confirmation
-        System.out.println("Suppression de la commande");
+        System.out.println("Suppression de la demande");
+
+        if (demandeSelectionnee == null) {
+            return;
+        }
         
         // Demander une confirmation avant suppression
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Confirmation de suppression");
-        alert.setHeaderText("Voulez-vous vraiment supprimer cette commande ?");
+        alert.setHeaderText("Voulez-vous vraiment supprimer cette demande ?");
         alert.setContentText("Cette action est irréversible.");
         
         alert.showAndWait().ifPresent(response -> {
             if (response == ButtonType.OK) {
-                // TODO: Supprimer la commande de la base de données
-                System.out.println("Commande supprimée");
-                detailsPane.setVisible(false);
-                loadCommandes(); // Recharger la liste
+                if (demandeRepository.supprimerDemande(demandeSelectionnee.getIdDemande())) {
+                    detailsPane.setVisible(false);
+                    loadCommandes();
+                }
             }
         });
     }
@@ -213,14 +467,15 @@ public class CommandeController {
      * Affiche les détails d'une commande sélectionnée
      */
     public void afficherDetailsCommande(Object commande) {
-        // TODO: Remplir les champs avec les détails de la commande
+        if (!(commande instanceof Demande d)) {
+            return;
+        }
         detailsPane.setVisible(true);
-        
-        // Exemple de données (à remplacer avec les vraies données)
-        numeroLabel.setText("CMD-001");
-        dateLabel.setText("10/02/2026");
-        patientLabel.setText("Jean Dupont");
-        medecinLabel.setText("Dr. Martin");
-        statutLabel.setText("En cours");
+
+        numeroLabel.setText(String.valueOf(d.getIdDemande()));
+        dateLabel.setText(d.getDateDemande() != null ? d.getDateDemande().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")) : "");
+        patientLabel.setText(String.valueOf(d.getIdUser()));
+        medecinLabel.setText(String.valueOf(d.getQuantite()));
+        statutLabel.setText("Demande produit");
     }
 }

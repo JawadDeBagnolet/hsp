@@ -66,6 +66,15 @@ public class PageAccueil {
             System.err.println("Erreur lors de la redirection vers planning: " + e.getMessage());
         }
     }
+
+    @FXML
+    public void versHospitalisations(ActionEvent event) {
+        try {
+            StartApplication.changeScene("hospitalisationsView");
+        } catch (Exception e) {
+            System.err.println("Erreur lors de la redirection vers hospitalisations: " + e.getMessage());
+        }
+    }
     
     @FXML
     public void versMonEspace(ActionEvent event) {

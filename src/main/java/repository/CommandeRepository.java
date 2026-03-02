@@ -13,13 +13,14 @@ import java.util.List;
 public class CommandeRepository {
 
     public boolean ajouterCommande(Commande commande) {
-        String sql = "INSERT INTO commande (numCommande, libelle) VALUES (?, ?)";
+        String sql = "INSERT INTO commande (id_user, numCommande, libelle) VALUES (?, ?, ?)";
         
         try (Connection cnx = Database.getConnexion();
              PreparedStatement stmt = cnx.prepareStatement(sql)) {
             
-            stmt.setInt(1, commande.getNumCommande());
-            stmt.setString(2, commande.getLibelle());
+            stmt.setInt(1, commande.getIdUser());
+            stmt.setInt(2, commande.getNumCommande());
+            stmt.setString(3, commande.getLibelle());
             
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -29,7 +30,7 @@ public class CommandeRepository {
     }
     
     public Commande trouverCommandeParId(int id) {
-        String sql = "SELECT * FROM commande WHERE idCommande = ?";
+        String sql = "SELECT * FROM commande WHERE id_commande = ?";
         
         try (Connection cnx = Database.getConnexion();
              PreparedStatement stmt = cnx.prepareStatement(sql)) {
@@ -39,7 +40,8 @@ public class CommandeRepository {
             
             if (rs.next()) {
                 return new Commande(
-                    rs.getInt("idCommande"),
+                    rs.getInt("id_commande"),
+                    rs.getInt("id_user"),
                     rs.getInt("numCommande"),
                     rs.getString("libelle")
                 );
@@ -61,7 +63,8 @@ public class CommandeRepository {
             
             if (rs.next()) {
                 return new Commande(
-                    rs.getInt("idCommande"),
+                    rs.getInt("id_commande"),
+                    rs.getInt("id_user"),
                     rs.getInt("numCommande"),
                     rs.getString("libelle")
                 );
@@ -82,7 +85,8 @@ public class CommandeRepository {
             
             while (rs.next()) {
                 commandes.add(new Commande(
-                    rs.getInt("idCommande"),
+                    rs.getInt("id_commande"),
+                    rs.getInt("id_user"),
                     rs.getInt("numCommande"),
                     rs.getString("libelle")
                 ));
@@ -94,14 +98,15 @@ public class CommandeRepository {
     }
     
     public boolean modifierCommande(Commande commande) {
-        String sql = "UPDATE commande SET numCommande = ?, libelle = ? WHERE idCommande = ?";
+        String sql = "UPDATE commande SET id_user = ?, numCommande = ?, libelle = ? WHERE id_commande = ?";
         
         try (Connection cnx = Database.getConnexion();
              PreparedStatement stmt = cnx.prepareStatement(sql)) {
             
-            stmt.setInt(1, commande.getNumCommande());
-            stmt.setString(2, commande.getLibelle());
-            stmt.setInt(3, commande.getIdCommande());
+            stmt.setInt(1, commande.getIdUser());
+            stmt.setInt(2, commande.getNumCommande());
+            stmt.setString(3, commande.getLibelle());
+            stmt.setInt(4, commande.getIdCommande());
             
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -111,7 +116,7 @@ public class CommandeRepository {
     }
     
     public boolean supprimerCommande(int id) {
-        String sql = "DELETE FROM commande WHERE idCommande = ?";
+        String sql = "DELETE FROM commande WHERE id_commande = ?";
         
         try (Connection cnx = Database.getConnexion();
              PreparedStatement stmt = cnx.prepareStatement(sql)) {

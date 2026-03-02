@@ -8,7 +8,9 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
+import modele.FichePatient;
 import modele.RendezVous;
+import repository.FichePatientRepository;
 import repository.RendezVousRepository;
 import repository.UserRepository;
 import modele.User;
@@ -52,6 +54,7 @@ public class PlanningController {
     
     private RendezVousRepository rdvRepository;
     private UserRepository userRepository;
+    private FichePatientRepository fichePatientRepository;
     private ObservableList<RendezVous> rendezVousObservable;
     private LocalDate debutSemaineActuelle;
     private User medecinSelectionne;
@@ -63,6 +66,7 @@ public class PlanningController {
             
             rdvRepository = new RendezVousRepository();
             userRepository = new UserRepository();
+            fichePatientRepository = new FichePatientRepository();
             rendezVousObservable = FXCollections.observableArrayList();
             
             // Initialiser la semaine actuelle
@@ -87,13 +91,132 @@ public class PlanningController {
         }
     }
 
+    private void ouvrirDialogCreationRdv(LocalDateTime dateHeure) {
+        try {
+            List<FichePatient> patients = fichePatientRepository.getAllFichePatients();
+            if (patients.isEmpty()) {
+                afficherMessage("❌ Aucun patient disponible", "#dc3545");
+                return;
+            }
+
+            List<User> users = userRepository.getAllUsers();
+            ObservableList<User> medecins = FXCollections.observableArrayList();
+            for (User u : users) {
+                if (u != null && u.getRole() != null && u.getRole().equalsIgnoreCase("MEDECIN")) {
+                    medecins.add(u);
+                }
+            }
+            if (medecins.isEmpty()) {
+                afficherMessage("❌ Aucun médecin disponible", "#dc3545");
+                return;
+            }
+
+            Dialog<ButtonType> dialog = new Dialog<>();
+            dialog.setTitle("Nouveau rendez-vous");
+            dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+
+            ComboBox<FichePatient> patientCombo = new ComboBox<>(FXCollections.observableArrayList(patients));
+            patientCombo.setValue(patients.get(0));
+            patientCombo.setCellFactory(param -> new ListCell<>() {
+                @Override
+                protected void updateItem(FichePatient item, boolean empty) {
+                    super.updateItem(item, empty);
+                    setText(empty || item == null ? null : (item.getPrenom() + " " + item.getNom() + " (ID: " + item.getIdFichePatient() + ")"));
+                }
+            });
+            patientCombo.setButtonCell(new ListCell<>() {
+                @Override
+                protected void updateItem(FichePatient item, boolean empty) {
+                    super.updateItem(item, empty);
+                    setText(empty || item == null ? null : (item.getPrenom() + " " + item.getNom()));
+                }
+            });
+
+            ComboBox<User> medecinCombo = new ComboBox<>(medecins);
+            medecinCombo.setValue(medecins.get(0));
+            medecinCombo.setCellFactory(param -> new ListCell<>() {
+                @Override
+                protected void updateItem(User item, boolean empty) {
+                    super.updateItem(item, empty);
+                    setText(empty || item == null ? null : (item.getPrenom() + " " + item.getNom() + " (ID: " + item.getIdUser() + ")"));
+                }
+            });
+            medecinCombo.setButtonCell(new ListCell<>() {
+                @Override
+                protected void updateItem(User item, boolean empty) {
+                    super.updateItem(item, empty);
+                    setText(empty || item == null ? null : (item.getPrenom() + " " + item.getNom()));
+                }
+            });
+
+            TextField motifField = new TextField();
+            motifField.setPromptText("Motif");
+
+            TextArea notesArea = new TextArea();
+            notesArea.setPromptText("Notes (optionnel)");
+            notesArea.setPrefRowCount(3);
+
+            ComboBox<String> statutCombo = new ComboBox<>(FXCollections.observableArrayList("PLANIFIE", "CONFIRME", "ANNULE", "EN_COURS"));
+            statutCombo.setValue("PLANIFIE");
+
+            GridPane grid = new GridPane();
+            grid.setHgap(10);
+            grid.setVgap(10);
+            grid.add(new Label("Date/heure:"), 0, 0);
+            grid.add(new Label(dateHeure.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))), 1, 0);
+            grid.add(new Label("Patient:"), 0, 1);
+            grid.add(patientCombo, 1, 1);
+            grid.add(new Label("Médecin:"), 0, 2);
+            grid.add(medecinCombo, 1, 2);
+            grid.add(new Label("Motif:"), 0, 3);
+            grid.add(motifField, 1, 3);
+            grid.add(new Label("Statut:"), 0, 4);
+            grid.add(statutCombo, 1, 4);
+            grid.add(new Label("Notes:"), 0, 5);
+            grid.add(notesArea, 1, 5);
+
+            dialog.getDialogPane().setContent(grid);
+
+            dialog.showAndWait().ifPresent(result -> {
+                if (result != ButtonType.OK) {
+                    return;
+                }
+
+                FichePatient patient = patientCombo.getValue();
+                User medecin = medecinCombo.getValue();
+                String motif = motifField.getText();
+
+                if (patient == null || medecin == null || motif == null || motif.trim().isEmpty()) {
+                    afficherMessage("❌ Patient, médecin et motif sont obligatoires", "#dc3545");
+                    return;
+                }
+
+                RendezVous rdv = new RendezVous(patient.getIdFichePatient(), medecin.getIdUser(), dateHeure, motif.trim());
+                rdv.setNotes(notesArea.getText());
+                rdv.setStatut(statutCombo.getValue());
+
+                boolean ok = rdvRepository.ajouterRendezVous(rdv);
+                if (ok) {
+                    afficherMessage("✅ Rendez-vous créé", "#28a745");
+                    chargerRendezVous();
+                } else {
+                    afficherMessage("❌ Erreur lors de la création du rendez-vous", "#dc3545");
+                }
+            });
+
+        } catch (Exception e) {
+            System.err.println("Erreur dialog RDV: " + e.getMessage());
+            afficherMessage("❌ Erreur: " + e.getMessage(), "#dc3545");
+        }
+    }
+
     private void configurerMedecins() {
         try {
             List<User> medecins = userRepository.getAllUsers();
             ObservableList<User> medecinsList = FXCollections.observableArrayList();
             
             for (User user : medecins) {
-                if ("MEDECIN".equals(user.getRole())) {
+                if (user.getRole() != null && user.getRole().equalsIgnoreCase("medecin")) {
                     medecinsList.add(user);
                 }
             }
@@ -153,8 +276,7 @@ public class PlanningController {
                 cellule.setOnMouseClicked(event -> {
                     if (event.getClickCount() == 2) {
                         LocalDateTime dateHeureCliquée = (LocalDateTime) cellule.getProperties().get("dateHeure");
-                        afficherMessage("Double-clic sur: " + dateHeureCliquée.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")), "#3498db");
-                        // TODO: Ouvrir une fenêtre pour ajouter un rendez-vous
+                        ouvrirDialogCreationRdv(dateHeureCliquée);
                     }
                 });
                 

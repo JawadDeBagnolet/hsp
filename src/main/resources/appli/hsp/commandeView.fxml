@@ -80,7 +80,7 @@
         <VBox spacing="10">
             <Text style="-fx-font-size: 18px; -fx-fill: #e8e8e8; -fx-font-weight: bold;" text="Rechercher une commande" />
             <HBox alignment="CENTER_LEFT" spacing="15">
-                <TextField fx:id="rechercheField" promptText="Numéro de commande, nom du patient..." style="-fx-pref-width: 300; -fx-pref-height: 35; -fx-background-color: #3d3d4d; -fx-text-fill: #e8e8e8; -fx-border-color: #505060; -fx-border-radius: 5;" />
+                <TextField fx:id="rechercheField" promptText="ID demande, ID médecin..." style="-fx-pref-width: 300; -fx-pref-height: 35; -fx-background-color: #3d3d4d; -fx-text-fill: #e8e8e8; -fx-border-color: #505060; -fx-border-radius: 5;" />
                 <Button onAction="#handleRecherche" style="-fx-background-color: #4a4a6a; -fx-text-fill: #e8e8e8; -fx-font-size: 14px; -fx-pref-width: 120; -fx-pref-height: 35; -fx-background-radius: 5;" text="Rechercher" />
             </HBox>
         </VBox>
@@ -93,8 +93,8 @@
                 <columns>
                     <TableColumn fx:id="idColumn" prefWidth="80" text="ID" />
                     <TableColumn fx:id="dateColumn" prefWidth="120" text="Date" />
-                    <TableColumn fx:id="patientColumn" prefWidth="150" text="Patient" />
-                    <TableColumn fx:id="medecinColumn" prefWidth="150" text="Médecin" />
+                    <TableColumn fx:id="patientColumn" prefWidth="150" text="Médecin" />
+                    <TableColumn fx:id="medecinColumn" prefWidth="150" text="Quantité" />
                     <TableColumn fx:id="statutColumn" prefWidth="100" text="Statut" />
                     <TableColumn fx:id="actionsColumn" prefWidth="120" text="Actions" />
                 </columns>
@@ -117,10 +117,10 @@
                 <Label style="-fx-text-fill: #ffffff; -fx-font-weight: bold;" text="Date :" GridPane.columnIndex="0" GridPane.rowIndex="1" />
                 <Label fx:id="dateLabel" style="-fx-text-fill: #e8e8e8;" text="" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                 
-                <Label style="-fx-text-fill: #ffffff; -fx-font-weight: bold;" text="Patient :" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+                <Label style="-fx-text-fill: #ffffff; -fx-font-weight: bold;" text="Médecin :" GridPane.columnIndex="0" GridPane.rowIndex="2" />
                 <Label fx:id="patientLabel" style="-fx-text-fill: #e8e8e8;" text="" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                 
-                <Label style="-fx-text-fill: #ffffff; -fx-font-weight: bold;" text="Médecin :" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+                <Label style="-fx-text-fill: #ffffff; -fx-font-weight: bold;" text="Quantité :" GridPane.columnIndex="0" GridPane.rowIndex="3" />
                 <Label fx:id="medecinLabel" style="-fx-text-fill: #e8e8e8;" text="" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                 
                 <Label style="-fx-text-fill: #ffffff; -fx-font-weight: bold;" text="Statut :" GridPane.columnIndex="0" GridPane.rowIndex="4" />

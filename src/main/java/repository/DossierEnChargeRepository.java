@@ -31,22 +31,24 @@ public class DossierEnChargeRepository {
             }
             System.out.println("Connexion à la base établie");
 
-            // Conversion explicite pour éviter les problèmes de type
-            java.sql.Date sqlDate = java.sql.Date.valueOf(dossier.getDateArrivee());
-            // Combiner date et heure en un Timestamp
-            java.time.LocalDateTime dateTime = dossier.getDateArrivee().atTime(dossier.getHeureArrivee());
-            java.sql.Timestamp sqlDateTime = java.sql.Timestamp.valueOf(dateTime);
-            
-            stmt.setDate(1, sqlDate);
-            stmt.setTimestamp(2, sqlDateTime);
+            // `date_arrivee` et `heure_arrivee` sont des DATETIME dans le schéma SQL
+            java.time.LocalDateTime dateArriveeDateTime = dossier.getDateArrivee().atStartOfDay();
+            java.sql.Timestamp sqlDateArrivee = java.sql.Timestamp.valueOf(dateArriveeDateTime);
+
+            java.time.LocalDateTime dateHeureArrivee = dossier.getDateArrivee().atTime(dossier.getHeureArrivee());
+            java.sql.Timestamp sqlHeureArrivee = java.sql.Timestamp.valueOf(dateHeureArrivee);
+
+            stmt.setTimestamp(1, sqlDateArrivee);
+            stmt.setTimestamp(2, sqlHeureArrivee);
             stmt.setString(3, dossier.getSymptomes());
-            stmt.setInt(4, dossier.getNiveauGravite());
+            // `niveau_gravite` est un enum('1','2','3','4','5')
+            stmt.setString(4, String.valueOf(dossier.getNiveauGravite()));
             stmt.setInt(5, dossier.getRefUser()); // id_patient
             stmt.setInt(6, SessionManager.getUtilisateurConnecte().getIdUser()); // id_user (utilisateur connecté)
             
             System.out.println("Paramètres préparés:");
-            System.out.println("  1. Date (SQL Date): " + sqlDate + " -> " + sqlDate.getClass().getSimpleName());
-            System.out.println("  2. Date/Heure (SQL Timestamp): " + sqlDateTime + " -> " + sqlDateTime.getClass().getSimpleName());
+            System.out.println("  1. Date arrivée (SQL Timestamp): " + sqlDateArrivee + " -> " + sqlDateArrivee.getClass().getSimpleName());
+            System.out.println("  2. Heure arrivée (SQL Timestamp): " + sqlHeureArrivee + " -> " + sqlHeureArrivee.getClass().getSimpleName());
             System.out.println("  3. Symptômes: " + dossier.getSymptomes());
             System.out.println("  4. Niveau gravité: " + dossier.getNiveauGravite());
             System.out.println("  5. ID Patient: " + dossier.getRefUser());
@@ -104,10 +106,10 @@ public class DossierEnChargeRepository {
             if (rs.next()) {
                 return new DossierEnCharge(
                     rs.getInt("id_dossier"),
-                    rs.getDate("date_arrivee").toLocalDate(),
+                    rs.getTimestamp("date_arrivee").toLocalDateTime().toLocalDate(),
                     rs.getTimestamp("heure_arrivee").toLocalDateTime().toLocalTime(),
                     rs.getString("symptomes"),
-                    rs.getInt("niveau_gravite"),
+                    Integer.parseInt(rs.getString("niveau_gravite")),
                     rs.getInt("id_patient")
                 );
             }
@@ -128,10 +130,10 @@ public class DossierEnChargeRepository {
             while (rs.next()) {
                 dossiers.add(new DossierEnCharge(
                     rs.getInt("id_dossier"),
-                    rs.getDate("date_arrivee").toLocalDate(),
+                    rs.getTimestamp("date_arrivee").toLocalDateTime().toLocalDate(),
                     rs.getTimestamp("heure_arrivee").toLocalDateTime().toLocalTime(),
                     rs.getString("symptomes"),
-                    rs.getInt("niveau_gravite"),
+                    Integer.parseInt(rs.getString("niveau_gravite")),
                     rs.getInt("id_patient")
                 ));
             }
@@ -147,13 +149,13 @@ public class DossierEnChargeRepository {
         try (Connection cnx = Database.getConnexion();
              PreparedStatement stmt = cnx.prepareStatement(sql)) {
 
-            stmt.setDate(1, java.sql.Date.valueOf(dossier.getDateArrivee()));
-            // Combiner date et heure en un Timestamp
-            java.time.LocalDateTime dateTime = dossier.getDateArrivee().atTime(dossier.getHeureArrivee());
-            java.sql.Timestamp sqlDateTime = java.sql.Timestamp.valueOf(dateTime);
-            stmt.setTimestamp(2, sqlDateTime);
+            java.sql.Timestamp sqlDateArrivee = java.sql.Timestamp.valueOf(dossier.getDateArrivee().atStartOfDay());
+            stmt.setTimestamp(1, sqlDateArrivee);
+
+            java.sql.Timestamp sqlHeureArrivee = java.sql.Timestamp.valueOf(dossier.getDateArrivee().atTime(dossier.getHeureArrivee()));
+            stmt.setTimestamp(2, sqlHeureArrivee);
             stmt.setString(3, dossier.getSymptomes());
-            stmt.setInt(4, dossier.getNiveauGravite());
+            stmt.setString(4, String.valueOf(dossier.getNiveauGravite()));
             stmt.setInt(5, dossier.getRefUser()); // id_patient
             stmt.setInt(6, SessionManager.getUtilisateurConnecte().getIdUser()); // id_user (utilisateur connecté)
             stmt.setInt(7, dossier.getIdDossier());

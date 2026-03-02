@@ -1,20 +1,23 @@
 package modele;
 
+import java.time.LocalDateTime;
+
 public class Demande {
     private int idDemande;
-    private int dateDemande;
-    private boolean statut;
+    private int idUser;
+    private LocalDateTime dateDemande;
     private int quantite;
 
-    public Demande(int idDemande, int dateDemande, boolean statut, int quantite) {
+    public Demande(int idDemande, int idUser, LocalDateTime dateDemande, int quantite) {
         this.idDemande = idDemande;
+        this.idUser = idUser;
         this.dateDemande = dateDemande;
-        this.statut = statut;
         this.quantite = quantite;
     }
-    public Demande(int dateDemande, boolean statut, int quantite) {
+
+    public Demande(int idUser, LocalDateTime dateDemande, int quantite) {
+        this.idUser = idUser;
         this.dateDemande = dateDemande;
-        this.statut = statut;
         this.quantite = quantite;
     }
 
@@ -26,20 +29,20 @@ public class Demande {
         this.idDemande = idDemande;
     }
 
-    public int getDateDemande() {
+    public int getIdUser() {
+        return idUser;
+    }
+
+    public void setIdUser(int idUser) {
+        this.idUser = idUser;
+    }
+
+    public LocalDateTime getDateDemande() {
         return dateDemande;
     }
 
-    public void setDateDemande(int dateDemande) {
+    public void setDateDemande(LocalDateTime dateDemande) {
         this.dateDemande = dateDemande;
-    }
-
-    public boolean isStatut() {
-        return statut;
-    }
-
-    public void setStatut(boolean statut) {
-        this.statut = statut;
     }
 
     public int getQuantite() {

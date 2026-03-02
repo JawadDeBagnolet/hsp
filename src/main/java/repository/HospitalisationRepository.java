@@ -7,20 +7,23 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 public class HospitalisationRepository {
 
     public boolean ajouterHospitalisation(Hospitalisation hospitalisation) {
-        String sql = "INSERT INTO hospitalisation (dateDebut, dateFin, desc_maladie) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO hospitalisation (id_dossier, id_chambre, date_debut, date_fin, desc_maladie) VALUES (?, ?, ?, ?, ?)";
         
         try (Connection cnx = Database.getConnexion();
              PreparedStatement stmt = cnx.prepareStatement(sql)) {
             
-            stmt.setInt(1, hospitalisation.getDateDebut());
-            stmt.setInt(2, hospitalisation.getDateFin());
-            stmt.setString(3, hospitalisation.getDesc_maladie());
+            stmt.setInt(1, hospitalisation.getIdDossier());
+            stmt.setInt(2, hospitalisation.getIdChambre());
+            stmt.setObject(3, hospitalisation.getDateDebut());
+            stmt.setObject(4, hospitalisation.getDateFin());
+            stmt.setString(5, hospitalisation.getDesc_maladie());
             
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -30,7 +33,7 @@ public class HospitalisationRepository {
     }
     
     public Hospitalisation trouverHospitalisationParId(int id) {
-        String sql = "SELECT * FROM hospitalisation WHERE idHospitalisation = ?";
+        String sql = "SELECT * FROM hospitalisation WHERE id_hospitalisation = ?";
         
         try (Connection cnx = Database.getConnexion();
              PreparedStatement stmt = cnx.prepareStatement(sql)) {
@@ -40,9 +43,11 @@ public class HospitalisationRepository {
             
             if (rs.next()) {
                 return new Hospitalisation(
-                    rs.getInt("idHospitalisation"),
-                    rs.getInt("dateDebut"),
-                    rs.getInt("dateFin"),
+                    rs.getInt("id_hospitalisation"),
+                    rs.getInt("id_dossier"),
+                    rs.getInt("id_chambre"),
+                    rs.getObject("date_debut", LocalDateTime.class),
+                    rs.getObject("date_fin", LocalDateTime.class),
                     rs.getString("desc_maladie")
                 );
             }
@@ -52,21 +57,23 @@ public class HospitalisationRepository {
         return null;
     }
     
-    public List<Hospitalisation> trouverHospitalisationsParDateDebut(int dateDebut) {
+    public List<Hospitalisation> trouverHospitalisationsParDateDebut(LocalDateTime dateDebut) {
         List<Hospitalisation> hospitalisations = new ArrayList<>();
-        String sql = "SELECT * FROM hospitalisation WHERE dateDebut = ?";
+        String sql = "SELECT * FROM hospitalisation WHERE date_debut = ?";
         
         try (Connection cnx = Database.getConnexion();
              PreparedStatement stmt = cnx.prepareStatement(sql)) {
             
-            stmt.setInt(1, dateDebut);
+            stmt.setObject(1, dateDebut);
             ResultSet rs = stmt.executeQuery();
             
             while (rs.next()) {
                 hospitalisations.add(new Hospitalisation(
-                    rs.getInt("idHospitalisation"),
-                    rs.getInt("dateDebut"),
-                    rs.getInt("dateFin"),
+                    rs.getInt("id_hospitalisation"),
+                    rs.getInt("id_dossier"),
+                    rs.getInt("id_chambre"),
+                    rs.getObject("date_debut", LocalDateTime.class),
+                    rs.getObject("date_fin", LocalDateTime.class),
                     rs.getString("desc_maladie")
                 ));
             }
@@ -86,9 +93,11 @@ public class HospitalisationRepository {
             
             while (rs.next()) {
                 hospitalisations.add(new Hospitalisation(
-                    rs.getInt("idHospitalisation"),
-                    rs.getInt("dateDebut"),
-                    rs.getInt("dateFin"),
+                    rs.getInt("id_hospitalisation"),
+                    rs.getInt("id_dossier"),
+                    rs.getInt("id_chambre"),
+                    rs.getObject("date_debut", LocalDateTime.class),
+                    rs.getObject("date_fin", LocalDateTime.class),
                     rs.getString("desc_maladie")
                 ));
             }
@@ -100,19 +109,21 @@ public class HospitalisationRepository {
     
     public List<Hospitalisation> getHospitalisationsEnCours() {
         List<Hospitalisation> hospitalisations = new ArrayList<>();
-        String sql = "SELECT * FROM hospitalisation WHERE dateFin > ?";
+        String sql = "SELECT * FROM hospitalisation WHERE date_fin IS NULL OR date_fin > ?";
         
         try (Connection cnx = Database.getConnexion();
              PreparedStatement stmt = cnx.prepareStatement(sql)) {
             
-            stmt.setInt(1, (int) (System.currentTimeMillis() / 1000));
+            stmt.setObject(1, LocalDateTime.now());
             ResultSet rs = stmt.executeQuery();
             
             while (rs.next()) {
                 hospitalisations.add(new Hospitalisation(
-                    rs.getInt("idHospitalisation"),
-                    rs.getInt("dateDebut"),
-                    rs.getInt("dateFin"),
+                    rs.getInt("id_hospitalisation"),
+                    rs.getInt("id_dossier"),
+                    rs.getInt("id_chambre"),
+                    rs.getObject("date_debut", LocalDateTime.class),
+                    rs.getObject("date_fin", LocalDateTime.class),
                     rs.getString("desc_maladie")
                 ));
             }
@@ -123,15 +134,17 @@ public class HospitalisationRepository {
     }
     
     public boolean modifierHospitalisation(Hospitalisation hospitalisation) {
-        String sql = "UPDATE hospitalisation SET dateDebut = ?, dateFin = ?, desc_maladie = ? WHERE idHospitalisation = ?";
+        String sql = "UPDATE hospitalisation SET id_dossier = ?, id_chambre = ?, date_debut = ?, date_fin = ?, desc_maladie = ? WHERE id_hospitalisation = ?";
         
         try (Connection cnx = Database.getConnexion();
              PreparedStatement stmt = cnx.prepareStatement(sql)) {
             
-            stmt.setInt(1, hospitalisation.getDateDebut());
-            stmt.setInt(2, hospitalisation.getDateFin());
-            stmt.setString(3, hospitalisation.getDesc_maladie());
-            stmt.setInt(4, hospitalisation.getIdHospitalisation());
+            stmt.setInt(1, hospitalisation.getIdDossier());
+            stmt.setInt(2, hospitalisation.getIdChambre());
+            stmt.setObject(3, hospitalisation.getDateDebut());
+            stmt.setObject(4, hospitalisation.getDateFin());
+            stmt.setString(5, hospitalisation.getDesc_maladie());
+            stmt.setInt(6, hospitalisation.getIdHospitalisation());
             
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -141,7 +154,7 @@ public class HospitalisationRepository {
     }
     
     public boolean supprimerHospitalisation(int id) {
-        String sql = "DELETE FROM hospitalisation WHERE idHospitalisation = ?";
+        String sql = "DELETE FROM hospitalisation WHERE id_hospitalisation = ?";
         
         try (Connection cnx = Database.getConnexion();
              PreparedStatement stmt = cnx.prepareStatement(sql)) {
