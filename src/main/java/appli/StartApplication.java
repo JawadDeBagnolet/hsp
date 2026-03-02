@@ -14,7 +14,7 @@ public class StartApplication extends Application {
     public void start(Stage stage) throws IOException {
         mainStage=stage;
         FXMLLoader fxmlLoader = new FXMLLoader(StartApplication.class.getResource("/appli/hsp/helloView.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 320, 240);
+        Scene scene = new Scene(fxmlLoader.load(), mainStage.getMaxWidth(), mainStage.getMaxHeight());
         mainStage.setTitle("Hello!");
         mainStage.setScene(scene);
         mainStage.show();
@@ -27,7 +27,7 @@ public class StartApplication extends Application {
     public static void changeScene(String nomDuFichierFxml ) throws IOException {
         FXMLLoader fxmlLoader = new
                 FXMLLoader(StartApplication.class.getResource("/appli/hsp/" + nomDuFichierFxml + ".fxml"));
-        Scene scene = new Scene(fxmlLoader.load());
+        Scene scene = new Scene(fxmlLoader.load(), mainStage.getWidth(), mainStage.getHeight());
         mainStage.setScene(scene);
     }
 
