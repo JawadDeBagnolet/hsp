@@ -37,12 +37,6 @@
                 
                 <Separator orientation="VERTICAL" style="-fx-background-color: #7f8c8d;" />
                 
-                <Button text="Dossiers"
-                        style="-fx-background-color: transparent; -fx-text-fill: #ecf0f1; -fx-font-size: 14px; -fx-border-color: transparent; -fx-cursor: hand;"
-                        onAction="#versDossiers" />
-                
-                <Separator orientation="VERTICAL" style="-fx-background-color: #7f8c8d;" />
-                
                 <Button text="Commandes"
                         style="-fx-background-color: transparent; -fx-text-fill: #ecf0f1; -fx-font-size: 14px; -fx-border-color: transparent; -fx-cursor: hand;"
                         onAction="#versCommandes" />
@@ -69,13 +63,42 @@
     <!-- Contenu principal -->
     <center>
         <VBox alignment="CENTER" spacing="30" style="-fx-padding: 40;">
+            <padding>
+                <Insets top="30" right="40" bottom="30" left="40"/>
+            </padding>
+
             <!-- Titre de la page -->
-            <Text text="📋 Liste des Patients"
-                  style="-fx-font-size: 42px; -fx-fill: #ffffff; -fx-font-weight: bold; -fx-font-family: 'Arial Black';" />
-            
-            <!-- Liste des patients -->
-            <ListView fx:id="patientsListView" prefHeight="400" prefWidth="600" 
+            <VBox spacing="15" alignment="CENTER">
+                <Text text="📋 Liste des Patients"
+                      style="-fx-font-size: 42px; -fx-fill: #ffffff; -fx-font-weight: bold; -fx-font-family: 'Arial Black';" />
+                
+                <Text text="Gestion complète des patients de l'hôpital"
+                      style="-fx-font-size: 20px; -fx-fill: #ecf0f1; -fx-font-weight: 500;" />
+            </VBox>
+
+            <!-- Panneau de statistiques -->
+            <HBox spacing="20" alignment="CENTER">
+                <VBox spacing="10" alignment="CENTER" style="-fx-background-color: rgba(255, 255, 255, 0.1); -fx-padding: 25; -fx-background-radius: 15; -fx-border-color: rgba(255, 255, 255, 0.3); -fx-border-width: 1; -fx-border-radius: 15; -fx-pref-width: 200;">
+                    <Text text="Total Patients" style="-fx-font-size: 16px; -fx-fill: #ffffff; -fx-font-weight: bold;" />
+                    <Label fx:id="totalPatientsLabel" text="0" style="-fx-font-size: 36px; -fx-fill: #3498db; -fx-font-weight: bold;" />
+                </VBox>
+
+                <VBox spacing="10" alignment="CENTER" style="-fx-background-color: rgba(255, 255, 255, 0.1); -fx-padding: 25; -fx-background-radius: 15; -fx-border-color: rgba(255, 255, 255, 0.3); -fx-border-width: 1; -fx-border-radius: 15; -fx-pref-width: 200;">
+                    <Text text="Actualiser" style="-fx-font-size: 16px; -fx-fill: #ffffff; -fx-font-weight: bold;" />
+                    <Button text="🔄" onAction="#handleRefresh" 
+                            style="-fx-background-color: #27ae60; -fx-text-fill: #ffffff; -fx-font-size: 24px; -fx-background-radius: 30; -fx-pref-width: 60; -fx-pref-height: 60; -fx-cursor: hand;" />
+                </VBox>
+            </HBox>
+
+            <!-- Liste des patients (plus simple que TableView) -->
+            <ListView fx:id="patientsListView" prefHeight="400" VBox.vgrow="ALWAYS" 
                       style="-fx-background-color: rgba(255, 255, 255, 0.95); -fx-background-radius: 15; -fx-border-color: rgba(255, 255, 255, 0.3); -fx-border-width: 1; -fx-border-radius: 15;" />
+
+            <!-- Boutons d'action -->
+            <HBox spacing="20" alignment="CENTER">
+                <Button text="🏠 Retour Accueil" onAction="#handleBack" 
+                        style="-fx-background-color: #95a5a6; -fx-text-fill: #ffffff; -fx-font-size: 16px; -fx-font-weight: bold; -fx-padding: 15 30; -fx-background-radius: 25; -fx-cursor: hand;" />
+            </HBox>
         </VBox>
     </center>
 </BorderPane>

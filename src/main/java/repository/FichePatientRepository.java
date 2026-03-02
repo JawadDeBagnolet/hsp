@@ -13,14 +13,14 @@ import java.util.List;
 public class FichePatientRepository {
 
     public boolean ajouterFichePatient(FichePatient fichePatient) {
-        String sql = "INSERT INTO patient (nom, prenom, numSecu, email, tel, rue, cp, ville) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO fiche_patient (nom, prenom, numSecu, email, tel, rue, cp, ville) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         
         try (Connection cnx = Database.getConnexion();
              PreparedStatement stmt = cnx.prepareStatement(sql)) {
             
             stmt.setString(1, fichePatient.getNom());
             stmt.setString(2, fichePatient.getPrenom());
-            stmt.setInt(3, fichePatient.getNumSecu());
+            stmt.setLong(3, fichePatient.getNum_secu());
             stmt.setString(4, fichePatient.getEmail());
             stmt.setInt(5, fichePatient.getTel());
             stmt.setString(6, fichePatient.getRue());
@@ -35,7 +35,7 @@ public class FichePatientRepository {
     }
     
     public FichePatient trouverFichePatientParId(int id) {
-        String sql = "SELECT * FROM patient WHERE id_patient = ?";
+        String sql = "SELECT * FROM fiche_patient WHERE id_patient = ?";
         
         try (Connection cnx = Database.getConnexion();
              PreparedStatement stmt = cnx.prepareStatement(sql)) {
@@ -47,7 +47,7 @@ public class FichePatientRepository {
                 FichePatient patient = new FichePatient(
                     rs.getString("nom"),
                     rs.getString("prenom"),
-                    rs.getInt("numSecu"),
+                    rs.getLong("num_secu"),
                     rs.getString("email"),
                     rs.getInt("tel"),
                     rs.getString("rue"),
@@ -64,7 +64,7 @@ public class FichePatientRepository {
     }
     
     public FichePatient trouverFichePatientParNumSecu(int numSecu) {
-        String sql = "SELECT * FROM patient WHERE numSecu = ?";
+        String sql = "SELECT * FROM fiche_patient WHERE num_secu = ?";
         
         try (Connection cnx = Database.getConnexion();
              PreparedStatement stmt = cnx.prepareStatement(sql)) {
@@ -76,7 +76,7 @@ public class FichePatientRepository {
                 FichePatient patient = new FichePatient(
                     rs.getString("nom"),
                     rs.getString("prenom"),
-                    rs.getInt("numSecu"),
+                    rs.getLong("num_secu"),
                     rs.getString("email"),
                     rs.getInt("tel"),
                     rs.getString("rue"),
@@ -94,7 +94,7 @@ public class FichePatientRepository {
     
     public List<FichePatient> getAllFichePatients() {
         List<FichePatient> fichePatients = new ArrayList<>();
-        String sql = "SELECT * FROM patient";
+        String sql = "SELECT * FROM fiche_patient";
         
         try (Connection cnx = Database.getConnexion();
              PreparedStatement stmt = cnx.prepareStatement(sql);
@@ -103,7 +103,7 @@ public class FichePatientRepository {
             // Afficher les métadonnées des colonnes
             java.sql.ResultSetMetaData metaData = rs.getMetaData();
             int columnCount = metaData.getColumnCount();
-            System.out.println("Colonnes dans la table patient:");
+            System.out.println("Colonnes dans la table fiche_patient:");
             for (int i = 1; i <= columnCount; i++) {
                 System.out.println("  Colonne " + i + ": " + metaData.getColumnName(i) + " (Type: " + metaData.getColumnTypeName(i) + ")");
             }
@@ -115,7 +115,7 @@ public class FichePatientRepository {
                 String idStr = rs.getString("id_patient");
                 String nom = rs.getString("nom");
                 String prenom = rs.getString("prenom");
-                String numSecuStr = rs.getString("numSecu");
+                String numSecuStr = rs.getString("num_secu");
                 String email = rs.getString("email");
                 String telStr = rs.getString("tel");
                 String rue = rs.getString("rue");
@@ -126,9 +126,9 @@ public class FichePatientRepository {
                 System.out.println("  Prénom: '" + prenom + "' (null? " + (prenom == null) + ")");
                 System.out.println("  Email: '" + email + "' (null? " + (email == null) + ")");
                 
-                // Convertir en entier avec gestion des erreurs
+                // Convertir en entier/long avec gestion des erreurs
                 int id = 0;
-                int numSecu = 0;
+                long numSecu = 0;
                 int tel = 0;
                 int cp = 0;
                 
@@ -139,7 +139,7 @@ public class FichePatientRepository {
                 }
                 
                 try {
-                    if (numSecuStr != null) numSecu = Integer.parseInt(numSecuStr);
+                    if (numSecuStr != null) numSecu = Long.parseLong(numSecuStr);
                 } catch (NumberFormatException e) {
                     System.err.println("Erreur conversion numSecu: " + numSecuStr);
                 }
@@ -177,14 +177,14 @@ public class FichePatientRepository {
     }
     
     public boolean modifierFichePatient(FichePatient fichePatient) {
-        String sql = "UPDATE patient SET nom = ?, prenom = ?, numSecu = ?, email = ?, tel = ?, rue = ?, cp = ?, ville = ? WHERE id_patient = ?";
+        String sql = "UPDATE fiche_patient SET nom = ?, prenom = ?, num_secu = ?, email = ?, tel = ?, rue = ?, cp = ?, ville = ? WHERE id_patient = ?";
         
         try (Connection cnx = Database.getConnexion();
              PreparedStatement stmt = cnx.prepareStatement(sql)) {
             
             stmt.setString(1, fichePatient.getNom());
             stmt.setString(2, fichePatient.getPrenom());
-            stmt.setInt(3, fichePatient.getNumSecu());
+            stmt.setLong(3, fichePatient.getNum_secu());
             stmt.setString(4, fichePatient.getEmail());
             stmt.setInt(5, fichePatient.getTel());
             stmt.setString(6, fichePatient.getRue());
@@ -200,7 +200,7 @@ public class FichePatientRepository {
     }
     
     public boolean supprimerFichePatient(int id) {
-        String sql = "DELETE FROM patient WHERE id_patient = ?";
+        String sql = "DELETE FROM fiche_patient WHERE id_patient = ?";
         
         try (Connection cnx = Database.getConnexion();
              PreparedStatement stmt = cnx.prepareStatement(sql)) {

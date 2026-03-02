@@ -97,13 +97,7 @@ public class PatientsController {
     }
 
     @FXML
-    public void versPatients() {
-        // Déjà sur la page patients
-        System.out.println("Déjà sur la page patients");
-    }
-
-    @FXML
-    public void versAccueil() {
+    private void versAccueil() {
         try {
             StartApplication.changeScene("pageAccueil");
         } catch (Exception e) {
@@ -112,16 +106,7 @@ public class PatientsController {
     }
 
     @FXML
-    public void versDossiers() {
-        try {
-            StartApplication.changeScene("dossierEnChargeView");
-        } catch (Exception e) {
-            System.err.println("Erreur: " + e.getMessage());
-        }
-    }
-
-    @FXML
-    public void versCommandes() {
+    private void versCommandes() {
         try {
             StartApplication.changeScene("commandeView");
         } catch (Exception e) {
@@ -130,16 +115,7 @@ public class PatientsController {
     }
 
     @FXML
-    public void versUtilisateurs() {
-        try {
-            StartApplication.changeScene("pageUtilisateurs");
-        } catch (Exception e) {
-            System.err.println("Erreur: " + e.getMessage());
-        }
-    }
-
-    @FXML
-    public void versMonEspace() {
+    private void versUtilisateurs() {
         try {
             StartApplication.changeScene("pageMonEspace");
         } catch (Exception e) {
@@ -148,7 +124,16 @@ public class PatientsController {
     }
 
     @FXML
-    public void deconnexion() {
+    private void versMonEspace() {
+        try {
+            StartApplication.changeScene("pageMonEspace");
+        } catch (Exception e) {
+            System.err.println("Erreur: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    private void deconnexion() {
         try {
             StartApplication.changeScene("helloView");
         } catch (Exception e) {

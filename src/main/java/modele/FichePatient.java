@@ -4,28 +4,28 @@ public class FichePatient {
     private int idFichePatient;
     private String nom;
     private String prenom;
-    private int numSecu;
+    private long num_secu;
     private String email;
     private int tel;
     private String rue;
     private int cp;
     private String ville;
 
-    public FichePatient(int idFichePatient, String nom, String prenom, int numSecu, String email, int tel, String rue, int cp, String ville) {
+    public FichePatient(int idFichePatient, String nom, String prenom, long num_secu, String email, int tel, String rue, int cp, String ville) {
         this.idFichePatient = idFichePatient;
         this.nom = nom;
         this.prenom = prenom;
-        this.numSecu = numSecu;
+        this.num_secu = num_secu;
         this.email = email;
         this.tel = tel;
         this.rue = rue;
         this.cp = cp;
         this.ville = ville;
     }
-    public FichePatient(String nom, String prenom, int numSecu, String email, int tel, String rue, int cp, String ville) {
+    public FichePatient(String nom, String prenom, long num_secu, String email, int tel, String rue, int cp, String ville) {
         this.nom = nom;
         this.prenom = prenom;
-        this.numSecu = numSecu;
+        this.num_secu = num_secu;
         this.email = email;
         this.tel = tel;
         this.rue = rue;
@@ -57,12 +57,12 @@ public class FichePatient {
         this.prenom = prenom;
     }
 
-    public int getNumSecu() {
-        return numSecu;
+    public long getNum_secu() {
+        return num_secu;
     }
 
-    public void setNumSecu(int numSecu) {
-        this.numSecu = numSecu;
+    public void setNum_secu(long num_secu) {
+        this.num_secu = num_secu;
     }
 
     public String getEmail() {

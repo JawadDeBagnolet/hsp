@@ -6,9 +6,9 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import modele.DossierEnCharge;
-import modele.User;
+import modele.FichePatient;
 import repository.DossierEnChargeRepository;
-import repository.UserRepository;
+import repository.FichePatientRepository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -31,7 +31,7 @@ public class DossierEnChargeController {
     private ComboBox<String> niveauGraviteCombo;
 
     @FXML
-    private ComboBox<User> utilisateurCombo;
+    private ComboBox<FichePatient> patientCombo;
 
     @FXML
     private Label messageLabel;
@@ -40,14 +40,14 @@ public class DossierEnChargeController {
     private ListView<DossierEnCharge> dossiersListView;
 
     private DossierEnChargeRepository dossierRepository;
-    private UserRepository userRepository;
+    private FichePatientRepository patientRepository;
 
     @FXML
     public void initialize() {
         System.out.println("Initialisation du DossierEnChargeController...");
         
         dossierRepository = new DossierEnChargeRepository();
-        userRepository = new UserRepository();
+        patientRepository = new FichePatientRepository();
         
         // Vérifier que les éléments FXML sont bien injectés
         if (dateArriveeField == null) {
@@ -67,8 +67,8 @@ public class DossierEnChargeController {
             return;
         }
         
-        if (utilisateurCombo == null) {
-            System.err.println("ERREUR: utilisateurCombo n'est pas injecté !");
+        if (patientCombo == null) {
+            System.err.println("ERREUR: patientCombo n'est pas injecté !");
             return;
         }
         
@@ -103,50 +103,50 @@ public class DossierEnChargeController {
         );
         System.out.println("ComboBox niveau de gravité initialisé avec " + niveauGraviteCombo.getItems().size() + " éléments");
         
-        // Initialiser le ComboBox des utilisateurs
-        utilisateurCombo.getItems().clear();
+        // Initialiser le ComboBox des patients
+        patientCombo.getItems().clear();
         try {
-            java.util.List<User> utilisateurs = userRepository.getAllUsers();
-            System.out.println("Nombre d'utilisateurs récupérés: " + utilisateurs.size());
+            java.util.List<FichePatient> patients = patientRepository.getAllFichePatients();
+            System.out.println("Nombre de patients récupérés: " + patients.size());
             
-            for (User utilisateur : utilisateurs) {
-                utilisateurCombo.getItems().add(utilisateur);
+            for (FichePatient patient : patients) {
+                patientCombo.getItems().add(patient);
             }
             
-            // Personnaliser l'affichage des utilisateurs dans le ComboBox
-            utilisateurCombo.setCellFactory(param -> new javafx.scene.control.ListCell<User>() {
+            // Personnaliser l'affichage des patients dans le ComboBox
+            patientCombo.setCellFactory(param -> new javafx.scene.control.ListCell<FichePatient>() {
                 @Override
-                protected void updateItem(User utilisateur, boolean empty) {
-                    super.updateItem(utilisateur, empty);
-                    if (empty || utilisateur == null) {
+                protected void updateItem(FichePatient patient, boolean empty) {
+                    super.updateItem(patient, empty);
+                    if (empty || patient == null) {
                         setText(null);
                     } else {
-                        setText(utilisateur.getPrenom() + " " + utilisateur.getNom() + " (" + utilisateur.getRole() + ")");
+                        setText(patient.getPrenom() + " " + patient.getNom() + " (ID: " + patient.getIdFichePatient() + ")");
                     }
                 }
             });
             
             // Personnaliser l'affichage de l'élément sélectionné
-            utilisateurCombo.setButtonCell(new javafx.scene.control.ListCell<User>() {
+            patientCombo.setButtonCell(new javafx.scene.control.ListCell<FichePatient>() {
                 @Override
-                protected void updateItem(User utilisateur, boolean empty) {
-                    super.updateItem(utilisateur, empty);
-                    if (empty || utilisateur == null) {
+                protected void updateItem(FichePatient patient, boolean empty) {
+                    super.updateItem(patient, empty);
+                    if (empty || patient == null) {
                         setText(null);
                     } else {
-                        setText(utilisateur.getPrenom() + " " + utilisateur.getNom());
+                        setText(patient.getPrenom() + " " + patient.getNom());
                     }
                 }
             });
             
-            // Sélectionner le premier utilisateur par défaut
-            if (!utilisateurCombo.getItems().isEmpty()) {
-                utilisateurCombo.setValue(utilisateurCombo.getItems().get(0));
-                System.out.println("Utilisateur par défaut sélectionné: " + utilisateurCombo.getValue().getNom() + " " + utilisateurCombo.getValue().getPrenom());
+            // Sélectionner le premier patient par défaut
+            if (!patientCombo.getItems().isEmpty()) {
+                patientCombo.setValue(patientCombo.getItems().get(0));
+                System.out.println("Patient par défaut sélectionné: " + patientCombo.getValue().getNom() + " " + patientCombo.getValue().getPrenom());
             }
             
         } catch (Exception e) {
-            System.err.println("Erreur lors du chargement des utilisateurs: " + e.getMessage());
+            System.err.println("Erreur lors du chargement des patients: " + e.getMessage());
             e.printStackTrace();
         }
         
@@ -277,25 +277,25 @@ public class DossierEnChargeController {
             }
             System.out.println("Niveau de gravité sélectionné: " + niveauGraviteCombo.getValue());
             
-            if (utilisateurCombo == null) {
-                System.err.println("ERREUR: utilisateurCombo est null !");
-                afficherMessage("Erreur interne: champ utilisateur non initialisé", "error");
+            if (patientCombo == null) {
+                System.err.println("ERREUR: patientCombo est null !");
+                afficherMessage("Erreur interne: champ patient non initialisé", "error");
                 return;
             }
             
-            System.out.println("utilisateurCombo: " + (utilisateurCombo.getValue() != null ? utilisateurCombo.getValue().getNom() + " " + utilisateurCombo.getValue().getPrenom() : "NULL"));
+            System.out.println("patientCombo: " + (patientCombo.getValue() != null ? patientCombo.getValue().getNom() + " " + patientCombo.getValue().getPrenom() : "NULL"));
             
-            if (utilisateurCombo.getValue() == null) {
-                System.out.println("Aucun utilisateur sélectionné");
-                afficherMessage("Veuillez sélectionner un utilisateur", "error");
+            if (patientCombo.getValue() == null) {
+                System.out.println("Aucun patient sélectionné");
+                afficherMessage("Veuillez sélectionner un patient", "error");
                 return;
             }
-            System.out.println("Utilisateur sélectionné: " + utilisateurCombo.getValue().getNom() + " " + utilisateurCombo.getValue().getPrenom() + " (ID: " + utilisateurCombo.getValue().getIdUser() + ")");
+            System.out.println("Patient sélectionné: " + patientCombo.getValue().getNom() + " " + patientCombo.getValue().getPrenom() + " (ID: " + patientCombo.getValue().getIdFichePatient() + ")");
             
-            // Récupérer l'utilisateur sélectionné (plus besoin de l'utilisateur connecté)
-            System.out.println("Utilisation de l'utilisateur sélectionné...");
-            User utilisateurSelectionne = utilisateurCombo.getValue();
-            System.out.println("Utilisateur sélectionné: " + utilisateurSelectionne.getNom() + " " + utilisateurSelectionne.getPrenom() + " (ID: " + utilisateurSelectionne.getIdUser() + ")");
+            // Récupérer le patient sélectionné
+            System.out.println("Utilisation du patient sélectionné...");
+            FichePatient patientSelectionne = patientCombo.getValue();
+            System.out.println("Patient sélectionné: " + patientSelectionne.getNom() + " " + patientSelectionne.getPrenom() + " (ID: " + patientSelectionne.getIdFichePatient() + ")");
             
             // Construire l'heure à partir des ComboBox
             System.out.println("Construction de l'heure...");
@@ -313,13 +313,13 @@ public class DossierEnChargeController {
                 
                 // Créer le dossier
                 System.out.println("Création de l'objet DossierEnCharge...");
-                System.out.println("Utilisateur sélectionné: " + utilisateurSelectionne.toString());
-                System.out.println("Utilisateur sélectionné ID: " + utilisateurSelectionne.getIdUser());
+                System.out.println("Patient sélectionné: " + patientSelectionne.toString());
+                System.out.println("Patient sélectionné ID: " + patientSelectionne.getIdFichePatient());
                 
-                // Vérifier que l'ID utilisateur est valide
-                if (utilisateurSelectionne.getIdUser() <= 0) {
-                    System.err.println("ERREUR: ID utilisateur invalide: " + utilisateurSelectionne.getIdUser());
-                    afficherMessage("Erreur: ID utilisateur invalide", "error");
+                // Vérifier que l'ID patient est valide
+                if (patientSelectionne.getIdFichePatient() <= 0) {
+                    System.err.println("ERREUR: ID patient invalide: " + patientSelectionne.getIdFichePatient());
+                    afficherMessage("Erreur: ID patient invalide", "error");
                     return;
                 }
                 
@@ -328,7 +328,7 @@ public class DossierEnChargeController {
                     heureArrivee,
                     symptomesField.getText().trim(),
                     niveauGravite,
-                    utilisateurSelectionne.getIdUser()
+                    patientSelectionne.getIdFichePatient()
                 );
                 System.out.println("Objet DossierEnCharge créé: " + nouveauDossier.toString());
                 
@@ -397,9 +397,9 @@ public class DossierEnChargeController {
         symptomesField.clear();
         niveauGraviteCombo.setValue("4 - Non urgent");
         
-        // Réinitialiser l'utilisateur au premier de la liste
-        if (utilisateurCombo != null && !utilisateurCombo.getItems().isEmpty()) {
-            utilisateurCombo.setValue(utilisateurCombo.getItems().get(0));
+        // Réinitialiser le patient au premier de la liste
+        if (patientCombo != null && !patientCombo.getItems().isEmpty()) {
+            patientCombo.setValue(patientCombo.getItems().get(0));
         }
     }
 
