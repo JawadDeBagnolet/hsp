@@ -43,9 +43,9 @@
                 
                 <Separator orientation="VERTICAL" style="-fx-background-color: #7f8c8d;" />
                 
-                <Button text="Utilisateurs"
-                        style="-fx-background-color: transparent; -fx-text-fill: #ecf0f1; -fx-font-size: 14px; -fx-border-color: transparent; -fx-cursor: hand;"
-                        onAction="#versUtilisateurs" />
+                <Button text="Patients"
+                        style="-fx-background-color: #3498db; -fx-text-fill: #ffffff; -fx-font-size: 14px; -fx-border-color: #2980b9; -fx-border-width: 1; -fx-border-radius: 5; -fx-background-radius: 5; -fx-cursor: hand;"
+                        onAction="#versPatients" />
                 
                 <Separator orientation="VERTICAL" style="-fx-background-color: #7f8c8d;" />
                 

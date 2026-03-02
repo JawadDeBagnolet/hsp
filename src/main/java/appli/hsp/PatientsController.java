@@ -244,6 +244,12 @@ public class PatientsController {
     }
 
     @FXML
+    private void versPatients() {
+        // Déjà sur la page patients
+        System.out.println("Déjà sur la page patients");
+    }
+
+    @FXML
     private void versAccueil() {
         try {
             StartApplication.changeScene("pageAccueil");

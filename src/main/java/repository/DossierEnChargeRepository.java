@@ -2,6 +2,7 @@ package repository;
 
 import database.Database;
 import modele.DossierEnCharge;
+import appli.SessionManager;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -18,7 +19,7 @@ public class DossierEnChargeRepository {
         System.out.println("Dossier à ajouter: " + dossier.toString());
         
         // Ne pas inclure l'ID dans l'INSERT si c'est auto-incrémenté
-        String sql = "INSERT INTO dossier_charge (date_arrivee, heure_arrivee, symptomes, niveau_gravite, ref_user) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO dossier_charge (date_arrivee, heure_arrivee, symptomes, niveau_gravite, id_patient, id_user) VALUES (?, ?, ?, ?, ?, ?)";
         System.out.println("SQL: " + sql);
 
         try (Connection cnx = Database.getConnexion();
@@ -32,20 +33,24 @@ public class DossierEnChargeRepository {
 
             // Conversion explicite pour éviter les problèmes de type
             java.sql.Date sqlDate = java.sql.Date.valueOf(dossier.getDateArrivee());
-            java.sql.Time sqlTime = java.sql.Time.valueOf(dossier.getHeureArrivee());
+            // Combiner date et heure en un Timestamp
+            java.time.LocalDateTime dateTime = dossier.getDateArrivee().atTime(dossier.getHeureArrivee());
+            java.sql.Timestamp sqlDateTime = java.sql.Timestamp.valueOf(dateTime);
             
             stmt.setDate(1, sqlDate);
-            stmt.setTime(2, sqlTime);
+            stmt.setTimestamp(2, sqlDateTime);
             stmt.setString(3, dossier.getSymptomes());
             stmt.setInt(4, dossier.getNiveauGravite());
-            stmt.setInt(5, dossier.getRefUser());
+            stmt.setInt(5, dossier.getRefUser()); // id_patient
+            stmt.setInt(6, SessionManager.getUtilisateurConnecte().getIdUser()); // id_user (utilisateur connecté)
             
             System.out.println("Paramètres préparés:");
             System.out.println("  1. Date (SQL Date): " + sqlDate + " -> " + sqlDate.getClass().getSimpleName());
-            System.out.println("  2. Heure (SQL Time): " + sqlTime + " -> " + sqlTime.getClass().getSimpleName());
+            System.out.println("  2. Date/Heure (SQL Timestamp): " + sqlDateTime + " -> " + sqlDateTime.getClass().getSimpleName());
             System.out.println("  3. Symptômes: " + dossier.getSymptomes());
             System.out.println("  4. Niveau gravité: " + dossier.getNiveauGravite());
-            System.out.println("  5. Ref user: " + dossier.getRefUser());
+            System.out.println("  5. ID Patient: " + dossier.getRefUser());
+            System.out.println("  6. ID User (connecté): " + SessionManager.getUtilisateurConnecte().getIdUser());
 
             int rowsAffected = stmt.executeUpdate();
             System.out.println("Nombre de lignes affectées: " + rowsAffected);
@@ -100,10 +105,10 @@ public class DossierEnChargeRepository {
                 return new DossierEnCharge(
                     rs.getInt("id_dossier"),
                     rs.getDate("date_arrivee").toLocalDate(),
-                    rs.getTime("heure_arrivee").toLocalTime(),
+                    rs.getTimestamp("heure_arrivee").toLocalDateTime().toLocalTime(),
                     rs.getString("symptomes"),
                     rs.getInt("niveau_gravite"),
-                    rs.getInt("ref_user")
+                    rs.getInt("id_patient")
                 );
             }
         } catch (SQLException e) {
@@ -124,10 +129,10 @@ public class DossierEnChargeRepository {
                 dossiers.add(new DossierEnCharge(
                     rs.getInt("id_dossier"),
                     rs.getDate("date_arrivee").toLocalDate(),
-                    rs.getTime("heure_arrivee").toLocalTime(),
+                    rs.getTimestamp("heure_arrivee").toLocalDateTime().toLocalTime(),
                     rs.getString("symptomes"),
                     rs.getInt("niveau_gravite"),
-                    rs.getInt("ref_user")
+                    rs.getInt("id_patient")
                 ));
             }
         } catch (SQLException e) {
@@ -137,17 +142,21 @@ public class DossierEnChargeRepository {
     }
 
     public boolean modifierDossier(DossierEnCharge dossier) {
-        String sql = "UPDATE dossier_charge SET date_arrivee = ?, heure_arrivee = ?, symptomes = ?, niveau_gravite = ?, ref_user = ? WHERE id_dossier = ?";
+        String sql = "UPDATE dossier_charge SET date_arrivee = ?, heure_arrivee = ?, symptomes = ?, niveau_gravite = ?, id_patient = ?, id_user = ? WHERE id_dossier = ?";
 
         try (Connection cnx = Database.getConnexion();
              PreparedStatement stmt = cnx.prepareStatement(sql)) {
 
             stmt.setDate(1, java.sql.Date.valueOf(dossier.getDateArrivee()));
-            stmt.setTime(2, java.sql.Time.valueOf(dossier.getHeureArrivee()));
+            // Combiner date et heure en un Timestamp
+            java.time.LocalDateTime dateTime = dossier.getDateArrivee().atTime(dossier.getHeureArrivee());
+            java.sql.Timestamp sqlDateTime = java.sql.Timestamp.valueOf(dateTime);
+            stmt.setTimestamp(2, sqlDateTime);
             stmt.setString(3, dossier.getSymptomes());
             stmt.setInt(4, dossier.getNiveauGravite());
-            stmt.setInt(5, dossier.getRefUser());
-            stmt.setInt(6, dossier.getIdDossier());
+            stmt.setInt(5, dossier.getRefUser()); // id_patient
+            stmt.setInt(6, SessionManager.getUtilisateurConnecte().getIdUser()); // id_user (utilisateur connecté)
+            stmt.setInt(7, dossier.getIdDossier());
 
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
