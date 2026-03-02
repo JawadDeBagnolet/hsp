@@ -283,7 +283,7 @@ public class FournisseursController {
     @FXML
     private void versUtilisateurs() {
         try {
-            StartApplication.changeScene("pageMonEspace");
+            StartApplication.changeScene("pageUtilisateurs");
         } catch (Exception e) {
             System.err.println("Erreur: " + e.getMessage());
         }

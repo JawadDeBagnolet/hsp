@@ -1,32 +1,80 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.RowConstraints?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Text?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<VBox alignment="TOP_CENTER" spacing="20" style="-fx-background-color: linear-gradient(to bottom, #1a1a2e, #0f0f1e); -fx-padding: 30;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="appli.hsp.CommandeController">
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            xmlns="http://javafx.com/javafx/25"
+            fx:controller="appli.hsp.CommandeController"
+            style="-fx-background-color: linear-gradient(to bottom, #2c3e50, #3498db);">
 
-    <padding>
-        <Insets bottom="30" left="30" right="30" top="30" />
-    </padding>
+    <!-- Barre de navigation en haut -->
+    <top>
+        <HBox style="-fx-background-color: #34495e; -fx-padding: 15; -fx-border-color: #2c3e50; -fx-border-width: 0 0 2 0;">
+            <padding>
+                <Insets top="10" right="20" bottom="10" left="20"/>
+            </padding>
 
-    <!-- Header avec navigation -->
-    <HBox alignment="CENTER_LEFT" spacing="20" style="-fx-background-color: #2d2d3d; -fx-padding: 15; -fx-background-radius: 8;">
-        <Button onAction="#handleRetour" style="-fx-background-color: #4a4a6a; -fx-text-fill: #e8e8e8; -fx-font-size: 14px; -fx-pref-width: 80; -fx-pref-height: 35; -fx-background-radius: 5;" text="← Retour" />
-        <Text style="-fx-font-size: 24px; -fx-fill: #e8e8e8; -fx-font-weight: bold;" text="Gestion des Commandes" />
-    </HBox>
+            <!-- Logo/Titre -->
+            <VBox spacing="5" HBox.hgrow="ALWAYS">
+                <Text text="HSP"
+                      style="-fx-font-size: 24px; -fx-fill: #3498db; -fx-font-weight: bold;" />
+                <Text text="Hôpital de Santé Publique"
+                      style="-fx-font-size: 12px; -fx-fill: #ecf0f1;" />
+            </VBox>
+
+            <!-- Menu de navigation -->
+            <HBox spacing="20" alignment="CENTER">
+                <Button text="Accueil"
+                        style="-fx-background-color: transparent; -fx-text-fill: #ecf0f1; -fx-font-size: 14px; -fx-border-color: transparent; -fx-cursor: hand;"
+                        onAction="#versAccueil" />
+
+                <Separator orientation="VERTICAL" style="-fx-background-color: #7f8c8d;" />
+
+                <Button text="Patients"
+                        style="-fx-background-color: transparent; -fx-text-fill: #ecf0f1; -fx-font-size: 14px; -fx-border-color: transparent; -fx-cursor: hand;"
+                        onAction="#versPatients" />
+
+                <Separator orientation="VERTICAL" style="-fx-background-color: #7f8c8d;" />
+
+                <Button text="Dossiers"
+                        style="-fx-background-color: transparent; -fx-text-fill: #ecf0f1; -fx-font-size: 14px; -fx-border-color: transparent; -fx-cursor: hand;"
+                        onAction="#versDossiers" />
+
+                <Separator orientation="VERTICAL" style="-fx-background-color: #7f8c8d;" />
+
+                <Button text="Commandes"
+                        style="-fx-background-color: #3498db; -fx-text-fill: #ffffff; -fx-font-size: 14px; -fx-border-color: #2980b9; -fx-border-width: 1; -fx-border-radius: 5; -fx-background-radius: 5; -fx-cursor: hand;" />
+
+                <Separator orientation="VERTICAL" style="-fx-background-color: #7f8c8d;" />
+
+                <Button text="Utilisateurs"
+                        style="-fx-background-color: transparent; -fx-text-fill: #ecf0f1; -fx-font-size: 14px; -fx-border-color: transparent; -fx-cursor: hand;"
+                        onAction="#versUtilisateurs" />
+
+                <Separator orientation="VERTICAL" style="-fx-background-color: #7f8c8d;" />
+
+                <Button text="Mon espace"
+                        style="-fx-background-color: transparent; -fx-text-fill: #ecf0f1; -fx-font-size: 14px; -fx-border-color: transparent; -fx-cursor: hand;"
+                        onAction="#versMonEspace" />
+
+                <Button text="Déconnexion"
+                        style="-fx-background-color: #e74c3c; -fx-text-fill: #ffffff; -fx-font-size: 14px; -fx-border-color: #c0392b; -fx-border-width: 1; -fx-border-radius: 5; -fx-background-radius: 5; -fx-cursor: hand;"
+                        onAction="#deconnexion" />
+            </HBox>
+        </HBox>
+    </top>
 
     <!-- Zone principale -->
-    <VBox spacing="25" style="-fx-background-color: #2d2d3d; -fx-padding: 30; -fx-background-radius: 10; -fx-border-color: #404050; -fx-border-width: 1;">
+    <center>
+        <VBox alignment="TOP_CENTER" spacing="20" style="-fx-padding: 30;">
+            <padding>
+                <Insets bottom="30" left="30" right="30" top="30" />
+            </padding>
+
+            <VBox spacing="25" style="-fx-background-color: #2d2d3d; -fx-padding: 30; -fx-background-radius: 10; -fx-border-color: #404050; -fx-border-width: 1;">
 
         <!-- Section recherche -->
         <VBox spacing="10">
@@ -96,6 +144,8 @@
             </HBox>
         </VBox>
 
-    </VBox>
+            </VBox>
+        </VBox>
+    </center>
 
-</VBox>
+</BorderPane>

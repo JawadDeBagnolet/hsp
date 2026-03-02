@@ -149,6 +149,66 @@ public class CommandeController {
         });
     }
 
+    @FXML
+    public void versAccueil(ActionEvent event) {
+        try {
+            StartApplication.changeScene("pageAccueil");
+        } catch (Exception e) {
+            System.err.println("Erreur lors de la redirection vers l'accueil: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    public void versPatients(ActionEvent event) {
+        try {
+            StartApplication.changeScene("patientsView");
+        } catch (Exception e) {
+            System.err.println("Erreur lors de la redirection vers patients: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    public void versDossiers(ActionEvent event) {
+        try {
+            StartApplication.changeScene("dossierEnChargeView");
+        } catch (Exception e) {
+            System.err.println("Erreur lors de la redirection vers dossiers: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    public void versCommandes(ActionEvent event) {
+        // Déjà sur la page commandes
+        System.out.println("Déjà sur la page commandes");
+    }
+
+    @FXML
+    public void versUtilisateurs(ActionEvent event) {
+        try {
+            StartApplication.changeScene("pageUtilisateurs");
+        } catch (Exception e) {
+            System.err.println("Erreur lors de la redirection vers utilisateurs: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    public void versMonEspace(ActionEvent event) {
+        try {
+            StartApplication.changeScene("pageMonEspace");
+        } catch (Exception e) {
+            System.err.println("Erreur lors de la redirection vers mon espace: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    public void deconnexion(ActionEvent event) {
+        try {
+            StartApplication.changeScene("helloView");
+        } catch (Exception e) {
+            System.err.println("Erreur lors de la déconnexion: " + e.getMessage());
+        }
+    }
+
     /**
      * Affiche les détails d'une commande sélectionnée
      */
