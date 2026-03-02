@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="appli.hsp.PlanningController">
+   <children>
+      <!-- Barre de navigation -->
+      <HBox alignment="CENTER_LEFT" style="-fx-background-color: #2c3e50; -fx-padding: 10;">
+         <children>
+            <Button mnemonicParsing="false" onAction="#versAccueil" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-border-color: white; -fx-border-width: 0 0 2 0; -fx-cursor: hand;" text="Accueil" />
+            <Button mnemonicParsing="false" onAction="#versPatients" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-border-color: white; -fx-border-width: 0 0 2 0; -fx-cursor: hand;" text="Patients" />
+            <Button mnemonicParsing="false" onAction="#versCommandes" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-border-color: white; -fx-border-width: 0 0 2 0; -fx-cursor: hand;" text="Commandes" />
+            <Button mnemonicParsing="false" onAction="#versUtilisateurs" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-border-color: white; -fx-border-width: 0 0 2 0; -fx-cursor: hand;" text="Utilisateurs" />
+            <Button mnemonicParsing="false" onAction="#versPlanning" style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-border-color: transparent; -fx-border-width: 0 0 2 0; -fx-cursor: hand;" text="Planning" />
+            <Pane HBox.hgrow="ALWAYS" />
+            <Button mnemonicParsing="false" onAction="#versMonEspace" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-border-color: white; -fx-border-width: 0 0 2 0; -fx-cursor: hand;" text="Mon Espace" />
+            <Button mnemonicParsing="false" onAction="#deconnexion" style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-cursor: hand;" text="Déconnexion" />
+         </children>
+      </HBox>
+      
+      <!-- En-tête du planning -->
+      <VBox style="-fx-padding: 20; -fx-background-color: #ecf0f1;">
+         <children>
+            <HBox alignment="CENTER_LEFT" spacing="20">
+               <children>
+                  <Label text="📅 Planning Hebdomadaire" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;">
+                     <font>
+                        <Font size="24.0" />
+                     </font>
+                  </Label>
+                  <Pane HBox.hgrow="ALWAYS" />
+                  <Label fx:id="totalRdvLabel" style="-fx-font-size: 14px; -fx-text-fill: #7f8c8d; -fx-font-weight: bold;" text="Total: 0 rendez-vous" />
+               </children>
+            </HBox>
+            
+            <!-- Contrôles de navigation -->
+            <HBox alignment="CENTER_LEFT" spacing="15" style="-fx-padding: 10 0;">
+               <children>
+                  <Button fx:id="semainePrecedenteButton" mnemonicParsing="false" onAction="#semainePrecedente" style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-cursor: hand; -fx-font-weight: bold;" text="◀ Semaine précédente" />
+                  <Button fx:id="aujourdHuiButton" mnemonicParsing="false" onAction="#aujourdHui" style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-cursor: hand; -fx-font-weight: bold;" text="Aujourd'hui" />
+                  <Button fx:id="semaineSuivanteButton" mnemonicParsing="false" onAction="#semaineSuivante" style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-cursor: hand; -fx-font-weight: bold;" text="Semaine suivante ▶" />
+                  <Pane HBox.hgrow="ALWAYS" />
+                  <ComboBox fx:id="medecinComboBox" prefWidth="200.0" promptText="Tous les médecins" style="-fx-font-size: 12px;" />
+                  <Button mnemonicParsing="false" onAction="#actualiser" style="-fx-background-color: #f39c12; -fx-text-fill: white; -fx-cursor: hand; -fx-font-weight: bold;" text="🔄 Actualiser" />
+               </children>
+            </HBox>
+            
+            <!-- Label de la semaine -->
+            <Label fx:id="semaineLabel" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2c3e50; -fx-padding: 10 0;" text="Semaine du..." />
+         </children>
+      </VBox>
+      
+      <!-- Grille de planning -->
+      <ScrollPane fx:id="planningScrollPane" fitToWidth="true" fitToHeight="true" VBox.vgrow="ALWAYS" style="-fx-background-color: white;">
+         <content>
+            <GridPane fx:id="planningGrid" hgap="2.0" vgap="2.0" style="-fx-padding: 10;">
+               <!-- La grille sera remplie dynamiquement par le contrôleur -->
+            </GridPane>
+         </content>
+      </ScrollPane>
+      
+      <!-- Barre de messages -->
+      <HBox alignment="CENTER_LEFT" style="-fx-background-color: #34495e; -fx-padding: 10;">
+         <children>
+            <Label fx:id="messageLabel" style="-fx-text-fill: white; -fx-font-weight: bold;" text="Prêt" />
+            <Pane HBox.hgrow="ALWAYS" />
+            <Label style="-fx-text-fill: #bdc3c7; -fx-font-size: 12px;" text="💡 Double-cliquez sur une créneau pour ajouter un rendez-vous" />
+         </children>
+      </HBox>
+   </children>
+</VBox>

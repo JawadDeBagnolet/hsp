@@ -59,6 +59,15 @@ public class PageAccueil {
     }
     
     @FXML
+    public void versPlanning(ActionEvent event) {
+        try {
+            StartApplication.changeScene("planningView");
+        } catch (Exception e) {
+            System.err.println("Erreur lors de la redirection vers planning: " + e.getMessage());
+        }
+    }
+    
+    @FXML
     public void versMonEspace(ActionEvent event) {
         try {
             StartApplication.changeScene("pageMonEspace");

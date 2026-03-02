@@ -13,7 +13,7 @@ import java.util.List;
 public class FichePatientRepository {
 
     public boolean ajouterFichePatient(FichePatient fichePatient) {
-        String sql = "INSERT INTO fiche_patient (nom, prenom, numSecu, email, tel, rue, cp, ville) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO fiche_patient (nom, prenom, num_secu, email, tel, rue, cp, ville) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         
         try (Connection cnx = Database.getConnexion();
              PreparedStatement stmt = cnx.prepareStatement(sql)) {
