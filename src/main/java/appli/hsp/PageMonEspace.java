@@ -141,7 +141,7 @@ public class PageMonEspace {
     @FXML
     public void versPatients(ActionEvent event) {
         try {
-            StartApplication.changeScene("pagePatients");
+            StartApplication.changeScene("patientsView");
         } catch (Exception e) {
             System.err.println("Erreur lors de la redirection vers patients: " + e.getMessage());
         }
@@ -150,7 +150,7 @@ public class PageMonEspace {
     @FXML
     public void versCommandes(ActionEvent event) {
         try {
-            StartApplication.changeScene("pageCommandes");
+            StartApplication.changeScene("commandeView");
         } catch (Exception e) {
             System.err.println("Erreur lors de la redirection vers commandes: " + e.getMessage());
         }

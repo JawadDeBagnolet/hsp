@@ -43,9 +43,9 @@
                 
                 <Separator orientation="VERTICAL" style="-fx-background-color: #7f8c8d;" />
                 
-                <Button text="Patients"
-                        style="-fx-background-color: #3498db; -fx-text-fill: #ffffff; -fx-font-size: 14px; -fx-border-color: #2980b9; -fx-border-width: 1; -fx-border-radius: 5; -fx-background-radius: 5; -fx-cursor: hand;"
-                        onAction="#versPatients" />
+                <Button text="Utilisateurs"
+                        style="-fx-background-color: transparent; -fx-text-fill: #ecf0f1; -fx-font-size: 14px; -fx-border-color: transparent; -fx-cursor: hand;"
+                        onAction="#versUtilisateurs" />
                 
                 <Separator orientation="VERTICAL" style="-fx-background-color: #7f8c8d;" />
                 
@@ -62,11 +62,10 @@
 
     <!-- Contenu principal -->
     <center>
-        <ScrollPane fitToWidth="true" fitToHeight="true" style="-fx-background-color: linear-gradient(to bottom, #2c3e50, #3498db); -fx-border-color: transparent;" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED">
-            <VBox alignment="CENTER" spacing="30" style="-fx-padding: 40;">
-                <padding>
-                    <Insets top="30" right="40" bottom="30" left="40"/>
-                </padding>
+        <VBox alignment="CENTER" spacing="30" style="-fx-padding: 40;">
+            <padding>
+                <Insets top="30" right="40" bottom="30" left="40"/>
+            </padding>
 
             <!-- Titre de la page -->
             <VBox spacing="15" alignment="CENTER">
@@ -92,55 +91,14 @@
             </HBox>
 
             <!-- Liste des patients (plus simple que TableView) -->
-            <ListView fx:id="patientsListView" prefHeight="400" minHeight="300" VBox.vgrow="ALWAYS" 
-                      style="-fx-background-color: white; -fx-background-radius: 15; -fx-border-color: #3498db; -fx-border-width: 2; -fx-border-radius: 15; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 10, 0, 0, 0);" />
-
-            <!-- Panneau de modification -->
-            <VBox fx:id="modificationPane" spacing="15" style="-fx-background-color: rgba(255, 255, 255, 0.1); -fx-padding: 20; -fx-background-radius: 15; -fx-border-color: rgba(255, 255, 255, 0.3); -fx-border-width: 1; -fx-border-radius: 15;" visible="false">
-                <Text text="✏️ Modifier le patient" style="-fx-font-size: 20px; -fx-fill: #ffffff; -fx-font-weight: bold;" />
-                
-                <GridPane hgap="15" vgap="10">
-                    <Label text="Nom:" style="-fx-fill: #ffffff;" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-                    <TextField fx:id="nomField" style="-fx-background-color: rgba(255, 255, 255, 0.9);" GridPane.columnIndex="1" GridPane.rowIndex="0" />
-                    
-                    <Label text="Prénom:" style="-fx-fill: #ffffff;" GridPane.columnIndex="0" GridPane.rowIndex="1" />
-                    <TextField fx:id="prenomField" style="-fx-background-color: rgba(255, 255, 255, 0.9);" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                    
-                    <Label text="Numéro Sécurité Sociale:" style="-fx-fill: #ffffff;" GridPane.columnIndex="0" GridPane.rowIndex="2" />
-                    <TextField fx:id="numSecuField" style="-fx-background-color: rgba(255, 255, 255, 0.9);" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                    
-                    <Label text="Email:" style="-fx-fill: #ffffff;" GridPane.columnIndex="0" GridPane.rowIndex="3" />
-                    <TextField fx:id="emailField" style="-fx-background-color: rgba(255, 255, 255, 0.9);" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                    
-                    <Label text="Téléphone:" style="-fx-fill: #ffffff;" GridPane.columnIndex="0" GridPane.rowIndex="4" />
-                    <TextField fx:id="telField" style="-fx-background-color: rgba(255, 255, 255, 0.9);" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-                    
-                    <Label text="Rue:" style="-fx-fill: #ffffff;" GridPane.columnIndex="0" GridPane.rowIndex="5" />
-                    <TextField fx:id="rueField" style="-fx-background-color: rgba(255, 255, 255, 0.9);" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-                    
-                    <Label text="Code Postal:" style="-fx-fill: #ffffff;" GridPane.columnIndex="0" GridPane.rowIndex="6" />
-                    <TextField fx:id="cpField" style="-fx-background-color: rgba(255, 255, 255, 0.9);" GridPane.columnIndex="1" GridPane.rowIndex="6" />
-                    
-                    <Label text="Ville:" style="-fx-fill: #ffffff;" GridPane.columnIndex="0" GridPane.rowIndex="7" />
-                    <TextField fx:id="villeField" style="-fx-background-color: rgba(255, 255, 255, 0.9);" GridPane.columnIndex="1" GridPane.rowIndex="7" />
-                </GridPane>
-                
-                <HBox spacing="15" alignment="CENTER">
-                    <Button text="💾 Enregistrer" onAction="#handleSaveModification" 
-                            style="-fx-background-color: #27ae60; -fx-text-fill: #ffffff; -fx-font-size: 14px; -fx-font-weight: bold; -fx-padding: 10 20; -fx-background-radius: 20; -fx-cursor: hand;" />
-                    <Button text="❌ Annuler" onAction="#handleCancelModification" 
-                            style="-fx-background-color: #e74c3c; -fx-text-fill: #ffffff; -fx-font-size: 14px; -fx-font-weight: bold; -fx-padding: 10 20; -fx-background-radius: 20; -fx-cursor: hand;" />
-                </HBox>
-            </VBox>
+            <ListView fx:id="patientsListView" prefHeight="400" VBox.vgrow="ALWAYS" 
+                      style="-fx-background-color: rgba(255, 255, 255, 0.95); -fx-background-radius: 15; -fx-border-color: rgba(255, 255, 255, 0.3); -fx-border-width: 1; -fx-border-radius: 15;" />
 
             <!-- Boutons d'action -->
             <HBox spacing="20" alignment="CENTER">
-                <Button text="✏️ Modifier Patient" onAction="#handleModifierPatient" 
-                        style="-fx-background-color: #f39c12; -fx-text-fill: #ffffff; -fx-font-size: 16px; -fx-font-weight: bold; -fx-padding: 15 30; -fx-background-radius: 25; -fx-cursor: hand;" />
                 <Button text="🏠 Retour Accueil" onAction="#handleBack" 
                         style="-fx-background-color: #95a5a6; -fx-text-fill: #ffffff; -fx-font-size: 16px; -fx-font-weight: bold; -fx-padding: 15 30; -fx-background-radius: 25; -fx-cursor: hand;" />
             </HBox>
-            </VBox>
-        </ScrollPane>
+        </VBox>
     </center>
 </BorderPane>
