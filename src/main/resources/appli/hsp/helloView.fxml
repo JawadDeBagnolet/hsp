@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
 
-<VBox alignment="CENTER" spacing="30" style="-fx-background-color: linear-gradient(to bottom, #1a1a2e, #0f0f1e); -fx-padding: 50;" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/25" fx:controller="appli.hsp.HelloController">
+<VBox alignment="CENTER" spacing="30" style="-fx-background-color: linear-gradient(to bottom, #1a1a2e, #0f0f1e); -fx-padding: 50;" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/21" fx:controller="appli.hsp.HelloController">
 
     <padding>
         <Insets bottom="40" left="40" right="40" top="40" />
