@@ -3,12 +3,8 @@ package appli.hsp;
 import appli.StartApplication;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.layout.AnchorPane;
 
 public class PageAccueil {
-
-    @FXML
-    private AnchorPane rootPane;
 
     @FXML
     public void initialize() {

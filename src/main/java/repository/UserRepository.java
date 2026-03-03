@@ -57,12 +57,13 @@ public class UserRepository {
     }
     
     public User trouverUtilisateurParEmail(String email) {
-        String sql = "SELECT * FROM user WHERE email = ?";
+        String sql = "SELECT * FROM user WHERE LOWER(email) = LOWER(?)";
         
         try (Connection cnx = Database.getConnexion();
              PreparedStatement stmt = cnx.prepareStatement(sql)) {
-            
-            stmt.setString(1, email);
+
+            String safeEmail = (email == null) ? null : email.trim();
+            stmt.setString(1, safeEmail);
             ResultSet rs = stmt.executeQuery();
             
             if (rs.next()) {

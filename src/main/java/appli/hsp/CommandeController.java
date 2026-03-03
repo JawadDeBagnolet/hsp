@@ -12,15 +12,20 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import modele.Demande;
 import modele.FicheProduit;
+import modele.User;
 import repository.DemandeProduitRepository;
 import repository.DemandeRepository;
 import repository.FicheProduitRepository;
+import repository.UserRepository;
 
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class CommandeController {
 
@@ -63,13 +68,19 @@ public class CommandeController {
     private TableColumn<Demande, String> dateColumn;
 
     @FXML
-    private TableColumn<Demande, Integer> patientColumn;
+    private TableColumn<Demande, String> patientColumn;
 
     @FXML
-    private TableColumn<Demande, Integer> medecinColumn;
+    private TableColumn<Demande, String> roleColumn;
 
     @FXML
-    private TableColumn<Demande, Integer> statutColumn;
+    private TableColumn<Demande, String> produitsColumn;
+
+    @FXML
+    private TableColumn<Demande, String> nbProduitsColumn;
+
+    @FXML
+    private TableColumn<Demande, String> statutColumn;
 
     @FXML
     private TableColumn<Demande, Void> actionsColumn;
@@ -87,14 +98,34 @@ public class CommandeController {
     private Label patientLabel;
 
     @FXML
+    private Label roleLabel;
+
+    @FXML
     private Label medecinLabel;
 
     @FXML
     private Label statutLabel;
 
+    @FXML
+    private TableView<repository.DemandeProduitRepository.ProduitCommande> produitsTable;
+
+    @FXML
+    private TableColumn<repository.DemandeProduitRepository.ProduitCommande, String> produitNomColumn;
+
+    @FXML
+    private TableColumn<repository.DemandeProduitRepository.ProduitCommande, Integer> produitQuantiteColumn;
+
+    @FXML
+    private TableColumn<repository.DemandeProduitRepository.ProduitCommande, Integer> produitStockColumn;
+
     private final DemandeRepository demandeRepository = new DemandeRepository();
     private final FicheProduitRepository ficheProduitRepository = new FicheProduitRepository();
     private final DemandeProduitRepository demandeProduitRepository = new DemandeProduitRepository();
+    private final UserRepository userRepository = new UserRepository();
+
+    private final Map<Integer, String> userLabelCache = new HashMap<>();
+    private final Map<Integer, String> userRoleCache = new HashMap<>();
+    private final Map<Integer, Integer> nbProduitsCache = new HashMap<>();
 
     private final ObservableList<Demande> demandesObservable = FXCollections.observableArrayList();
     private Demande demandeSelectionnee;
@@ -103,6 +134,9 @@ public class CommandeController {
     public void initialize() {
         // Initialisation du contrôleur
         System.out.println("Page commande initialisée");
+        
+        // Test du contenu de la base de données pour diagnostiquer
+        demandeProduitRepository.testDatabaseContent();
         
         // Configuration initiale du tableau
         setupTable();
@@ -113,21 +147,41 @@ public class CommandeController {
         commandesTable.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
             demandeSelectionnee = newVal;
             if (newVal != null) {
+                System.out.println("Ligne sélectionnée: " + newVal.getIdDemande());
                 afficherDetailsCommande(newVal);
             }
         });
+        
+        // Forcer un premier chargement
+        System.out.println("Premier chargement des commandes...");
+        loadCommandes();
     }
 
     private void setupTable() {
+        System.out.println("Configuration du tableau...");
+        
+        // Vérifier que le TableView est bien initialisé
+        if (commandesTable == null) {
+            System.err.println("ERREUR: commandesTable est null!");
+            return;
+        }
+        
         // Configuration des colonnes du tableau
-        idColumn.setStyle("-fx-alignment: CENTER;");
+        idColumn.setStyle("-fx-alignment: CENTER; -fx-font-weight: bold;");
         dateColumn.setStyle("-fx-alignment: CENTER;");
-        patientColumn.setStyle("-fx-alignment: CENTER_LEFT;");
-        medecinColumn.setStyle("-fx-alignment: CENTER_LEFT;");
+        patientColumn.setStyle("-fx-alignment: CENTER;");
+        roleColumn.setStyle("-fx-alignment: CENTER;");
+        produitsColumn.setStyle("-fx-alignment: CENTER;");
+        nbProduitsColumn.setStyle("-fx-alignment: CENTER;");
         statutColumn.setStyle("-fx-alignment: CENTER;");
         actionsColumn.setStyle("-fx-alignment: CENTER;");
 
-        idColumn.setCellValueFactory(new PropertyValueFactory<>("idDemande"));
+        idColumn.setCellValueFactory(cellData -> {
+            if (cellData.getValue() == null) {
+                return new javafx.beans.property.SimpleIntegerProperty(0).asObject();
+            }
+            return new javafx.beans.property.SimpleIntegerProperty(cellData.getValue().getIdDemande()).asObject();
+        });
         dateColumn.setCellValueFactory(cellData -> {
             if (cellData.getValue() == null || cellData.getValue().getDateDemande() == null) {
                 return new javafx.beans.property.SimpleStringProperty("");
@@ -136,15 +190,108 @@ public class CommandeController {
                 cellData.getValue().getDateDemande().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))
             );
         });
-        // `commandeView.fxml` est générique (patient/médecin/statut), on l'utilise pour afficher des infos utiles
-        patientColumn.setCellValueFactory(new PropertyValueFactory<>("idUser"));
-        medecinColumn.setCellValueFactory(new PropertyValueFactory<>("quantite"));
-        statutColumn.setCellValueFactory(new PropertyValueFactory<>("idDemande"));
+        // Afficher les informations réelles des demandes
+        patientColumn.setCellValueFactory(cellData -> {
+            if (cellData.getValue() == null) {
+                return new javafx.beans.property.SimpleStringProperty("");
+            }
+            return new javafx.beans.property.SimpleStringProperty(getUserLabel(cellData.getValue().getIdUser()));
+        });
+        roleColumn.setCellValueFactory(cellData -> {
+            if (cellData.getValue() == null) {
+                return new javafx.beans.property.SimpleStringProperty("");
+            }
+            return new javafx.beans.property.SimpleStringProperty(getUserRole(cellData.getValue().getIdUser()));
+        });
+        produitsColumn.setCellValueFactory(cellData -> {
+            if (cellData.getValue() == null) {
+                return new javafx.beans.property.SimpleStringProperty("");
+            }
+            int nb = getNbProduits(cellData.getValue().getIdDemande());
+            return new javafx.beans.property.SimpleStringProperty(nb + " produit" + (nb > 1 ? "s" : ""));
+        });
+        nbProduitsColumn.setCellValueFactory(cellData -> {
+            if (cellData.getValue() == null) {
+                return new javafx.beans.property.SimpleStringProperty("");
+            }
+            int nb = getNbProduits(cellData.getValue().getIdDemande());
+            return new javafx.beans.property.SimpleStringProperty(String.valueOf(nb));
+        });
+        statutColumn.setCellValueFactory(cellData -> {
+            // Afficher "Demande produit" comme statut pour toutes les demandes
+            return new javafx.beans.property.SimpleStringProperty("Demande produit");
+        });
+
+        idColumn.setCellFactory(col -> new TableCell<>() {
+            @Override
+            protected void updateItem(Integer item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(empty ? null : String.valueOf(item));
+                setTextFill(Color.web("#111827"));
+            }
+        });
+
+        dateColumn.setCellFactory(col -> new TableCell<>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(empty ? null : item);
+                setTextFill(Color.web("#111827"));
+            }
+        });
+
+        patientColumn.setCellFactory(col -> new TableCell<>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(empty ? null : item);
+                setTextFill(Color.web("#111827"));
+            }
+        });
+
+        roleColumn.setCellFactory(col -> new TableCell<>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(empty ? null : item);
+                setTextFill(Color.web("#111827"));
+            }
+        });
+
+        produitsColumn.setCellFactory(col -> new TableCell<>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(empty ? null : item);
+                setTextFill(Color.web("#111827"));
+            }
+        });
+
+        nbProduitsColumn.setCellFactory(col -> new TableCell<>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(empty ? null : item);
+                setTextFill(Color.web("#111827"));
+            }
+        });
+
+        statutColumn.setCellFactory(col -> new TableCell<>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(empty ? null : item);
+                setTextFill(Color.web("#111827"));
+            }
+        });
 
         actionsColumn.setCellFactory(param -> new TableCell<>() {
-            private final Button voirBtn = new Button("Voir");
+            private final Button voirBtn = new Button("👁️ Voir");
 
             {
+                voirBtn.setStyle("-fx-background-color: linear-gradient(to right, #667eea, #764ba2); -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 20; -fx-cursor: hand; -fx-padding: 8 15; -fx-border-radius: 20; -fx-border-color: transparent;");
+                voirBtn.setOnMouseEntered(e -> voirBtn.setStyle("-fx-background-color: linear-gradient(to right, #764ba2, #667eea); -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 20; -fx-cursor: hand; -fx-padding: 8 15; -fx-border-radius: 20; -fx-border-color: transparent; -fx-scale-x: 1.05; -fx-scale-y: 1.05;"));
+                voirBtn.setOnMouseExited(e -> voirBtn.setStyle("-fx-background-color: linear-gradient(to right, #667eea, #764ba2); -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 20; -fx-cursor: hand; -fx-padding: 8 15; -fx-border-radius: 20; -fx-border-color: transparent;"));
                 voirBtn.setOnAction(e -> {
                     Demande d = getTableView().getItems().get(getIndex());
                     afficherDetailsCommande(d);
@@ -160,6 +307,29 @@ public class CommandeController {
 
         commandesTable.setItems(demandesObservable);
 
+        // Style simple et lisible pour garantir l'affichage (évite les styles/rowFactory trop intrusifs)
+        commandesTable.setStyle("-fx-background-color: #ffffff; -fx-border-color: #cbd5e1; -fx-border-radius: 6;");
+
+        // Configuration du tableau des produits dans les détails
+        produitNomColumn.setCellValueFactory(cellData -> {
+            if (cellData.getValue() == null || cellData.getValue().getProduit() == null) {
+                return new javafx.beans.property.SimpleStringProperty("");
+            }
+            return new javafx.beans.property.SimpleStringProperty(cellData.getValue().getProduit().getLibelle());
+        });
+        
+        produitQuantiteColumn.setCellValueFactory(new PropertyValueFactory<>("quantite"));
+        
+        produitStockColumn.setCellValueFactory(cellData -> {
+            if (cellData.getValue() == null || cellData.getValue().getProduit() == null) {
+                return new javafx.beans.property.SimpleIntegerProperty(0).asObject();
+            }
+            return new javafx.beans.property.SimpleIntegerProperty(cellData.getValue().getProduit().getStockActuel()).asObject();
+        });
+
+        // Forcer le rafraîchissement du tableau
+        commandesTable.refresh();
+        
         loadCommandes();
     }
 
@@ -167,10 +337,28 @@ public class CommandeController {
         System.out.println("Chargement des demandes...");
         try {
             List<Demande> demandes = demandeRepository.getAllDemandes();
+            System.out.println("Nombre de demandes trouvées: " + demandes.size());
+            
+            // Afficher les détails de chaque demande pour debug
+            for (int i = 0; i < demandes.size(); i++) {
+                Demande d = demandes.get(i);
+                System.out.println("Demande " + i + ": ID=" + d.getIdDemande() + ", User=" + d.getIdUser() + ", Date=" + d.getDateDemande() + ", Qté=" + d.getQuantite());
+            }
+            
             demandesObservable.clear();
             demandesObservable.addAll(demandes);
+            
+            System.out.println("ObservableList size after loading: " + demandesObservable.size());
+            System.out.println("TableView items size: " + commandesTable.getItems().size());
+            
+            // Forcer le rafraîchissement complet
+            commandesTable.refresh();
+            commandesTable.layout();
+            commandesTable.autosize();
+            
         } catch (Exception e) {
             System.err.println("Erreur lors du chargement des demandes: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -470,12 +658,108 @@ public class CommandeController {
         if (!(commande instanceof Demande d)) {
             return;
         }
+        System.out.println("Affichage détails pour demande ID: " + d.getIdDemande());
         detailsPane.setVisible(true);
 
         numeroLabel.setText(String.valueOf(d.getIdDemande()));
         dateLabel.setText(d.getDateDemande() != null ? d.getDateDemande().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")) : "");
-        patientLabel.setText(String.valueOf(d.getIdUser()));
-        medecinLabel.setText(String.valueOf(d.getQuantite()));
+        patientLabel.setText(getUserLabel(d.getIdUser()));
+        roleLabel.setText(getUserRole(d.getIdUser()));
+        medecinLabel.setText("Total: " + d.getQuantite() + " unités");
         statutLabel.setText("Demande produit");
+
+        // Charger et afficher les produits de la commande
+        System.out.println("Chargement des produits pour la demande " + d.getIdDemande());
+        List<repository.DemandeProduitRepository.ProduitCommande> produits = demandeProduitRepository.getProduitsByDemande(d.getIdDemande());
+        System.out.println("Produits récupérés: " + produits.size());
+        
+        ObservableList<repository.DemandeProduitRepository.ProduitCommande> produitsObservable = FXCollections.observableArrayList(produits);
+        produitsTable.setItems(produitsObservable);
+        produitsTable.refresh();
+        
+        System.out.println("Tableau des produits mis à jour avec " + produitsTable.getItems().size() + " éléments");
+    }
+
+    private String getUserLabel(int idUser) {
+        if (idUser <= 0) {
+            return "";
+        }
+
+        String cached = userLabelCache.get(idUser);
+        if (cached != null) {
+            return cached;
+        }
+
+        try {
+            User u = userRepository.trouverUtilisateurParId(idUser);
+            String label;
+            if (u == null) {
+                label = "Utilisateur #" + idUser;
+            } else {
+                String nom = (u.getNom() == null ? "" : u.getNom().trim());
+                String prenom = (u.getPrenom() == null ? "" : u.getPrenom().trim());
+                label = (nom + " " + prenom).trim();
+                if (label.isEmpty()) {
+                    label = "Utilisateur #" + idUser;
+                }
+            }
+            userLabelCache.put(idUser, label);
+            return label;
+        } catch (Exception e) {
+            String label = "Utilisateur #" + idUser;
+            userLabelCache.put(idUser, label);
+            return label;
+        }
+    }
+
+    private String getUserRole(int idUser) {
+        if (idUser <= 0) {
+            return "";
+        }
+
+        String cached = userRoleCache.get(idUser);
+        if (cached != null) {
+            return cached;
+        }
+
+        try {
+            User u = userRepository.trouverUtilisateurParId(idUser);
+            String role = (u == null || u.getRole() == null) ? "" : u.getRole().trim();
+            if (role.isEmpty()) {
+                role = "-";
+            }
+            userRoleCache.put(idUser, role);
+            return role;
+        } catch (Exception e) {
+            String role = "-";
+            userRoleCache.put(idUser, role);
+            return role;
+        }
+    }
+
+    private int getNbProduits(int idDemande) {
+        if (idDemande <= 0) {
+            return 0;
+        }
+
+        Integer cached = nbProduitsCache.get(idDemande);
+        if (cached != null) {
+            System.out.println("Nb produits pour demande " + idDemande + " (cache): " + cached);
+            return cached;
+        }
+
+        try {
+            System.out.println("Calcul nb produits pour demande " + idDemande);
+            List<repository.DemandeProduitRepository.ProduitCommande> produits = demandeProduitRepository.getProduitsByDemande(idDemande);
+            int nb = produits.size();
+            System.out.println("Nb produits calculé pour demande " + idDemande + ": " + nb);
+            nbProduitsCache.put(idDemande, nb);
+            return nb;
+        } catch (Exception e) {
+            System.err.println("Erreur getNbProduits pour demande " + idDemande + ": " + e.getMessage());
+            e.printStackTrace();
+            nbProduitsCache.put(idDemande, 0);
+            return 0;
+        }
     }
 }

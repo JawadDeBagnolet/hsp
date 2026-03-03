@@ -6,6 +6,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.net.URL;
 
 public class StartApplication extends Application {
     private static Stage mainStage;
@@ -25,10 +26,23 @@ public class StartApplication extends Application {
     }
 
     public static void changeScene(String nomDuFichierFxml ) throws IOException {
-        FXMLLoader fxmlLoader = new
-                FXMLLoader(StartApplication.class.getResource("/appli/hsp/" + nomDuFichierFxml + ".fxml"));
+        String resourcePath = "/appli/hsp/" + nomDuFichierFxml + ".fxml";
+        URL resourceUrl = StartApplication.class.getResource(resourcePath);
+        System.out.println("[changeScene] Loading FXML: " + resourcePath + " -> " + resourceUrl);
+
+        if (resourceUrl == null) {
+            throw new IOException("FXML introuvable: " + resourcePath);
+        }
+
+        FXMLLoader fxmlLoader = new FXMLLoader(resourceUrl);
         Scene scene = new Scene(fxmlLoader.load(), mainStage.getWidth(), mainStage.getHeight());
         mainStage.setScene(scene);
+
+        System.out.println("[changeScene] Scene set. root=" + scene.getRoot().getClass().getName());
+        mainStage.setTitle("HSP - " + nomDuFichierFxml);
+        mainStage.sizeToScene();
+        mainStage.show();
+        System.out.println("[changeScene] Stage showing=" + mainStage.isShowing() + ", title=" + mainStage.getTitle());
     }
 
 }

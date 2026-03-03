@@ -69,12 +69,13 @@
 
     <!-- Zone principale -->
     <center>
-        <VBox alignment="TOP_CENTER" spacing="20" style="-fx-padding: 30;">
-            <padding>
-                <Insets bottom="30" left="30" right="30" top="30" />
-            </padding>
+        <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;">
+            <VBox alignment="TOP_CENTER" spacing="20" style="-fx-padding: 30;">
+                <padding>
+                    <Insets bottom="30" left="30" right="30" top="30" />
+                </padding>
 
-            <VBox spacing="25" style="-fx-background-color: #2d2d3d; -fx-padding: 30; -fx-background-radius: 10; -fx-border-color: #404050; -fx-border-width: 1;">
+                <VBox spacing="25" style="-fx-background-color: #2d2d3d; -fx-padding: 30; -fx-background-radius: 10; -fx-border-color: #404050; -fx-border-width: 1;">
 
         <!-- Section recherche -->
         <VBox spacing="10">
@@ -86,23 +87,25 @@
         </VBox>
 
         <!-- Tableau des commandes -->
-        <VBox spacing="10">
-            <Text style="-fx-font-size: 18px; -fx-fill: #e8e8e8; -fx-font-weight: bold;" text="Liste des commandes" />
+        <VBox spacing="8" style="-fx-padding: 0 0 10 0;" VBox.vgrow="ALWAYS">
+            <Text style="-fx-font-size: 18px; -fx-fill: #111827; -fx-font-weight: bold;" text="Liste des commandes" />
             
-            <TableView fx:id="commandesTable" style="-fx-pref-height: 300; -fx-background-color: #3d3d4d; -fx-border-color: #505060; -fx-border-radius: 5;">
+            <TableView fx:id="commandesTable" prefHeight="550" minHeight="300" maxHeight="Infinity" VBox.vgrow="ALWAYS" style="-fx-background-color: #ffffff; -fx-border-color: #cbd5e1; -fx-border-radius: 6; -fx-background-radius: 6;">
                 <columns>
-                    <TableColumn fx:id="idColumn" prefWidth="80" text="ID" />
-                    <TableColumn fx:id="dateColumn" prefWidth="120" text="Date" />
-                    <TableColumn fx:id="patientColumn" prefWidth="150" text="Médecin" />
-                    <TableColumn fx:id="medecinColumn" prefWidth="150" text="Quantité" />
-                    <TableColumn fx:id="statutColumn" prefWidth="100" text="Statut" />
-                    <TableColumn fx:id="actionsColumn" prefWidth="120" text="Actions" />
+                    <TableColumn fx:id="idColumn" prefWidth="60" text="ID" style="-fx-font-weight: bold; -fx-alignment: CENTER;" />
+                    <TableColumn fx:id="dateColumn" prefWidth="180" text="Date" style="-fx-font-weight: bold; -fx-alignment: CENTER;" />
+                    <TableColumn fx:id="patientColumn" prefWidth="140" text="Utilisateur" style="-fx-font-weight: bold; -fx-alignment: CENTER;" />
+                    <TableColumn fx:id="roleColumn" prefWidth="120" text="Rôle" style="-fx-font-weight: bold; -fx-alignment: CENTER;" />
+                    <TableColumn fx:id="produitsColumn" prefWidth="100" text="Produits" style="-fx-font-weight: bold; -fx-alignment: CENTER;" />
+                    <TableColumn fx:id="nbProduitsColumn" prefWidth="90" text="Nb produits" style="-fx-font-weight: bold; -fx-alignment: CENTER;" />
+                    <TableColumn fx:id="statutColumn" prefWidth="140" text="Statut" style="-fx-font-weight: bold; -fx-alignment: CENTER;" />
+                    <TableColumn fx:id="actionsColumn" prefWidth="120" text="Actions" style="-fx-font-weight: bold; -fx-alignment: CENTER;" />
                 </columns>
             </TableView>
         </VBox>
 
         <!-- Section actions -->
-        <HBox alignment="CENTER" spacing="15">
+        <HBox alignment="CENTER" spacing="15" style="-fx-padding: 5 0 0 0;">
             <Button onAction="#handleNouvelleCommande" style="-fx-background-color: #5a6a4a; -fx-text-fill: #e8e8e8; -fx-font-size: 14px; -fx-pref-width: 150; -fx-pref-height: 40; -fx-background-radius: 5;" text="Nouvelle commande" />
             <Button onAction="#handleRafraichir" style="-fx-background-color: #4a4a6a; -fx-text-fill: #e8e8e8; -fx-font-size: 14px; -fx-pref-width: 120; -fx-pref-height: 40; -fx-background-radius: 5;" text="Rafraîchir" />
         </HBox>
@@ -120,16 +123,20 @@
                 <Label style="-fx-text-fill: #ffffff; -fx-font-weight: bold;" text="Médecin :" GridPane.columnIndex="0" GridPane.rowIndex="2" />
                 <Label fx:id="patientLabel" style="-fx-text-fill: #e8e8e8;" text="" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                 
-                <Label style="-fx-text-fill: #ffffff; -fx-font-weight: bold;" text="Quantité :" GridPane.columnIndex="0" GridPane.rowIndex="3" />
-                <Label fx:id="medecinLabel" style="-fx-text-fill: #e8e8e8;" text="" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                <Label style="-fx-text-fill: #ffffff; -fx-font-weight: bold;" text="Rôle :" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+                <Label fx:id="roleLabel" style="-fx-text-fill: #e8e8e8;" text="" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+
+                <Label style="-fx-text-fill: #ffffff; -fx-font-weight: bold;" text="Quantité :" GridPane.columnIndex="0" GridPane.rowIndex="4" />
+                <Label fx:id="medecinLabel" style="-fx-text-fill: #e8e8e8;" text="" GridPane.columnIndex="1" GridPane.rowIndex="4" />
                 
-                <Label style="-fx-text-fill: #ffffff; -fx-font-weight: bold;" text="Statut :" GridPane.columnIndex="0" GridPane.rowIndex="4" />
-                <Label fx:id="statutLabel" style="-fx-text-fill: #e8e8e8;" text="" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                <Label style="-fx-text-fill: #ffffff; -fx-font-weight: bold;" text="Statut :" GridPane.columnIndex="0" GridPane.rowIndex="5" />
+                <Label fx:id="statutLabel" style="-fx-text-fill: #e8e8e8;" text="" GridPane.columnIndex="1" GridPane.rowIndex="5" />
             <columnConstraints>
                <ColumnConstraints />
                <ColumnConstraints />
             </columnConstraints>
             <rowConstraints>
+               <RowConstraints />
                <RowConstraints />
                <RowConstraints />
                <RowConstraints />
@@ -142,10 +149,23 @@
                 <Button onAction="#handleModifier" style="-fx-background-color: #6a6a4a; -fx-text-fill: #e8e8e8; -fx-font-size: 14px; -fx-pref-width: 100; -fx-pref-height: 35; -fx-background-radius: 5;" text="Modifier" />
                 <Button onAction="#handleSupprimer" style="-fx-background-color: #6a4a4a; -fx-text-fill: #e8e8e8; -fx-font-size: 14px; -fx-pref-width: 100; -fx-pref-height: 35; -fx-background-radius: 5;" text="Supprimer" />
             </HBox>
-        </VBox>
-
+            
+            <!-- Détails des produits -->
+            <VBox spacing="10" style="-fx-padding: 15; -fx-background-color: #4a4a5a; -fx-background-radius: 6; -fx-border-color: #5a5a6a; -fx-border-width: 1;">
+                <Text style="-fx-font-size: 16px; -fx-fill: #ffffff; -fx-font-weight: bold;" text="Produits commandés" />
+                <TableView fx:id="produitsTable" prefHeight="150" style="-fx-background-color: #ffffff; -fx-border-color: #cbd5e1; -fx-border-radius: 4;">
+                    <columns>
+                        <TableColumn fx:id="produitNomColumn" prefWidth="200" text="Produit" style="-fx-font-weight: bold;" />
+                        <TableColumn fx:id="produitQuantiteColumn" prefWidth="80" text="Quantité" style="-fx-font-weight: bold; -fx-alignment: CENTER;" />
+                        <TableColumn fx:id="produitStockColumn" prefWidth="80" text="Stock" style="-fx-font-weight: bold; -fx-alignment: CENTER;" />
+                    </columns>
+                </TableView>
             </VBox>
         </VBox>
+
+                </VBox>
+            </VBox>
+        </ScrollPane>
     </center>
 
 </BorderPane>
