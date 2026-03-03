@@ -96,8 +96,6 @@
                     <TableColumn fx:id="dateColumn" prefWidth="180" text="Date" style="-fx-font-weight: bold; -fx-alignment: CENTER;" />
                     <TableColumn fx:id="patientColumn" prefWidth="140" text="Utilisateur" style="-fx-font-weight: bold; -fx-alignment: CENTER;" />
                     <TableColumn fx:id="roleColumn" prefWidth="120" text="Rôle" style="-fx-font-weight: bold; -fx-alignment: CENTER;" />
-                    <TableColumn fx:id="produitsColumn" prefWidth="100" text="Produits" style="-fx-font-weight: bold; -fx-alignment: CENTER;" />
-                    <TableColumn fx:id="nbProduitsColumn" prefWidth="90" text="Nb produits" style="-fx-font-weight: bold; -fx-alignment: CENTER;" />
                     <TableColumn fx:id="statutColumn" prefWidth="140" text="Statut" style="-fx-font-weight: bold; -fx-alignment: CENTER;" />
                     <TableColumn fx:id="actionsColumn" prefWidth="120" text="Actions" style="-fx-font-weight: bold; -fx-alignment: CENTER;" />
                 </columns>
@@ -156,8 +154,7 @@
                 <TableView fx:id="produitsTable" prefHeight="150" style="-fx-background-color: #ffffff; -fx-border-color: #cbd5e1; -fx-border-radius: 4;">
                     <columns>
                         <TableColumn fx:id="produitNomColumn" prefWidth="200" text="Produit" style="-fx-font-weight: bold;" />
-                        <TableColumn fx:id="produitQuantiteColumn" prefWidth="80" text="Quantité" style="-fx-font-weight: bold; -fx-alignment: CENTER;" />
-                        <TableColumn fx:id="produitStockColumn" prefWidth="80" text="Stock" style="-fx-font-weight: bold; -fx-alignment: CENTER;" />
+                        <TableColumn fx:id="produitQuantiteDemandeeColumn" prefWidth="80" text="Qté demandée" style="-fx-font-weight: bold; -fx-alignment: CENTER;" />
                     </columns>
                 </TableView>
             </VBox>

@@ -207,13 +207,30 @@ public class DemandeProduitRepository {
 
     public List<ProduitCommande> getProduitsByDemande(int idDemande) {
         List<ProduitCommande> produits = new ArrayList<>();
-        String sql = "SELECT dp.id_produit, dp.qte, fp.libelle, fp.description, fp.niv_dangerosite, fp.stock_actuel " +
-                    "FROM demande_produit dp " +
-                    "JOIN fiche_produit fp ON dp.id_produit = fp.id_produit " +
-                    "WHERE dp.id_demande = ?";
         
-        System.out.println("Recherche des produits pour la demande ID: " + idDemande);
-        System.out.println("SQL: " + sql);
+        System.out.println("=== RECHERCHE PRODUITS POUR DEMANDE " + idDemande + " ===");
+        
+        // D'abord vérifier s'il y a quelque chose dans demande_produit pour cette demande
+        try (Connection cnx = Database.getConnexion();
+             Statement stmt = cnx.createStatement()) {
+            
+            ResultSet rs = stmt.executeQuery("SELECT COUNT(*) as total FROM demande_produit WHERE id_demande = " + idDemande);
+            if (rs.next()) {
+                int total = rs.getInt("total");
+                System.out.println("NOMBRE DE LIGNES DANS demande_produit POUR CETTE DEMANDE: " + total);
+                if (total == 0) {
+                    System.out.println("-> AUCUN PRODUIT ASSOCIÉ À CETTE DEMANDE !");
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("ERREUR VÉRIFICATION COUNT: " + e.getMessage());
+        }
+        
+        // Récupérer les données avec jointure pour avoir le vrai nom du produit
+        String sql = "SELECT dp.id_produit, dp.qte, fp.libelle " +
+                    "FROM demande_produit dp " +
+                    "LEFT JOIN fiche_produit fp ON dp.id_produit = fp.id_produit " +
+                    "WHERE dp.id_demande = ?";
         
         try (Connection cnx = Database.getConnexion();
              PreparedStatement stmt = cnx.prepareStatement(sql)) {
@@ -224,24 +241,35 @@ public class DemandeProduitRepository {
             int count = 0;
             while (rs.next()) {
                 count++;
-                System.out.println("Produit trouvé #" + count + ": id_produit=" + rs.getInt("id_produit") + 
-                                 ", qte=" + rs.getInt("qte") + ", libelle=" + rs.getString("libelle"));
-                
-                FicheProduit produit = new FicheProduit(
-                    rs.getInt("id_produit"),
-                    rs.getString("libelle"),
-                    rs.getString("description"),
-                    rs.getInt("niv_dangerosite"),
-                    rs.getInt("stock_actuel")
-                );
+                int idProduit = rs.getInt("id_produit");
                 int quantite = rs.getInt("qte");
+                String libelle = rs.getString("libelle");
+                
+                // Si le libelle est null (pas de jointure trouvée), utiliser une valeur par défaut
+                if (rs.wasNull() || libelle == null) {
+                    libelle = "Produit #" + idProduit;
+                }
+                
+                System.out.println("PRODUIT TROUVÉ #" + count + ": id_produit=" + idProduit + 
+                                 ", qte=" + quantite + ", libelle='" + libelle + "'");
+                
+                // Créer un FicheProduit avec le vrai nom
+                FicheProduit produit = new FicheProduit(
+                    idProduit,
+                    libelle,
+                    "Description non disponible",  // description temporaire
+                    0,  // nivDangerosite par défaut
+                    0   // stockActuel par défaut
+                );
+                
                 produits.add(new ProduitCommande(produit, quantite));
             }
-            System.out.println("Total produits trouvés pour demande " + idDemande + ": " + count);
+            System.out.println("TOTAL PRODUITS TROUVÉS: " + count);
         } catch (SQLException e) {
-            System.err.println("Erreur lors de la récupération des produits de la demande " + idDemande + ": " + e.getMessage());
+            System.err.println("ERREUR SQL: " + e.getMessage());
             e.printStackTrace();
         }
+        System.out.println("=== FIN RECHERCHE ===\n");
         return produits;
     }
 

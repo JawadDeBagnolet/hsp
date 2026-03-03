@@ -73,11 +73,6 @@ public class CommandeController {
     @FXML
     private TableColumn<Demande, String> roleColumn;
 
-    @FXML
-    private TableColumn<Demande, String> produitsColumn;
-
-    @FXML
-    private TableColumn<Demande, String> nbProduitsColumn;
 
     @FXML
     private TableColumn<Demande, String> statutColumn;
@@ -112,11 +107,9 @@ public class CommandeController {
     @FXML
     private TableColumn<repository.DemandeProduitRepository.ProduitCommande, String> produitNomColumn;
 
-    @FXML
-    private TableColumn<repository.DemandeProduitRepository.ProduitCommande, Integer> produitQuantiteColumn;
 
     @FXML
-    private TableColumn<repository.DemandeProduitRepository.ProduitCommande, Integer> produitStockColumn;
+    private TableColumn<repository.DemandeProduitRepository.ProduitCommande, Integer> produitQuantiteDemandeeColumn;
 
     private final DemandeRepository demandeRepository = new DemandeRepository();
     private final FicheProduitRepository ficheProduitRepository = new FicheProduitRepository();
@@ -166,13 +159,22 @@ public class CommandeController {
             return;
         }
         
+        // Vérifier que toutes les colonnes sont bien présentes
+        System.out.println("Colonnes du TableView:");
+        for (TableColumn<Demande, ?> col : commandesTable.getColumns()) {
+            System.out.println("  - " + col.getId() + " (" + col.getText() + ")");
+        }
+        
+        // Vérifier que les champs FXML sont bien injectés
+        System.out.println("Vérification des champs FXML:");
+        System.out.println("  idColumn: " + (idColumn != null ? "OK" : "NULL"));
+        System.out.println("  dateColumn: " + (dateColumn != null ? "OK" : "NULL"));
+        
         // Configuration des colonnes du tableau
         idColumn.setStyle("-fx-alignment: CENTER; -fx-font-weight: bold;");
         dateColumn.setStyle("-fx-alignment: CENTER;");
         patientColumn.setStyle("-fx-alignment: CENTER;");
         roleColumn.setStyle("-fx-alignment: CENTER;");
-        produitsColumn.setStyle("-fx-alignment: CENTER;");
-        nbProduitsColumn.setStyle("-fx-alignment: CENTER;");
         statutColumn.setStyle("-fx-alignment: CENTER;");
         actionsColumn.setStyle("-fx-alignment: CENTER;");
 
@@ -202,20 +204,6 @@ public class CommandeController {
                 return new javafx.beans.property.SimpleStringProperty("");
             }
             return new javafx.beans.property.SimpleStringProperty(getUserRole(cellData.getValue().getIdUser()));
-        });
-        produitsColumn.setCellValueFactory(cellData -> {
-            if (cellData.getValue() == null) {
-                return new javafx.beans.property.SimpleStringProperty("");
-            }
-            int nb = getNbProduits(cellData.getValue().getIdDemande());
-            return new javafx.beans.property.SimpleStringProperty(nb + " produit" + (nb > 1 ? "s" : ""));
-        });
-        nbProduitsColumn.setCellValueFactory(cellData -> {
-            if (cellData.getValue() == null) {
-                return new javafx.beans.property.SimpleStringProperty("");
-            }
-            int nb = getNbProduits(cellData.getValue().getIdDemande());
-            return new javafx.beans.property.SimpleStringProperty(String.valueOf(nb));
         });
         statutColumn.setCellValueFactory(cellData -> {
             // Afficher "Demande produit" comme statut pour toutes les demandes
@@ -258,23 +246,6 @@ public class CommandeController {
             }
         });
 
-        produitsColumn.setCellFactory(col -> new TableCell<>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                setText(empty ? null : item);
-                setTextFill(Color.web("#111827"));
-            }
-        });
-
-        nbProduitsColumn.setCellFactory(col -> new TableCell<>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                setText(empty ? null : item);
-                setTextFill(Color.web("#111827"));
-            }
-        });
 
         statutColumn.setCellFactory(col -> new TableCell<>() {
             @Override
@@ -318,13 +289,15 @@ public class CommandeController {
             return new javafx.beans.property.SimpleStringProperty(cellData.getValue().getProduit().getLibelle());
         });
         
-        produitQuantiteColumn.setCellValueFactory(new PropertyValueFactory<>("quantite"));
         
-        produitStockColumn.setCellValueFactory(cellData -> {
-            if (cellData.getValue() == null || cellData.getValue().getProduit() == null) {
+        produitQuantiteDemandeeColumn.setCellValueFactory(cellData -> {
+            System.out.println("produitQuantiteDemandeeColumn cellValueFactory appelé");
+            if (cellData.getValue() == null) {
                 return new javafx.beans.property.SimpleIntegerProperty(0).asObject();
             }
-            return new javafx.beans.property.SimpleIntegerProperty(cellData.getValue().getProduit().getStockActuel()).asObject();
+            int quantite = cellData.getValue().getQuantite();
+            System.out.println("  -> Qté demandée: " + quantite);
+            return new javafx.beans.property.SimpleIntegerProperty(quantite).asObject();
         });
 
         // Forcer le rafraîchissement du tableau
