@@ -10,6 +10,11 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import modele.FournisseurProduit;
 import repository.FournisseurProduitRepository;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,7 +30,7 @@ public class FournisseursProduitsController {
     private TableColumn<FournisseurProduit, Integer> fournisseurColumn;
 
     @FXML
-    private TableColumn<FournisseurProduit, Integer> produitColumn;
+    private TableColumn<FournisseurProduit, String> produitColumn;
 
     @FXML
     private TableColumn<FournisseurProduit, Double> prixColumn;
@@ -43,18 +48,40 @@ public class FournisseursProduitsController {
     public void initialize() {
         System.out.println("Initialisation du contrôleur des fournisseurs produits...");
 
-        // Configuration des colonnes
-        idColumn.setCellValueFactory(new PropertyValueFactory<>("idFournisseurProduit"));
-        System.out.println("Colonne ID configurée avec la propriété: idFournisseurProduit");
+        // Configuration des colonnes avec callbacks personnalisés pour éviter les erreurs de module system
+        idColumn.setCellValueFactory(cellData -> {
+            if (cellData.getValue() == null) {
+                return new javafx.beans.property.SimpleIntegerProperty(0).asObject();
+            }
+            return new javafx.beans.property.SimpleIntegerProperty(cellData.getValue().getIdFournisseurProduit()).asObject();
+        });
+        System.out.println("Colonne ID configurée avec callback personnalisé");
         
-        fournisseurColumn.setCellValueFactory(new PropertyValueFactory<>("idFournisseur"));
-        System.out.println("Colonne Fournisseur configurée avec la propriété: idFournisseur");
+        fournisseurColumn.setCellValueFactory(cellData -> {
+            if (cellData.getValue() == null) {
+                return new javafx.beans.property.SimpleIntegerProperty(0).asObject();
+            }
+            return new javafx.beans.property.SimpleIntegerProperty(cellData.getValue().getIdFournisseur()).asObject();
+        });
+        System.out.println("Colonne Fournisseur configurée avec callback personnalisé");
         
-        produitColumn.setCellValueFactory(new PropertyValueFactory<>("idProduit"));
-        System.out.println("Colonne Produit configurée avec la propriété: idProduit");
+        produitColumn.setCellValueFactory(cellData -> {
+            if (cellData.getValue() == null) {
+                return new javafx.beans.property.SimpleStringProperty("");
+            }
+            // Récupérer le nom du produit depuis la BDD
+            String nomProduit = getNomProduitParId(cellData.getValue().getIdProduit());
+            return new javafx.beans.property.SimpleStringProperty(nomProduit);
+        });
+        System.out.println("Colonne Produit configurée avec callback personnalisé (affichage du nom)");
         
-        prixColumn.setCellValueFactory(new PropertyValueFactory<>("prix"));
-        System.out.println("Colonne Prix configurée avec la propriété: prix");
+        prixColumn.setCellValueFactory(cellData -> {
+            if (cellData.getValue() == null) {
+                return new javafx.beans.property.SimpleDoubleProperty(0.0).asObject();
+            }
+            return new javafx.beans.property.SimpleDoubleProperty(cellData.getValue().getPrix()).asObject();
+        });
+        System.out.println("Colonne Prix configurée avec callback personnalisé");
 
         // Configuration de la colonne actions
         actionsColumn.setCellFactory(param -> new TableCell<>() {
@@ -134,8 +161,17 @@ public class FournisseursProduitsController {
         dialog.setTitle("Nouveau fournisseur produit");
         dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
-        TextField idFournisseurField = new TextField();
-        idFournisseurField.setPromptText("ID du fournisseur");
+        // ComboBox pour sélectionner le fournisseur
+        ComboBox<String> fournisseurComboBox = new ComboBox<>();
+        fournisseurComboBox.setPromptText("Sélectionner un fournisseur");
+        
+        // Charger les fournisseurs depuis la BDD
+        try {
+            List<String> fournisseurs = getNomsFournisseurs();
+            fournisseurComboBox.getItems().addAll(fournisseurs);
+        } catch (Exception e) {
+            System.err.println("Erreur lors du chargement des fournisseurs: " + e.getMessage());
+        }
         
         TextField idProduitField = new TextField();
         idProduitField.setPromptText("ID du produit");
@@ -146,8 +182,8 @@ public class FournisseursProduitsController {
         javafx.scene.layout.GridPane grid = new javafx.scene.layout.GridPane();
         grid.setHgap(10);
         grid.setVgap(10);
-        grid.add(new Label("ID Fournisseur:"), 0, 0);
-        grid.add(idFournisseurField, 1, 0);
+        grid.add(new Label("Fournisseur:"), 0, 0);
+        grid.add(fournisseurComboBox, 1, 0);
         grid.add(new Label("ID Produit:"), 0, 1);
         grid.add(idProduitField, 1, 1);
         grid.add(new Label("Prix:"), 0, 2);
@@ -161,7 +197,13 @@ public class FournisseursProduitsController {
             }
 
             try {
-                int idFournisseur = Integer.parseInt(idFournisseurField.getText().trim());
+                String selectedFournisseur = fournisseurComboBox.getValue();
+                if (selectedFournisseur == null || selectedFournisseur.isEmpty()) {
+                    afficherMessage("Veuillez sélectionner un fournisseur", "#e74c3c");
+                    return;
+                }
+                
+                int idFournisseur = getIdFournisseurParNom(selectedFournisseur);
                 int idProduit = Integer.parseInt(idProduitField.getText().trim());
                 double prix = Double.parseDouble(prixField.getText().trim());
 
@@ -181,6 +223,59 @@ public class FournisseursProduitsController {
                 afficherMessage("Valeurs invalides", "#e74c3c");
             }
         });
+    }
+    
+    private List<String> getNomsFournisseurs() {
+        List<String> noms = new ArrayList<>();
+        String sql = "SELECT nom FROM fournisseur ORDER BY nom";
+        
+        try (Connection cnx = database.Database.getConnexion();
+             PreparedStatement stmt = cnx.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            
+            while (rs.next()) {
+                noms.add(rs.getString("nom"));
+            }
+        } catch (SQLException e) {
+            System.err.println("Erreur lors de la récupération des fournisseurs: " + e.getMessage());
+        }
+        return noms;
+    }
+    
+    private int getIdFournisseurParNom(String nom) {
+        String sql = "SELECT id_fournisseur FROM fournisseur WHERE nom = ?";
+        
+        try (Connection cnx = database.Database.getConnexion();
+             PreparedStatement stmt = cnx.prepareStatement(sql)) {
+            
+            stmt.setString(1, nom);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("id_fournisseur");
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Erreur lors de la récupération de l'ID fournisseur: " + e.getMessage());
+        }
+        return -1;
+    }
+    
+    private String getNomProduitParId(int idProduit) {
+        String sql = "SELECT nom_produit FROM fiche_produit WHERE id_produit = ?";
+        
+        try (Connection cnx = database.Database.getConnexion();
+             PreparedStatement stmt = cnx.prepareStatement(sql)) {
+            
+            stmt.setInt(1, idProduit);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getString("nom_produit");
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Erreur lors de la récupération du nom produit: " + e.getMessage());
+        }
+        return "Produit #" + idProduit; // Valeur par défaut si non trouvé
     }
 
     private void modifierFournisseurProduit(FournisseurProduit fp) {
@@ -260,7 +355,7 @@ public class FournisseursProduitsController {
     @FXML
     public void handleRetour(ActionEvent event) {
         try {
-            StartApplication.changeScene("/appli/hsp/pageAccueil.fxml");
+            StartApplication.changeScene("pageAccueil");
         } catch (Exception e) {
             afficherMessage("Erreur lors du retour: " + e.getMessage(), "#e74c3c");
         }
