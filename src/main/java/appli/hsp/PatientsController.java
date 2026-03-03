@@ -402,7 +402,16 @@ public class PatientsController {
             Integer.parseInt(tel);
             Integer.parseInt(cp);
         } catch (NumberFormatException e) {
-            afficherMessage("Les champs numériques ne sont pas valides", "#e74c3c");
+            // Identifier quel champ pose problème
+            if (!numSecu.matches("\\d+")) {
+                afficherMessage("Le numéro de sécurité sociale ne doit contenir que des chiffres", "#e74c3c");
+            } else if (!tel.matches("\\d+")) {
+                afficherMessage("Le numéro de téléphone ne doit contenir que des chiffres", "#e74c3c");
+            } else if (!cp.matches("\\d+")) {
+                afficherMessage("Le code postal ne doit contenir que des chiffres", "#e74c3c");
+            } else {
+                afficherMessage("Les champs numériques ne sont pas valides", "#e74c3c");
+            }
             return false;
         }
         

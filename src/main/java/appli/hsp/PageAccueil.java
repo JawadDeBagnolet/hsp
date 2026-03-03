@@ -1,6 +1,9 @@
 package appli.hsp;
 
 import appli.StartApplication;
+import appli.hsp.exception.ErrorCode;
+import appli.hsp.exception.HSPException;
+import appli.hsp.utils.ErrorHandler;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -34,7 +37,10 @@ public class PageAccueil {
         try {
             StartApplication.changeScene("patientsView");
         } catch (Exception e) {
-            System.err.println("Erreur lors de la redirection vers patients: " + e.getMessage());
+            ErrorHandler.handleException(
+                new HSPException(ErrorCode.NAVIGATION_ERROR, "Impossible d'accéder à la gestion des patients", e),
+                "Navigation vers Patients"
+            );
         }
     }
     
@@ -43,7 +49,10 @@ public class PageAccueil {
         try {
             StartApplication.changeScene("dossierEnChargeView");
         } catch (Exception e) {
-            System.err.println("Erreur lors de la redirection vers dossiers: " + e.getMessage());
+            ErrorHandler.handleException(
+                new HSPException(ErrorCode.NAVIGATION_ERROR, "Impossible d'accéder à la gestion des dossiers", e),
+                "Navigation vers Dossiers"
+            );
         }
     }
     
@@ -52,7 +61,10 @@ public class PageAccueil {
         try {
             StartApplication.changeScene("commandeView");
         } catch (Exception e) {
-            System.err.println("Erreur lors de la redirection vers commandes: " + e.getMessage());
+            ErrorHandler.handleException(
+                new HSPException(ErrorCode.NAVIGATION_ERROR, "Impossible d'accéder à la gestion des commandes", e),
+                "Navigation vers Commandes"
+            );
         }
     }
     
@@ -61,7 +73,10 @@ public class PageAccueil {
         try {
             StartApplication.changeScene("pageUtilisateurs");
         } catch (Exception e) {
-            System.err.println("Erreur lors de la redirection vers utilisateurs: " + e.getMessage());
+            ErrorHandler.handleException(
+                new HSPException(ErrorCode.NAVIGATION_ERROR, "Impossible d'accéder à la gestion des utilisateurs", e),
+                "Navigation vers Utilisateurs"
+            );
         }
     }
     
@@ -70,7 +85,10 @@ public class PageAccueil {
         try {
             StartApplication.changeScene("planningView");
         } catch (Exception e) {
-            System.err.println("Erreur lors de la redirection vers planning: " + e.getMessage());
+            ErrorHandler.handleException(
+                new HSPException(ErrorCode.NAVIGATION_ERROR, "Impossible d'accéder au planning", e),
+                "Navigation vers Planning"
+            );
         }
     }
 
@@ -79,20 +97,22 @@ public class PageAccueil {
         try {
             StartApplication.changeScene("hospitalisationsView");
         } catch (Exception e) {
-            System.err.println("Erreur lors de la redirection vers hospitalisations: " + e.getMessage());
+            ErrorHandler.handleException(
+                new HSPException(ErrorCode.NAVIGATION_ERROR, "Impossible d'accéder à la gestion des hospitalisations", e),
+                "Navigation vers Hospitalisations"
+            );
         }
     }
     
     @FXML
     public void versFournisseursProduits(ActionEvent event) {
-        System.out.println("=== CLIC SUR BOUTON FOURNISSEURS ===");
         try {
-            System.out.println("Tentative de redirection vers fournisseurs produits...");
             StartApplication.changeScene("fournisseursProduitsView");
-            System.out.println("Redirection vers fournisseurs produits réussie !");
         } catch (Exception e) {
-            System.err.println("Erreur lors de la redirection vers fournisseurs produits: " + e.getMessage());
-            e.printStackTrace();
+            ErrorHandler.handleException(
+                new HSPException(ErrorCode.NAVIGATION_ERROR, "Impossible d'accéder à la gestion des fournisseurs et produits", e),
+                "Navigation vers Fournisseurs/Produits"
+            );
         }
     }
     
@@ -101,16 +121,29 @@ public class PageAccueil {
         try {
             StartApplication.changeScene("pageMonEspace");
         } catch (Exception e) {
-            System.err.println("Erreur lors de la redirection vers mon espace: " + e.getMessage());
+            ErrorHandler.handleException(
+                new HSPException(ErrorCode.NAVIGATION_ERROR, "Impossible d'accéder à votre espace personnel", e),
+                "Navigation vers Mon Espace"
+            );
         }
     }
     
     @FXML
     public void deconnexion(ActionEvent event) {
         try {
-            StartApplication.changeScene("helloView");
+            boolean confirmed = ErrorHandler.showConfirmationAlert(
+                "Déconnexion", 
+                "Êtes-vous sûr de vouloir vous déconnecter ?"
+            );
+            if (confirmed) {
+                StartApplication.changeScene("helloView");
+                ErrorHandler.showInfoAlert("Déconnexion", "Vous avez été déconnecté avec succès");
+            }
         } catch (Exception e) {
-            System.err.println("Erreur lors de la déconnexion: " + e.getMessage());
+            ErrorHandler.handleException(
+                new HSPException(ErrorCode.NAVIGATION_ERROR, "Erreur lors de la déconnexion", e),
+                "Déconnexion"
+            );
         }
     }
 }

@@ -110,6 +110,7 @@ public class DossierEnChargeRepository {
                     rs.getTimestamp("heure_arrivee").toLocalDateTime().toLocalTime(),
                     rs.getString("symptomes"),
                     Integer.parseInt(rs.getString("niveau_gravite")),
+                    rs.getInt("ref_user"),
                     rs.getInt("id_patient")
                 );
             }
@@ -134,6 +135,7 @@ public class DossierEnChargeRepository {
                     rs.getTimestamp("heure_arrivee").toLocalDateTime().toLocalTime(),
                     rs.getString("symptomes"),
                     Integer.parseInt(rs.getString("niveau_gravite")),
+                    rs.getInt("ref_user"),
                     rs.getInt("id_patient")
                 ));
             }

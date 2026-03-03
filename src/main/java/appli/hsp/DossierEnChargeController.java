@@ -2,6 +2,9 @@ package appli.hsp;
 
 import appli.StartApplication;
 import appli.SessionManager;
+import appli.hsp.exception.ErrorCode;
+import appli.hsp.exception.HSPException;
+import appli.hsp.utils.ErrorHandler;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -12,6 +15,7 @@ import repository.FichePatientRepository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Optional;
 
 public class DossierEnChargeController {
 
@@ -39,165 +43,72 @@ public class DossierEnChargeController {
     @FXML
     private ListView<DossierEnCharge> dossiersListView;
 
+    @FXML
+    private TextField rechercheField;
+
+    @FXML
+    private Button modifierButton;
+
+    @FXML
+    private Button supprimerButton;
+
+    @FXML
+    private Button nouveauButton;
+
     private DossierEnChargeRepository dossierRepository;
     private FichePatientRepository patientRepository;
+    private DossierEnCharge dossierEnEdition = null;
 
     @FXML
     public void initialize() {
-        System.out.println("Initialisation du DossierEnChargeController...");
-        
-        dossierRepository = new DossierEnChargeRepository();
-        patientRepository = new FichePatientRepository();
-        
-        // Vérifier que les éléments FXML sont bien injectés
-        if (dateArriveeField == null) {
-            System.err.println("ERREUR: dateArriveeField n'est pas injecté !");
-            return;
+        try {
+            dossierRepository = new DossierEnChargeRepository();
+            patientRepository = new FichePatientRepository();
+            
+            initialiserComposants();
+            chargerListeDossiers();
+            configurerRecherche();
+            configurerSelectionDossier();
+        } catch (Exception e) {
+            ErrorHandler.handleException(
+                new HSPException(ErrorCode.SYSTEM_ERROR, "Erreur lors de l'initialisation du contrôleur", e),
+                "Initialisation DossierEnChargeController"
+            );
         }
-        if (heureCombo == null) {
-            System.err.println("ERREUR: heureCombo n'est pas injecté !");
-            return;
-        }
-        if (minuteCombo == null) {
-            System.err.println("ERREUR: minuteCombo n'est pas injecté !");
-            return;
-        }
-        if (niveauGraviteCombo == null) {
-            System.err.println("ERREUR: niveauGraviteCombo n'est pas injecté !");
-            return;
-        }
-        
-        if (patientCombo == null) {
-            System.err.println("ERREUR: patientCombo n'est pas injecté !");
-            return;
-        }
-        
-        System.out.println("Tous les éléments FXML sont correctement injectés");
-        
-        // Initialiser la date avec la date du jour (automatiquement)
-        LocalDate aujourdHui = LocalDate.now();
-        dateArriveeField.setValue(aujourdHui);
-        System.out.println("Date du jour définie automatiquement: " + aujourdHui);
+    }
+    
+    private void initialiserComposants() {
+        // Initialiser la date avec la date du jour
+        dateArriveeField.setValue(LocalDate.now());
         
         // Initialiser le ComboBox des heures (00-23)
         heureCombo.getItems().clear();
         for (int i = 0; i < 24; i++) {
             heureCombo.getItems().add(String.format("%02d", i));
         }
-        System.out.println("ComboBox heures initialisé avec " + heureCombo.getItems().size() + " éléments");
-        
-        // Personnaliser l'affichage du ComboBox des heures
-        heureCombo.setCellFactory(param -> new javafx.scene.control.ListCell<String>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                } else {
-                    setText(item);
-                    setStyle("-fx-text-fill: #2c3e50; -fx-font-size: 14px;");
-                }
-            }
-        });
-        
-        // Personnaliser l'affichage de l'élément sélectionné pour les heures
-        heureCombo.setButtonCell(new javafx.scene.control.ListCell<String>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                } else {
-                    setText(item);
-                    setStyle("-fx-text-fill: #2c3e50; -fx-font-size: 14px;");
-                }
-            }
-        });
         
         // Initialiser le ComboBox des minutes (00-55 par pas de 5)
         minuteCombo.getItems().clear();
         for (int i = 0; i < 60; i += 5) {
             minuteCombo.getItems().add(String.format("%02d", i));
         }
-        System.out.println("ComboBox minutes initialisé avec " + minuteCombo.getItems().size() + " éléments");
-        
-        // Personnaliser l'affichage du ComboBox des minutes
-        minuteCombo.setCellFactory(param -> new javafx.scene.control.ListCell<String>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                } else {
-                    setText(item);
-                    setStyle("-fx-text-fill: #2c3e50; -fx-font-size: 14px;");
-                }
-            }
-        });
-        
-        // Personnaliser l'affichage de l'élément sélectionné pour les minutes
-        minuteCombo.setButtonCell(new javafx.scene.control.ListCell<String>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                } else {
-                    setText(item);
-                    setStyle("-fx-text-fill: #2c3e50; -fx-font-size: 14px;");
-                }
-            }
-        });
         
         // Initialiser le ComboBox de niveau de gravité
-        niveauGraviteCombo.getItems().clear();
         niveauGraviteCombo.getItems().addAll(
             "1 - Urgence vitale",
             "2 - Urgence relative", 
             "3 - Urgence différée",
             "4 - Non urgent"
         );
-        System.out.println("ComboBox niveau de gravité initialisé avec " + niveauGraviteCombo.getItems().size() + " éléments");
-        
-        // Personnaliser l'affichage du ComboBox de niveau de gravité
-        niveauGraviteCombo.setCellFactory(param -> new javafx.scene.control.ListCell<String>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                } else {
-                    setText(item);
-                    setStyle("-fx-text-fill: #2c3e50; -fx-font-size: 14px;");
-                }
-            }
-        });
-        
-        // Personnaliser l'affichage de l'élément sélectionné pour niveau de gravité
-        niveauGraviteCombo.setButtonCell(new javafx.scene.control.ListCell<String>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                } else {
-                    setText(item);
-                    setStyle("-fx-text-fill: #2c3e50; -fx-font-size: 14px;");
-                }
-            }
-        });
         
         // Initialiser le ComboBox des patients
-        patientCombo.getItems().clear();
         try {
             java.util.List<FichePatient> patients = patientRepository.getAllFichePatients();
-            System.out.println("Nombre de patients récupérés: " + patients.size());
-            
             for (FichePatient patient : patients) {
                 patientCombo.getItems().add(patient);
             }
             
-            // Personnaliser l'affichage des patients dans le ComboBox
+            // Personnaliser l'affichage des patients
             patientCombo.setCellFactory(param -> new javafx.scene.control.ListCell<FichePatient>() {
                 @Override
                 protected void updateItem(FichePatient patient, boolean empty) {
@@ -210,7 +121,6 @@ public class DossierEnChargeController {
                 }
             });
             
-            // Personnaliser l'affichage de l'élément sélectionné
             patientCombo.setButtonCell(new javafx.scene.control.ListCell<FichePatient>() {
                 @Override
                 protected void updateItem(FichePatient patient, boolean empty) {
@@ -226,239 +136,249 @@ public class DossierEnChargeController {
             // Sélectionner le premier patient par défaut
             if (!patientCombo.getItems().isEmpty()) {
                 patientCombo.setValue(patientCombo.getItems().get(0));
-                System.out.println("Patient par défaut sélectionné: " + patientCombo.getValue().getNom() + " " + patientCombo.getValue().getPrenom());
             }
             
         } catch (Exception e) {
-            System.err.println("Erreur lors du chargement des patients: " + e.getMessage());
-            e.printStackTrace();
+            ErrorHandler.handleException(
+                new HSPException(ErrorCode.DATA_ACCESS_ERROR, "Erreur lors du chargement des patients", e),
+                "Chargement patients"
+            );
         }
         
-        try {
-            // Valeurs par défaut pour l'heure
-            LocalTime maintenant = LocalTime.now();
-            String heureStr = String.format("%02d", maintenant.getHour());
-            String minuteStr = String.format("%02d", (maintenant.getMinute() / 5) * 5);
-            
-            heureCombo.setValue(heureStr);
-            minuteCombo.setValue(minuteStr);
-            niveauGraviteCombo.setValue("4 - Non urgent");
-            
-            System.out.println("Valeurs par défaut définies - Heure: " + heureStr + ":" + minuteStr + ", Gravité: 4 - Non urgent");
-            
-        } catch (Exception e) {
-            System.err.println("ERREUR lors de la définition des valeurs par défaut: " + e.getMessage());
-            e.printStackTrace();
-        }
+        // Valeurs par défaut
+        LocalTime maintenant = LocalTime.now();
+        heureCombo.setValue(String.format("%02d", maintenant.getHour()));
+        minuteCombo.setValue(String.format("%02d", (maintenant.getMinute() / 5) * 5));
+        niveauGraviteCombo.setValue("4 - Non urgent");
         
         messageLabel.setText("");
-        System.out.println("Initialisation terminée avec succès");
         
-        // Forcer le rafraîchissement des ComboBox
-        Platform.runLater(() -> {
-            heureCombo.requestFocus();
-            minuteCombo.requestFocus();
-            niveauGraviteCombo.requestFocus();
-            dateArriveeField.requestFocus();
-            System.out.println("Rafraîchissement des éléments forcé");
+        // Personnaliser l'affichage des dossiers
+        dossiersListView.setCellFactory(param -> new javafx.scene.control.ListCell<DossierEnCharge>() {
+            @Override
+            protected void updateItem(DossierEnCharge dossier, boolean empty) {
+                super.updateItem(dossier, empty);
+                if (empty || dossier == null) {
+                    setText(null);
+                    setStyle("");
+                } else {
+                    String texte = String.format("📅 %s ⏰ %s - 🏥 %s (Niveau: %d)",
+                        dossier.getDateArrivee(),
+                        dossier.getHeureArrivee(),
+                        dossier.getSymptomes().length() > 30 ? 
+                            dossier.getSymptomes().substring(0, 30) + "..." : 
+                            dossier.getSymptomes(),
+                        dossier.getNiveauGravite());
+                    setText(texte);
+                    setStyle("-fx-background-color: #f8f9fa; -fx-border-color: #dee2e6; -fx-border-width: 0 0 1 0; -fx-padding: 8;");
+                }
+            }
         });
         
-        // Initialiser la liste des dossiers
-        if (dossiersListView != null) {
-            System.out.println("Initialisation de la ListView des dossiers...");
-            chargerListeDossiers();
-            
-            // Personnaliser l'affichage des dossiers dans la ListView
-            dossiersListView.setCellFactory(param -> new javafx.scene.control.ListCell<DossierEnCharge>() {
-                @Override
-                protected void updateItem(DossierEnCharge dossier, boolean empty) {
-                    super.updateItem(dossier, empty);
-                    if (empty || dossier == null) {
-                        setText(null);
-                        setStyle("");
-                    } else {
-                        String texte = String.format("📅 %s ⏰ %s - 🏥 %s (Niveau: %d)",
-                            dossier.getDateArrivee(),
-                            dossier.getHeureArrivee(),
-                            dossier.getSymptomes().length() > 30 ? 
-                                dossier.getSymptomes().substring(0, 30) + "..." : 
-                                dossier.getSymptomes(),
-                            dossier.getNiveauGravite());
-                        setText(texte);
-                        setStyle("-fx-background-color: #f8f9fa; -fx-border-color: #dee2e6; -fx-border-width: 0 0 1 0; -fx-padding: 8;");
-                    }
+        // État initial des boutons
+        mettreAJourBoutonsEdition(false);
+    }
+    
+    private void configurerRecherche() {
+        rechercheField.textProperty().addListener((observable, oldValue, newValue) -> {
+            filtrerListeDossiers(newValue);
+        });
+    }
+    
+    private void configurerSelectionDossier() {
+        dossiersListView.getSelectionModel().selectedItemProperty().addListener(
+            (observable, oldValue, newValue) -> {
+                boolean dossierSelectionne = newValue != null;
+                mettreAJourBoutonsEdition(dossierSelectionne);
+                
+                if (dossierSelectionne && dossierEnEdition == null) {
+                    // Charger le dossier sélectionné dans le formulaire (mode lecture seule)
+                    chargerDossierDansFormulaire(newValue, false);
                 }
             });
-        } else {
-            System.err.println("ERREUR: dossiersListView n'est pas injecté !");
+    }
+    
+    private void mettreAJourBoutonsEdition(boolean editionActive) {
+        modifierButton.setDisable(!editionActive);
+        supprimerButton.setDisable(!editionActive);
+        nouveauButton.setDisable(editionActive);
+    }
+    
+    private void filtrerListeDossiers(String texteRecherche) {
+        try {
+            java.util.List<DossierEnCharge> tousDossiers = dossierRepository.getAllDossiers();
+            java.util.List<DossierEnCharge> dossiersFiltres = tousDossiers.stream()
+                .filter(dossier -> 
+                    texteRecherche.isEmpty() ||
+                    dossier.getSymptomes().toLowerCase().contains(texteRecherche.toLowerCase()) ||
+                    dossier.getDateArrivee().toString().contains(texteRecherche) ||
+                    String.valueOf(dossier.getNiveauGravite()).contains(texteRecherche)
+                )
+                .collect(java.util.stream.Collectors.toList());
+            
+            dossiersListView.getItems().clear();
+            dossiersListView.getItems().addAll(dossiersFiltres);
+        } catch (Exception e) {
+            ErrorHandler.handleException(
+                new HSPException(ErrorCode.DATA_ACCESS_ERROR, "Erreur lors du filtrage des dossiers", e),
+                "Filtrage dossiers"
+            );
+        }
+    }
+    
+    private void chargerDossierDansFormulaire(DossierEnCharge dossier, boolean modeEdition) {
+        dossierEnEdition = modeEdition ? dossier : null;
+        
+        dateArriveeField.setValue(dossier.getDateArrivee());
+        
+        // Extraire heure et minute
+        String[] heureParts = dossier.getHeureArrivee().toString().split(":");
+        heureCombo.setValue(heureParts[0]);
+        minuteCombo.setValue(heureParts[1]);
+        
+        symptomesField.setText(dossier.getSymptomes());
+        niveauGraviteCombo.setValue(dossier.getNiveauGravite() + " - " + getLabelGravite(dossier.getNiveauGravite()));
+        
+        // Sélectionner le patient correspondant
+        for (FichePatient patient : patientCombo.getItems()) {
+            if (patient.getIdFichePatient() == dossier.getIdPatient()) {
+                patientCombo.setValue(patient);
+                break;
+            }
+        }
+        
+        // Activer/désactiver les champs selon le mode
+        boolean champsActifs = modeEdition;
+        dateArriveeField.setDisable(!champsActifs);
+        heureCombo.setDisable(!champsActifs);
+        minuteCombo.setDisable(!champsActifs);
+        symptomesField.setDisable(!champsActifs);
+        niveauGraviteCombo.setDisable(!champsActifs);
+        patientCombo.setDisable(!champsActifs);
+    }
+    
+    private String getLabelGravite(int niveau) {
+        switch (niveau) {
+            case 1: return "Urgence vitale";
+            case 2: return "Urgence relative";
+            case 3: return "Urgence différée";
+            case 4: return "Non urgent";
+            default: return "Inconnu";
         }
     }
 
     @FXML
     private void handleCreerDossier() {
-        System.out.println("=== DÉBUT CRÉATION DOSSIER ===");
-        
         try {
-            // Validation des champs
-            System.out.println("Validation des champs...");
-            
-            if (dateArriveeField == null) {
-                System.err.println("ERREUR: dateArriveeField est null !");
-                afficherMessage("Erreur interne: champ date non initialisé", "error");
+            if (!validerFormulaire()) {
                 return;
             }
             
-            System.out.println("dateArriveeField n'est pas null, valeur: " + dateArriveeField.getValue());
+            DossierEnCharge nouveauDossier = creerDossierFromFormulaire();
             
-            if (dateArriveeField.getValue() == null) {
-                System.out.println("Date non sélectionnée");
-                afficherMessage("Veuillez sélectionner une date d'arrivée", "error");
-                return;
-            }
-            System.out.println("Date sélectionnée: " + dateArriveeField.getValue());
+            boolean succes = dossierRepository.ajouterDossier(nouveauDossier);
             
-            if (heureCombo == null || minuteCombo == null) {
-                System.err.println("ERREUR: ComboBox heure/minute sont null !");
-                afficherMessage("Erreur interne: champs heure non initialisés", "error");
-                return;
-            }
-            
-            System.out.println("heureCombo: " + (heureCombo.getValue() != null ? heureCombo.getValue() : "NULL"));
-            System.out.println("minuteCombo: " + (minuteCombo.getValue() != null ? minuteCombo.getValue() : "NULL"));
-            
-            if (heureCombo.getValue() == null || minuteCombo.getValue() == null) {
-                System.out.println("Heure non sélectionnée - Heure: " + heureCombo.getValue() + ", Minute: " + minuteCombo.getValue());
-                afficherMessage("Veuillez sélectionner une heure d'arrivée", "error");
-                return;
-            }
-            System.out.println("Heure sélectionnée: " + heureCombo.getValue() + ":" + minuteCombo.getValue());
-            
-            if (symptomesField == null) {
-                System.err.println("ERREUR: symptomesField est null !");
-                afficherMessage("Erreur interne: champ symptômes non initialisé", "error");
-                return;
-            }
-            
-            if (symptomesField.getText().trim().isEmpty()) {
-                System.out.println("Symptômes vides");
-                afficherMessage("Veuillez décrire les symptômes", "error");
-                return;
-            }
-            System.out.println("Symptômes: " + symptomesField.getText().trim().substring(0, Math.min(50, symptomesField.getText().trim().length())) + "...");
-            
-            if (niveauGraviteCombo == null) {
-                System.err.println("ERREUR: niveauGraviteCombo est null !");
-                afficherMessage("Erreur interne: champ gravité non initialisé", "error");
-                return;
-            }
-            
-            System.out.println("niveauGraviteCombo: " + (niveauGraviteCombo.getValue() != null ? niveauGraviteCombo.getValue() : "NULL"));
-            
-            if (niveauGraviteCombo.getValue() == null) {
-                System.out.println("Niveau de gravité non sélectionné: " + niveauGraviteCombo.getValue());
-                afficherMessage("Veuillez sélectionner un niveau de gravité", "error");
-                return;
-            }
-            System.out.println("Niveau de gravité sélectionné: " + niveauGraviteCombo.getValue());
-            
-            if (patientCombo == null) {
-                System.err.println("ERREUR: patientCombo est null !");
-                afficherMessage("Erreur interne: champ patient non initialisé", "error");
-                return;
-            }
-            
-            System.out.println("patientCombo: " + (patientCombo.getValue() != null ? patientCombo.getValue().getNom() + " " + patientCombo.getValue().getPrenom() : "NULL"));
-            
-            if (patientCombo.getValue() == null) {
-                System.out.println("Aucun patient sélectionné");
-                afficherMessage("Veuillez sélectionner un patient", "error");
-                return;
-            }
-            System.out.println("Patient sélectionné: " + patientCombo.getValue().getNom() + " " + patientCombo.getValue().getPrenom() + " (ID: " + patientCombo.getValue().getIdFichePatient() + ")");
-            
-            // Récupérer le patient sélectionné
-            System.out.println("Utilisation du patient sélectionné...");
-            FichePatient patientSelectionne = patientCombo.getValue();
-            System.out.println("Patient sélectionné: " + patientSelectionne.getNom() + " " + patientSelectionne.getPrenom() + " (ID: " + patientSelectionne.getIdFichePatient() + ")");
-            
-            // Construire l'heure à partir des ComboBox
-            System.out.println("Construction de l'heure...");
-            try {
-                int heure = Integer.parseInt(heureCombo.getValue());
-                int minute = Integer.parseInt(minuteCombo.getValue());
-                LocalTime heureArrivee = LocalTime.of(heure, minute);
-                System.out.println("Heure construite: " + heureArrivee);
-                
-                // Extraire le niveau de gravité (premier chiffre)
-                System.out.println("Extraction du niveau de gravité...");
-                String graviteText = niveauGraviteCombo.getValue();
-                int niveauGravite = Integer.parseInt(graviteText.split(" - ")[0]);
-                System.out.println("Niveau de gravité extrait: " + niveauGravite);
-                
-                // Créer le dossier
-                System.out.println("Création de l'objet DossierEnCharge...");
-                System.out.println("Patient sélectionné: " + patientSelectionne.toString());
-                System.out.println("Patient sélectionné ID: " + patientSelectionne.getIdFichePatient());
-                
-                // Vérifier que l'ID patient est valide
-                if (patientSelectionne.getIdFichePatient() <= 0) {
-                    System.err.println("ERREUR: ID patient invalide: " + patientSelectionne.getIdFichePatient());
-                    afficherMessage("Erreur: ID patient invalide", "error");
-                    return;
-                }
-                
-                DossierEnCharge nouveauDossier = new DossierEnCharge(
-                    dateArriveeField.getValue(),
-                    heureArrivee,
-                    symptomesField.getText().trim(),
-                    niveauGravite,
-                    patientSelectionne.getIdFichePatient()
-                );
-                System.out.println("Objet DossierEnCharge créé: " + nouveauDossier.toString());
-                
-                // Sauvegarder dans la base de données
-                System.out.println("Sauvegarde dans la base de données...");
-                if (dossierRepository == null) {
-                    System.err.println("ERREUR: dossierRepository est null !");
-                    afficherMessage("Erreur interne: repository non initialisé", "error");
-                    return;
-                }
-                
-                System.out.println("Appel de ajouterDossier...");
-                boolean succes = dossierRepository.ajouterDossier(nouveauDossier);
-                System.out.println("Résultat sauvegarde: " + succes);
-                
-                if (succes) {
-                    afficherMessage("Dossier de prise en charge créé avec succès!", "success");
-                    viderChamps();
-                    // Rafraîchir la liste des dossiers
-                    chargerListeDossiers();
-                } else {
-                    afficherMessage("Erreur lors de la création du dossier", "error");
-                }
-                
-            } catch (NumberFormatException e) {
-                System.err.println("Erreur de format numérique: " + e.getMessage());
-                afficherMessage("Erreur de format dans les données", "error");
-            } catch (Exception e) {
-                System.err.println("Erreur générale lors de la création du dossier: " + e.getMessage());
-                e.printStackTrace();
-                afficherMessage("Erreur: " + e.getMessage(), "error");
+            if (succes) {
+                afficherMessage("Dossier de prise en charge créé avec succès!", "success");
+                viderChamps();
+                chargerListeDossiers();
+            } else {
+                throw new HSPException(ErrorCode.DATA_ACCESS_ERROR, "Échec de la création du dossier");
             }
             
         } catch (Exception e) {
-            System.err.println("Erreur générale dans handleCreerDossier: " + e.getMessage());
-            e.printStackTrace();
-            afficherMessage("Erreur générale: " + e.getMessage(), "error");
+            ErrorHandler.handleException(
+                new HSPException(ErrorCode.DATA_ACCESS_ERROR, "Erreur lors de la création du dossier", e),
+                "Création dossier"
+            );
         }
-        
-        System.out.println("=== FIN CRÉATION DOSSIER ===");
     }
 
     @FXML
     private void handleViderChamps() {
         viderChamps();
         afficherMessage("Champs vidés", "info");
+    }
+
+    @FXML
+    private void handleModifierDossier() {
+        try {
+            DossierEnCharge dossierSelectionne = dossiersListView.getSelectionModel().getSelectedItem();
+            if (dossierSelectionne == null) {
+                afficherMessage("Veuillez sélectionner un dossier à modifier", "error");
+                return;
+            }
+            
+            if (dossierEnEdition == null) {
+                // Passer en mode édition
+                chargerDossierDansFormulaire(dossierSelectionne, true);
+                afficherMessage("Mode édition activé", "info");
+            } else {
+                // Sauvegarder les modifications
+                if (!validerFormulaire()) {
+                    return;
+                }
+                
+                DossierEnCharge dossierModifie = creerDossierFromFormulaire();
+                // Conserver l'ID original
+                dossierModifie.setIdDossier(dossierSelectionne.getIdDossier());
+                
+                boolean succes = dossierRepository.modifierDossier(dossierModifie);
+                
+                if (succes) {
+                    afficherMessage("Dossier modifié avec succès!", "success");
+                    annulerEdition();
+                    chargerListeDossiers();
+                } else {
+                    throw new HSPException(ErrorCode.DATA_ACCESS_ERROR, "Échec de la modification du dossier");
+                }
+            }
+        } catch (Exception e) {
+            ErrorHandler.handleException(
+                new HSPException(ErrorCode.DATA_ACCESS_ERROR, "Erreur lors de la modification du dossier", e),
+                "Modification dossier"
+            );
+        }
+    }
+
+    @FXML
+    private void handleSupprimerDossier() {
+        try {
+            DossierEnCharge dossierSelectionne = dossiersListView.getSelectionModel().getSelectedItem();
+            if (dossierSelectionne == null) {
+                afficherMessage("Veuillez sélectionner un dossier à supprimer", "error");
+                return;
+            }
+            
+            boolean confirmed = ErrorHandler.showConfirmationAlert(
+                "Suppression de dossier",
+                "Êtes-vous sûr de vouloir supprimer le dossier du " + dossierSelectionne.getDateArrivee() + " ?"
+            );
+            
+            if (confirmed) {
+                boolean succes = dossierRepository.supprimerDossier(dossierSelectionne.getIdDossier());
+                
+                if (succes) {
+                    afficherMessage("Dossier supprimé avec succès!", "success");
+                    annulerEdition();
+                    chargerListeDossiers();
+                } else {
+                    throw new HSPException(ErrorCode.DATA_ACCESS_ERROR, "Échec de la suppression du dossier");
+                }
+            }
+        } catch (Exception e) {
+            ErrorHandler.handleException(
+                new HSPException(ErrorCode.DATA_ACCESS_ERROR, "Erreur lors de la suppression du dossier", e),
+                "Suppression dossier"
+            );
+        }
+    }
+
+    @FXML
+    private void handleNouveauDossier() {
+        annulerEdition();
+        viderChamps();
+        afficherMessage("Prêt pour la création d'un nouveau dossier", "info");
     }
 
     @FXML
@@ -485,6 +405,76 @@ public class DossierEnChargeController {
         if (patientCombo != null && !patientCombo.getItems().isEmpty()) {
             patientCombo.setValue(patientCombo.getItems().get(0));
         }
+        
+        // Réactiver tous les champs
+        activerChamps(true);
+    }
+    
+    private void annulerEdition() {
+        dossierEnEdition = null;
+        viderChamps();
+        mettreAJourBoutonsEdition(false);
+    }
+    
+    private void activerChamps(boolean activer) {
+        dateArriveeField.setDisable(!activer);
+        heureCombo.setDisable(!activer);
+        minuteCombo.setDisable(!activer);
+        symptomesField.setDisable(!activer);
+        niveauGraviteCombo.setDisable(!activer);
+        patientCombo.setDisable(!activer);
+    }
+    
+    private boolean validerFormulaire() {
+        if (dateArriveeField.getValue() == null) {
+            afficherMessage("Veuillez sélectionner une date d'arrivée", "error");
+            return false;
+        }
+        
+        if (heureCombo.getValue() == null || minuteCombo.getValue() == null) {
+            afficherMessage("Veuillez sélectionner une heure d'arrivée", "error");
+            return false;
+        }
+        
+        if (symptomesField.getText().trim().isEmpty()) {
+            afficherMessage("Veuillez décrire les symptômes", "error");
+            return false;
+        }
+        
+        if (niveauGraviteCombo.getValue() == null) {
+            afficherMessage("Veuillez sélectionner un niveau de gravité", "error");
+            return false;
+        }
+        
+        if (patientCombo.getValue() == null) {
+            afficherMessage("Veuillez sélectionner un patient", "error");
+            return false;
+        }
+        
+        return true;
+    }
+    
+    private DossierEnCharge creerDossierFromFormulaire() {
+        try {
+            int heure = Integer.parseInt(heureCombo.getValue());
+            int minute = Integer.parseInt(minuteCombo.getValue());
+            LocalTime heureArrivee = LocalTime.of(heure, minute);
+            
+            String graviteText = niveauGraviteCombo.getValue();
+            int niveauGravite = Integer.parseInt(graviteText.split(" - ")[0]);
+            
+            FichePatient patientSelectionne = patientCombo.getValue();
+            
+            return new DossierEnCharge(
+                dateArriveeField.getValue(),
+                heureArrivee,
+                symptomesField.getText().trim(),
+                niveauGravite,
+                patientSelectionne.getIdFichePatient()
+            );
+        } catch (NumberFormatException e) {
+            throw new RuntimeException("Erreur de format dans les données", e);
+        }
     }
 
     private void afficherMessage(String message, String type) {
@@ -494,13 +484,16 @@ public class DossierEnChargeController {
              type.equals("success") ? "#27ae60" : "#3498db") + "; -fx-font-weight: bold;");
     }
 
-    // Méthodes de navigation
+    // Méthodes de navigation avec gestion d'erreur
     @FXML
     private void versAccueil() {
         try {
             StartApplication.changeScene("pageAccueil");
         } catch (Exception e) {
-            System.err.println("Erreur: " + e.getMessage());
+            ErrorHandler.handleException(
+                new HSPException(ErrorCode.NAVIGATION_ERROR, "Impossible d'accéder à l'accueil", e),
+                "Navigation vers Accueil"
+            );
         }
     }
 
@@ -509,7 +502,10 @@ public class DossierEnChargeController {
         try {
             StartApplication.changeScene("patientsView");
         } catch (Exception e) {
-            System.err.println("Erreur: " + e.getMessage());
+            ErrorHandler.handleException(
+                new HSPException(ErrorCode.NAVIGATION_ERROR, "Impossible d'accéder à la gestion des patients", e),
+                "Navigation vers Patients"
+            );
         }
     }
 
@@ -518,7 +514,10 @@ public class DossierEnChargeController {
         try {
             StartApplication.changeScene("commandeView");
         } catch (Exception e) {
-            System.err.println("Erreur: " + e.getMessage());
+            ErrorHandler.handleException(
+                new HSPException(ErrorCode.NAVIGATION_ERROR, "Impossible d'accéder à la gestion des commandes", e),
+                "Navigation vers Commandes"
+            );
         }
     }
 
@@ -527,7 +526,10 @@ public class DossierEnChargeController {
         try {
             StartApplication.changeScene("pageUtilisateurs");
         } catch (Exception e) {
-            System.err.println("Erreur: " + e.getMessage());
+            ErrorHandler.handleException(
+                new HSPException(ErrorCode.NAVIGATION_ERROR, "Impossible d'accéder à la gestion des utilisateurs", e),
+                "Navigation vers Utilisateurs"
+            );
         }
     }
 
@@ -536,40 +538,43 @@ public class DossierEnChargeController {
         try {
             StartApplication.changeScene("pageMonEspace");
         } catch (Exception e) {
-            System.err.println("Erreur: " + e.getMessage());
+            ErrorHandler.handleException(
+                new HSPException(ErrorCode.NAVIGATION_ERROR, "Impossible d'accéder à votre espace personnel", e),
+                "Navigation vers Mon Espace"
+            );
         }
     }
 
     @FXML
     private void deconnexion() {
         try {
-            SessionManager.deconnecter();
-            StartApplication.changeScene("helloView");
+            boolean confirmed = ErrorHandler.showConfirmationAlert(
+                "Déconnexion", 
+                "Êtes-vous sûr de vouloir vous déconnecter ?"
+            );
+            if (confirmed) {
+                SessionManager.deconnecter();
+                StartApplication.changeScene("helloView");
+                ErrorHandler.showInfoAlert("Déconnexion", "Vous avez été déconnecté avec succès");
+            }
         } catch (Exception e) {
-            System.err.println("Erreur: " + e.getMessage());
+            ErrorHandler.handleException(
+                new HSPException(ErrorCode.NAVIGATION_ERROR, "Erreur lors de la déconnexion", e),
+                "Déconnexion"
+            );
         }
     }
     
     private void chargerListeDossiers() {
         try {
-            System.out.println("Chargement de la liste des dossiers...");
-            if (dossierRepository != null) {
-                java.util.List<DossierEnCharge> dossiers = dossierRepository.getAllDossiers();
-                System.out.println("Nombre de dossiers récupérés: " + dossiers.size());
-                
-                if (dossiersListView != null) {
-                    dossiersListView.getItems().clear();
-                    dossiersListView.getItems().addAll(dossiers);
-                    System.out.println("Liste des dossiers mise à jour dans la ListView");
-                } else {
-                    System.err.println("ERREUR: dossiersListView est null !");
-                }
-            } else {
-                System.err.println("ERREUR: dossierRepository est null !");
-            }
+            java.util.List<DossierEnCharge> dossiers = dossierRepository.getAllDossiers();
+            dossiersListView.getItems().clear();
+            dossiersListView.getItems().addAll(dossiers);
         } catch (Exception e) {
-            System.err.println("Erreur lors du chargement des dossiers: " + e.getMessage());
-            e.printStackTrace();
+            ErrorHandler.handleException(
+                new HSPException(ErrorCode.DATA_ACCESS_ERROR, "Erreur lors du chargement des dossiers", e),
+                "Chargement liste dossiers"
+            );
         }
     }
 }

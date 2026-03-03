@@ -10,22 +10,24 @@ public class DossierEnCharge {
     private String symptomes;
     private int niveauGravite;
     private int refUser;
+    private int idPatient;
 
-    public DossierEnCharge(int idDossier, LocalDate dateArrivee, LocalTime heureArrivee, String symptomes, int niveauGravite, int refUser) {
+    public DossierEnCharge(int idDossier, LocalDate dateArrivee, LocalTime heureArrivee, String symptomes, int niveauGravite, int refUser, int idPatient) {
         this.idDossier = idDossier;
         this.dateArrivee = dateArrivee;
         this.heureArrivee = heureArrivee;
         this.symptomes = symptomes;
         this.niveauGravite = niveauGravite;
         this.refUser = refUser;
+        this.idPatient = idPatient;
     }
 
-    public DossierEnCharge(LocalDate dateArrivee, LocalTime heureArrivee, String symptomes, int niveauGravite, int refUser) {
+    public DossierEnCharge(LocalDate dateArrivee, LocalTime heureArrivee, String symptomes, int niveauGravite, int idPatient) {
         this.dateArrivee = dateArrivee;
         this.heureArrivee = heureArrivee;
         this.symptomes = symptomes;
         this.niveauGravite = niveauGravite;
-        this.refUser = refUser;
+        this.idPatient = idPatient;
     }
 
     public int getIdDossier() {
@@ -76,6 +78,14 @@ public class DossierEnCharge {
         this.refUser = refUser;
     }
 
+    public int getIdPatient() {
+        return idPatient;
+    }
+
+    public void setIdPatient(int idPatient) {
+        this.idPatient = idPatient;
+    }
+
     @Override
     public String toString() {
         return "DossierEnCharge{" +
@@ -85,6 +95,7 @@ public class DossierEnCharge {
                 ", symptomes='" + symptomes + '\'' +
                 ", niveauGravite=" + niveauGravite +
                 ", refUser=" + refUser +
+                ", idPatient=" + idPatient +
                 '}';
     }
 }
