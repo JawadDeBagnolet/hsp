@@ -29,7 +29,7 @@ public class ChambreRepository {
     }
     
     public Chambre trouverChambreParId(int id) {
-        String sql = "SELECT * FROM chambre WHERE idChambre = ?";
+        String sql = "SELECT * FROM chambre WHERE id_chambre = ?";
         
         try (Connection cnx = Database.getConnexion();
              PreparedStatement stmt = cnx.prepareStatement(sql)) {
@@ -39,8 +39,8 @@ public class ChambreRepository {
             
             if (rs.next()) {
                 return new Chambre(
-                    rs.getInt("idChambre"),
-                    rs.getInt("numeroChambre"),
+                    rs.getInt("id_chambre"),
+                    rs.getInt("numero_chambre"),
                     rs.getBoolean("disponible")
                 );
             }
@@ -51,7 +51,7 @@ public class ChambreRepository {
     }
     
     public Chambre trouverChambreParNumero(int numero) {
-        String sql = "SELECT * FROM chambre WHERE numeroChambre = ?";
+        String sql = "SELECT * FROM chambre WHERE numero_chambre = ?";
         
         try (Connection cnx = Database.getConnexion();
              PreparedStatement stmt = cnx.prepareStatement(sql)) {
@@ -61,8 +61,8 @@ public class ChambreRepository {
             
             if (rs.next()) {
                 return new Chambre(
-                    rs.getInt("idChambre"),
-                    rs.getInt("numeroChambre"),
+                    rs.getInt("id_chambre"),
+                    rs.getInt("numero_chambre"),
                     rs.getBoolean("disponible")
                 );
             }
@@ -82,8 +82,8 @@ public class ChambreRepository {
             
             while (rs.next()) {
                 chambres.add(new Chambre(
-                    rs.getInt("idChambre"),
-                    rs.getInt("numeroChambre"),
+                    rs.getInt("id_chambre"),
+                    rs.getInt("numero_chambre"),
                     rs.getBoolean("disponible")
                 ));
             }
@@ -95,27 +95,59 @@ public class ChambreRepository {
     
     public List<Chambre> getChambresDisponibles() {
         List<Chambre> chambres = new ArrayList<>();
-        String sql = "SELECT * FROM chambre WHERE disponible = true";
+        String sql = "SELECT * FROM chambre WHERE disponible = 1";
+        
+        System.out.println("Requête SQL pour chambres disponibles: " + sql);
+        
+        try (Connection cnx = Database.getConnexion();
+             PreparedStatement stmt = cnx.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            
+            System.out.println("Exécution de la requête...");
+            
+            while (rs.next()) {
+                int idChambre = rs.getInt("id_chambre");
+                int numeroChambre = rs.getInt("numero_chambre");
+                boolean disponible = rs.getBoolean("disponible");
+                
+                System.out.println("Chambre trouvée - ID: " + idChambre + ", Numéro: " + numeroChambre + ", Disponible: " + disponible);
+                
+                chambres.add(new Chambre(idChambre, numeroChambre, disponible));
+            }
+            
+            System.out.println("Total chambres disponibles trouvées: " + chambres.size());
+        } catch (SQLException e) {
+            System.err.println("Erreur lors de la récupération des chambres disponibles: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return chambres;
+    }
+    
+    public void testerToutesLesChambres() {
+        System.out.println("=== TEST DE TOUTES LES CHAMBRES ===");
+        String sql = "SELECT * FROM chambre";
         
         try (Connection cnx = Database.getConnexion();
              PreparedStatement stmt = cnx.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
             
             while (rs.next()) {
-                chambres.add(new Chambre(
-                    rs.getInt("idChambre"),
-                    rs.getInt("numeroChambre"),
-                    rs.getBoolean("disponible")
-                ));
+                int idChambre = rs.getInt("id_chambre");
+                int numeroChambre = rs.getInt("numero_chambre");
+                boolean disponible = rs.getBoolean("disponible");
+                int disponibleInt = rs.getInt("disponible");
+                
+                System.out.println("Chambre " + numeroChambre + " (ID: " + idChambre + ") - disponible (boolean): " + disponible + " - disponible (int): " + disponibleInt);
             }
         } catch (SQLException e) {
-            System.err.println("Erreur lors de la récupération des chambres disponibles: " + e.getMessage());
+            System.err.println("Erreur lors du test des chambres: " + e.getMessage());
+            e.printStackTrace();
         }
-        return chambres;
+        System.out.println("=== FIN DU TEST ===");
     }
     
     public boolean modifierChambre(Chambre chambre) {
-        String sql = "UPDATE chambre SET numeroChambre = ?, disponible = ? WHERE idChambre = ?";
+        String sql = "UPDATE chambre SET numero_chambre = ?, disponible = ? WHERE id_chambre = ?";
         
         try (Connection cnx = Database.getConnexion();
              PreparedStatement stmt = cnx.prepareStatement(sql)) {
@@ -132,7 +164,7 @@ public class ChambreRepository {
     }
     
     public boolean supprimerChambre(int id) {
-        String sql = "DELETE FROM chambre WHERE idChambre = ?";
+        String sql = "DELETE FROM chambre WHERE id_chambre = ?";
         
         try (Connection cnx = Database.getConnexion();
              PreparedStatement stmt = cnx.prepareStatement(sql)) {
