@@ -75,34 +75,65 @@ public class HospitalisationsController {
             e.printStackTrace();
         }
         
-        idColumn.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("idHospitalisation"));
-        dossierColumn.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("idDossier"));
+        // Configuration des colonnes avec logs détaillés
+        System.out.println("Configuration des colonnes du TableView...");
+        
+        idColumn.setCellValueFactory(cellData -> {
+            if (cellData.getValue() == null) {
+                return new javafx.beans.property.SimpleIntegerProperty(0).asObject();
+            }
+            return new javafx.beans.property.SimpleIntegerProperty(cellData.getValue().getIdHospitalisation()).asObject();
+        });
+        System.out.println("Colonne ID configurée avec callback personnalisé");
+        
+        dossierColumn.setCellValueFactory(cellData -> {
+            if (cellData.getValue() == null) {
+                return new javafx.beans.property.SimpleIntegerProperty(0).asObject();
+            }
+            return new javafx.beans.property.SimpleIntegerProperty(cellData.getValue().getIdDossier()).asObject();
+        });
+        System.out.println("Colonne Dossier configurée avec callback personnalisé");
+        
         chambreColumn.setCellValueFactory(cellData -> {
             if (cellData.getValue() == null) {
+                System.out.println("Chambre: cellData.getValue() est null");
                 return new javafx.beans.property.SimpleStringProperty("");
             }
             int idChambre = cellData.getValue().getIdChambre();
             Chambre chambre = chambreRepository.trouverChambreParId(idChambre);
             if (chambre != null) {
-                return new javafx.beans.property.SimpleStringProperty("Chambre " + chambre.getNumeroChambre());
+                String result = "Chambre " + chambre.getNumeroChambre();
+                System.out.println("Chambre: " + result);
+                return new javafx.beans.property.SimpleStringProperty(result);
             }
-            return new javafx.beans.property.SimpleStringProperty("Chambre " + idChambre);
+            String result = "Chambre " + idChambre;
+            System.out.println("Chambre: " + result);
+            return new javafx.beans.property.SimpleStringProperty(result);
         });
 
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
         debutColumn.setCellValueFactory(cellData -> {
-            LocalDateTime v = cellData.getValue() != null ? cellData.getValue().getDateDebut() : null;
+            if (cellData.getValue() == null) {
+                return new javafx.beans.property.SimpleStringProperty("");
+            }
+            LocalDateTime v = cellData.getValue().getDateDebut();
             return new javafx.beans.property.SimpleStringProperty(v != null ? v.format(dtf) : "");
         });
 
         finColumn.setCellValueFactory(cellData -> {
-            LocalDateTime v = cellData.getValue() != null ? cellData.getValue().getDateFin() : null;
+            if (cellData.getValue() == null) {
+                return new javafx.beans.property.SimpleStringProperty("");
+            }
+            LocalDateTime v = cellData.getValue().getDateFin();
             return new javafx.beans.property.SimpleStringProperty(v != null ? v.format(dtf) : "");
         });
 
         descriptionColumn.setCellValueFactory(cellData -> {
-            String v = cellData.getValue() != null ? cellData.getValue().getDesc_maladie() : null;
+            if (cellData.getValue() == null) {
+                return new javafx.beans.property.SimpleStringProperty("");
+            }
+            String v = cellData.getValue().getDesc_maladie();
             return new javafx.beans.property.SimpleStringProperty(v != null ? v : "");
         });
 
@@ -140,8 +171,14 @@ public class HospitalisationsController {
         });
 
         hospitalisationsTable.setItems(hospitalisationsObservable);
+        System.out.println("TableView configuré avec la liste observable");
 
-        hospitalisationsTable.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> hospitalisationSelectionnee = newVal);
+        hospitalisationsTable.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+            hospitalisationSelectionnee = newVal;
+            if (newVal != null) {
+                System.out.println("Hospitalisation sélectionnée - ID: " + newVal.getIdHospitalisation() + ", Dossier: " + newVal.getIdDossier());
+            }
+        });
 
         chargerHospitalisations();
         chargerChambresDisponibles();
@@ -155,6 +192,21 @@ public class HospitalisationsController {
             System.out.println("Avant clear - Taille de la liste observable: " + hospitalisationsObservable.size());
             hospitalisationsObservable.clear();
             System.out.println("Après clear - Taille de la liste observable: " + hospitalisationsObservable.size());
+            
+            // Logs détaillés pour chaque hospitalisation
+            System.out.println("=== DÉTAIL DES HOSPITALISATIONS CHARGÉES ===");
+            for (int i = 0; i < list.size(); i++) {
+                Hospitalisation h = list.get(i);
+                System.out.println("Hospitalisation " + (i+1) + ":");
+                System.out.println("  ID: " + h.getIdHospitalisation());
+                System.out.println("  Dossier: " + h.getIdDossier());
+                System.out.println("  Chambre: " + h.getIdChambre());
+                System.out.println("  Date début: " + h.getDateDebut());
+                System.out.println("  Date fin: " + h.getDateFin());
+                System.out.println("  Description: " + h.getDesc_maladie());
+                System.out.println("---");
+            }
+            System.out.println("=== FIN DES DÉTAILS ===");
             
             hospitalisationsObservable.addAll(list);
             System.out.println("Après addAll - Taille de la liste observable: " + hospitalisationsObservable.size());
