@@ -16,119 +16,105 @@ public class PatientsController {
 
     @FXML
     private ListView<FichePatient> patientsListView;
-    
+
     @FXML
     private Label totalPatientsLabel;
-    
+
     @FXML
     private TextField nomField;
-    
+
     @FXML
     private TextField prenomField;
-    
+
     @FXML
-    private TextField numSecuField;
-    
+    private TextField numEtudiantField;
+
     @FXML
     private TextField emailField;
-    
+
     @FXML
     private TextField telField;
-    
+
     @FXML
     private TextField rueField;
-    
+
     @FXML
     private TextField cpField;
-    
+
     @FXML
     private TextField villeField;
-    
+
+    @FXML
+    private ComboBox<String> candidatureComboBox;
+
     @FXML
     private Label messageLabel;
-    
+
     @FXML
     private Button ajouterButton;
-    
+
     @FXML
     private Button modifierButton;
-    
+
     @FXML
     private Button supprimerButton;
-    
+
     @FXML
     private Button viderButton;
-    
+
     @FXML
     private TextField rechercheField;
-    
+
     private FichePatientRepository patientRepository;
     private ObservableList<FichePatient> patientsList;
-    private FichePatient patientSelectionne;
+    private FichePatient eleveSelectionne;
 
     @FXML
     public void initialize() {
         patientRepository = new FichePatientRepository();
         patientsList = FXCollections.observableArrayList();
-        
-        System.out.println("Initialisation du controller avec ListView...");
-        
-        // Configuration de la ListView pour afficher les patients
+
+        // Candidature statuses
+        candidatureComboBox.setItems(FXCollections.observableArrayList("En cours", "Refusé", "Validé"));
+        candidatureComboBox.setPromptText("Statut candidature");
+
         patientsListView.setCellFactory(param -> new ListCell<>() {
             @Override
-            protected void updateItem(FichePatient patient, boolean empty) {
-                super.updateItem(patient, empty);
-                if (empty || patient == null) {
+            protected void updateItem(FichePatient eleve, boolean empty) {
+                super.updateItem(eleve, empty);
+                if (empty || eleve == null) {
                     setText("");
                 } else {
-                    setText(String.format("ID: %d | %s %s | %s", 
-                        patient.getIdFichePatient(), 
-                        patient.getNom(), 
-                        patient.getPrenom(), 
-                        patient.getEmail()));
+                    setText(String.format("ID: %d | %s %s | %s | Candidature: %s",
+                        eleve.getIdFichePatient(),
+                        eleve.getNom(),
+                        eleve.getPrenom(),
+                        eleve.getEmail(),
+                        eleve.getCandidatureLibelle()));
                 }
             }
         });
-        
+
         patientsListView.setItems(patientsList);
-        
-        // Configuration de la sélection
+
         patientsListView.getSelectionModel().selectedItemProperty().addListener(
             (obs, oldSelection, newSelection) -> {
                 if (newSelection != null) {
-                    patientSelectionne = newSelection;
-                    afficherPatientSelectionne();
+                    eleveSelectionne = newSelection;
+                    afficherEleveSelectionne();
                 }
             });
-        
-        // Charger les données après un délai pour s'assurer que l'interface est prête
+
         Platform.runLater(this::loadPatients);
     }
 
     private void loadPatients() {
         try {
-            List<FichePatient> patients = patientRepository.getAllFichePatients();
+            List<FichePatient> eleves = patientRepository.getAllFichePatients();
             patientsList.clear();
-            patientsList.addAll(patients);
-            
-            System.out.println("Controller - Patients reçus: " + patients.size());
-            for (FichePatient patient : patients) {
-                System.out.println("Controller - Patient: " + patient.getIdFichePatient() + 
-                                 ", " + patient.getNom() + 
-                                 ", " + patient.getPrenom() + 
-                                 ", " + patient.getEmail());
-            }
-            
-            // Mettre à jour le compteur
-            totalPatientsLabel.setText(String.valueOf(patients.size()));
-            
-            // Forcer le rafraîchissement
+            patientsList.addAll(eleves);
+            totalPatientsLabel.setText(String.valueOf(eleves.size()));
             patientsListView.refresh();
-            Platform.runLater(() -> {
-                patientsListView.refresh();
-                System.out.println("ListView refresh exécuté - Items: " + patientsListView.getItems().size());
-            });
-            
         } catch (Exception e) {
             System.err.println("Erreur: " + e.getMessage());
             totalPatientsLabel.setText("Erreur");
@@ -193,51 +179,50 @@ public class PatientsController {
             System.err.println("Erreur: " + e.getMessage());
         }
     }
-    
-    private void afficherPatientSelectionne() {
-        if (patientSelectionne != null) {
-            nomField.setText(patientSelectionne.getNom());
-            prenomField.setText(patientSelectionne.getPrenom());
-            numSecuField.setText(String.valueOf(patientSelectionne.getNum_secu()));
-            emailField.setText(patientSelectionne.getEmail());
-            telField.setText(String.valueOf(patientSelectionne.getTel()));
-            rueField.setText(patientSelectionne.getRue());
-            cpField.setText(String.valueOf(patientSelectionne.getCp()));
-            villeField.setText(patientSelectionne.getVille());
-            
-            // Activer les boutons de modification
+
+    private void afficherEleveSelectionne() {
+        if (eleveSelectionne != null) {
+            nomField.setText(eleveSelectionne.getNom());
+            prenomField.setText(eleveSelectionne.getPrenom());
+            numEtudiantField.setText(eleveSelectionne.getNum_etudiant());
+            emailField.setText(eleveSelectionne.getEmail());
+            telField.setText(String.valueOf(eleveSelectionne.getTel()));
+            rueField.setText(eleveSelectionne.getRue());
+            cpField.setText(String.valueOf(eleveSelectionne.getCp()));
+            villeField.setText(eleveSelectionne.getVille());
+            candidatureComboBox.setValue(eleveSelectionne.getCandidatureLibelle());
+
             modifierButton.setDisable(false);
             supprimerButton.setDisable(false);
             ajouterButton.setDisable(true);
-            
-            afficherMessage("Patient sélectionné: " + patientSelectionne.getNom() + " " + patientSelectionne.getPrenom(), "#3498db");
+
+            afficherMessage("Élève sélectionné: " + eleveSelectionne.getNom() + " " + eleveSelectionne.getPrenom(), "#3498db");
         }
     }
-    
+
     @FXML
     private void ajouterPatient() {
-        if (!validerChamps()) {
-            return;
-        }
-        
+        if (!validerChamps()) return;
+
         try {
-            FichePatient nouveauPatient = new FichePatient(
+            FichePatient nouvelEleve = new FichePatient(
                 nomField.getText().trim(),
                 prenomField.getText().trim(),
-                Long.parseLong(numSecuField.getText().trim()),
+                numEtudiantField.getText().trim(),
                 emailField.getText().trim(),
                 Integer.parseInt(telField.getText().trim()),
                 rueField.getText().trim(),
                 Integer.parseInt(cpField.getText().trim()),
-                villeField.getText().trim()
+                villeField.getText().trim(),
+                candidatureToInt(candidatureComboBox.getValue())
             );
-            
-            if (patientRepository.ajouterFichePatient(nouveauPatient)) {
-                afficherMessage("Patient ajouté avec succès!", "#27ae60");
+
+            if (patientRepository.ajouterFichePatient(nouvelEleve)) {
+                afficherMessage("Élève ajouté avec succès!", "#27ae60");
                 viderChamps();
                 loadPatients();
             } else {
-                afficherMessage("Erreur lors de l'ajout du patient", "#e74c3c");
+                afficherMessage("Erreur lors de l'ajout de l'élève", "#e74c3c");
             }
         } catch (NumberFormatException e) {
             afficherMessage("Veuillez vérifier les champs numériques", "#e74c3c");
@@ -245,35 +230,32 @@ public class PatientsController {
             afficherMessage("Erreur: " + e.getMessage(), "#e74c3c");
         }
     }
-    
+
     @FXML
     private void modifierPatient() {
-        if (patientSelectionne == null) {
-            afficherMessage("Veuillez sélectionner un patient à modifier", "#e74c3c");
+        if (eleveSelectionne == null) {
+            afficherMessage("Veuillez sélectionner un élève à modifier", "#e74c3c");
             return;
         }
-        
-        if (!validerChamps()) {
-            return;
-        }
-        
+        if (!validerChamps()) return;
+
         try {
-            // Mettre à jour les informations du patient sélectionné
-            patientSelectionne.setNom(nomField.getText().trim());
-            patientSelectionne.setPrenom(prenomField.getText().trim());
-            patientSelectionne.setNum_secu(Long.parseLong(numSecuField.getText().trim()));
-            patientSelectionne.setEmail(emailField.getText().trim());
-            patientSelectionne.setTel(Integer.parseInt(telField.getText().trim()));
-            patientSelectionne.setRue(rueField.getText().trim());
-            patientSelectionne.setCp(Integer.parseInt(cpField.getText().trim()));
-            patientSelectionne.setVille(villeField.getText().trim());
-            
-            if (patientRepository.modifierFichePatient(patientSelectionne)) {
-                afficherMessage("Patient modifié avec succès!", "#27ae60");
+            eleveSelectionne.setNom(nomField.getText().trim());
+            eleveSelectionne.setPrenom(prenomField.getText().trim());
+            eleveSelectionne.setNum_etudiant(numEtudiantField.getText().trim());
+            eleveSelectionne.setEmail(emailField.getText().trim());
+            eleveSelectionne.setTel(Integer.parseInt(telField.getText().trim()));
+            eleveSelectionne.setRue(rueField.getText().trim());
+            eleveSelectionne.setCp(Integer.parseInt(cpField.getText().trim()));
+            eleveSelectionne.setVille(villeField.getText().trim());
+            eleveSelectionne.setCandidature(candidatureToInt(candidatureComboBox.getValue()));
+
+            if (patientRepository.modifierFichePatient(eleveSelectionne)) {
+                afficherMessage("Élève modifié avec succès!", "#27ae60");
                 viderChamps();
                 loadPatients();
             } else {
-                afficherMessage("Erreur lors de la modification du patient", "#e74c3c");
+                afficherMessage("Erreur lors de la modification de l'élève", "#e74c3c");
             }
         } catch (NumberFormatException e) {
             afficherMessage("Veuillez vérifier les champs numériques", "#e74c3c");
@@ -281,143 +263,110 @@ public class PatientsController {
             afficherMessage("Erreur: " + e.getMessage(), "#e74c3c");
         }
     }
-    
+
     @FXML
     private void supprimerPatient() {
-        if (patientSelectionne == null) {
-            afficherMessage("Veuillez sélectionner un patient à supprimer", "#e74c3c");
+        if (eleveSelectionne == null) {
+            afficherMessage("Veuillez sélectionner un élève à supprimer", "#e74c3c");
             return;
         }
-        
+
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Confirmation de suppression");
-        alert.setHeaderText("Supprimer le patient");
-        alert.setContentText("Êtes-vous sûr de vouloir supprimer le patient " + 
-            patientSelectionne.getNom() + " " + patientSelectionne.getPrenom() + " ?");
-        
+        alert.setHeaderText("Supprimer l'élève");
+        alert.setContentText("Êtes-vous sûr de vouloir supprimer l'élève " +
+            eleveSelectionne.getNom() + " " + eleveSelectionne.getPrenom() + " ?");
+
         Optional<ButtonType> result = alert.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
-            if (patientRepository.supprimerFichePatient(patientSelectionne.getIdFichePatient())) {
-                afficherMessage("Patient supprimé avec succès!", "#27ae60");
+            if (patientRepository.supprimerFichePatient(eleveSelectionne.getIdFichePatient())) {
+                afficherMessage("Élève supprimé avec succès!", "#27ae60");
                 viderChamps();
                 loadPatients();
             } else {
-                afficherMessage("Erreur lors de la suppression du patient", "#e74c3c");
+                afficherMessage("Erreur lors de la suppression de l'élève", "#e74c3c");
             }
         }
     }
-    
+
     @FXML
     private void viderChamps() {
         nomField.clear();
         prenomField.clear();
-        numSecuField.clear();
+        numEtudiantField.clear();
         emailField.clear();
         telField.clear();
         rueField.clear();
         cpField.clear();
         villeField.clear();
+        candidatureComboBox.setValue(null);
         rechercheField.clear();
-        
-        patientSelectionne = null;
+
+        eleveSelectionne = null;
         patientsListView.getSelectionModel().clearSelection();
-        
-        // Réactiver/désactiver les boutons
+
         ajouterButton.setDisable(false);
         modifierButton.setDisable(true);
         supprimerButton.setDisable(true);
-        
+
         afficherMessage("Formulaire vidé", "#95a5a6");
     }
-    
+
     @FXML
     private void rechercherPatients() {
         String recherche = rechercheField.getText().trim().toLowerCase();
-        
+
         if (recherche.isEmpty()) {
             patientsListView.setItems(patientsList);
             return;
         }
-        
-        ObservableList<FichePatient> patientsFiltres = FXCollections.observableArrayList();
-        
-        for (FichePatient patient : patientsList) {
-            if (patient.getNom().toLowerCase().contains(recherche) ||
-                patient.getPrenom().toLowerCase().contains(recherche) ||
-                patient.getEmail().toLowerCase().contains(recherche) ||
-                patient.getVille().toLowerCase().contains(recherche)) {
-                patientsFiltres.add(patient);
+
+        ObservableList<FichePatient> elevesFiltres = FXCollections.observableArrayList();
+
+        for (FichePatient eleve : patientsList) {
+            if (eleve.getNom().toLowerCase().contains(recherche) ||
+                eleve.getPrenom().toLowerCase().contains(recherche) ||
+                eleve.getEmail().toLowerCase().contains(recherche) ||
+                eleve.getVille().toLowerCase().contains(recherche)) {
+                elevesFiltres.add(eleve);
             }
         }
-        
-        patientsListView.setItems(patientsFiltres);
-        afficherMessage(patientsFiltres.size() + " patient(s) trouvé(s)", "#3498db");
+
+        patientsListView.setItems(elevesFiltres);
+        afficherMessage(elevesFiltres.size() + " élève(s) trouvé(s)", "#3498db");
     }
-    
+
     private boolean validerChamps() {
         String nom = nomField.getText().trim();
         String prenom = prenomField.getText().trim();
-        String numSecu = numSecuField.getText().trim();
         String email = emailField.getText().trim();
         String tel = telField.getText().trim();
         String cp = cpField.getText().trim();
-        
-        if (nom.isEmpty()) {
-            afficherMessage("Le nom est obligatoire", "#e74c3c");
-            return false;
-        }
-        
-        if (prenom.isEmpty()) {
-            afficherMessage("Le prénom est obligatoire", "#e74c3c");
-            return false;
-        }
-        
-        if (numSecu.isEmpty()) {
-            afficherMessage("Le numéro de sécurité sociale est obligatoire", "#e74c3c");
-            return false;
-        }
-        
-        if (email.isEmpty()) {
-            afficherMessage("L'email est obligatoire", "#e74c3c");
-            return false;
-        }
-        
-        if (!email.contains("@") || !email.contains(".")) {
-            afficherMessage("L'email n'est pas valide", "#e74c3c");
-            return false;
-        }
-        
-        if (tel.isEmpty()) {
-            afficherMessage("Le téléphone est obligatoire", "#e74c3c");
-            return false;
-        }
-        
-        if (cp.isEmpty()) {
-            afficherMessage("Le code postal est obligatoire", "#e74c3c");
-            return false;
-        }
-        
+
+        if (nom.isEmpty()) { afficherMessage("Le nom est obligatoire", "#e74c3c"); return false; }
+        if (prenom.isEmpty()) { afficherMessage("Le prénom est obligatoire", "#e74c3c"); return false; }
+        if (email.isEmpty()) { afficherMessage("L'email est obligatoire", "#e74c3c"); return false; }
+        if (!email.contains("@") || !email.contains(".")) { afficherMessage("L'email n'est pas valide", "#e74c3c"); return false; }
+        if (tel.isEmpty()) { afficherMessage("Le téléphone est obligatoire", "#e74c3c"); return false; }
+        if (cp.isEmpty()) { afficherMessage("Le code postal est obligatoire", "#e74c3c"); return false; }
+
         try {
-            Long.parseLong(numSecu);
             Integer.parseInt(tel);
             Integer.parseInt(cp);
         } catch (NumberFormatException e) {
-            // Identifier quel champ pose problème
-            if (!numSecu.matches("\\d+")) {
-                afficherMessage("Le numéro de sécurité sociale ne doit contenir que des chiffres", "#e74c3c");
-            } else if (!tel.matches("\\d+")) {
-                afficherMessage("Le numéro de téléphone ne doit contenir que des chiffres", "#e74c3c");
-            } else if (!cp.matches("\\d+")) {
-                afficherMessage("Le code postal ne doit contenir que des chiffres", "#e74c3c");
-            } else {
-                afficherMessage("Les champs numériques ne sont pas valides", "#e74c3c");
-            }
+            afficherMessage("Téléphone et code postal doivent être numériques", "#e74c3c");
             return false;
         }
-        
         return true;
     }
-    
+
+    private Integer candidatureToInt(String libelle) {
+        if (libelle == null || libelle.equals("En cours")) return null;
+        if (libelle.equals("Refusé")) return 0;
+        if (libelle.equals("Validé")) return 1;
+        return null;
+    }
+
     private void afficherMessage(String message, String couleur) {
         messageLabel.setText(message);
         messageLabel.setStyle("-fx-text-fill: " + couleur + "; -fx-font-size: 14px; -fx-wrap-text: true; -fx-font-weight: bold;");

@@ -135,13 +135,8 @@
                                  style="-fx-pref-width: 100%; -fx-font-size: 14px; -fx-background-color: white; -fx-border-color: #bdc3c7; -fx-border-width: 2; -fx-border-radius: 5; -fx-cursor: hand; -fx-text-fill: #2c3e50; -fx-opacity: 1;" />
                     </VBox>
 
-                <!-- Barre de recherche et boutons d'action -->
-                <HBox spacing="15" alignment="CENTER_LEFT" style="-fx-pref-width: 100%;">
-                    <TextField fx:id="rechercheField" 
-                              promptText="🔍 Rechercher par symptômes, date ou niveau de gravité..."
-                              style="-fx-pref-width: 400; -fx-font-size: 14px; -fx-background-color: white; -fx-border-color: #bdc3c7; -fx-border-width: 2; -fx-border-radius: 5;" />
-                    
-                    <HBox spacing="10" alignment="CENTER">
+                <!-- Boutons d'action -->
+                    <HBox spacing="15" alignment="CENTER">
                         <Button fx:id="nouveauButton" 
                                 text="🆕 Nouveau" 
                                 onAction="#handleNouveauDossier"
@@ -159,11 +154,10 @@
                                 disable="true"
                                 style="-fx-background-color: #e74c3c; -fx-text-fill: #ffffff; -fx-font-size: 14px; -fx-font-weight: bold; -fx-padding: 8 15; -fx-background-radius: 5; -fx-cursor: hand;" />
                     </HBox>
-                </HBox>
 
-                <!-- Message de statut -->
-                <Label fx:id="messageLabel" 
-                       style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #e74c3c;" />
+                    <!-- Message de statut -->
+                    <Label fx:id="messageLabel" 
+                           style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #e74c3c;" />
 
                     <!-- Boutons d'action -->
                     <HBox spacing="15" alignment="CENTER">

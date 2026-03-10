@@ -13,203 +13,152 @@ import java.util.List;
 public class FichePatientRepository {
 
     public boolean ajouterFichePatient(FichePatient fichePatient) {
-        String sql = "INSERT INTO fiche_patient (nom, prenom, num_secu, email, tel, rue, cp, ville) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-        
+        String sql = "INSERT INTO fiche_eleve (nom, prenom, num_etudiant, email, tel, rue, cp, ville, candidature) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
         try (Connection cnx = Database.getConnexion();
              PreparedStatement stmt = cnx.prepareStatement(sql)) {
-            
+
             stmt.setString(1, fichePatient.getNom());
             stmt.setString(2, fichePatient.getPrenom());
-            stmt.setLong(3, fichePatient.getNum_secu());
+            stmt.setString(3, fichePatient.getNum_etudiant());
             stmt.setString(4, fichePatient.getEmail());
             stmt.setInt(5, fichePatient.getTel());
             stmt.setString(6, fichePatient.getRue());
             stmt.setInt(7, fichePatient.getCp());
             stmt.setString(8, fichePatient.getVille());
-            
+            if (fichePatient.getCandidature() == null) {
+                stmt.setNull(9, java.sql.Types.TINYINT);
+            } else {
+                stmt.setInt(9, fichePatient.getCandidature());
+            }
+
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
-            System.err.println("Erreur lors de l'ajout de la fiche patient : " + e.getMessage());
+            System.err.println("Erreur lors de l'ajout de la fiche élève : " + e.getMessage());
             return false;
         }
     }
-    
+
     public FichePatient trouverFichePatientParId(int id) {
-        String sql = "SELECT * FROM fiche_patient WHERE id_patient = ?";
-        
+        String sql = "SELECT * FROM fiche_eleve WHERE id_eleve = ?";
+
         try (Connection cnx = Database.getConnexion();
              PreparedStatement stmt = cnx.prepareStatement(sql)) {
-            
+
             stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
-            
+
             if (rs.next()) {
-                FichePatient patient = new FichePatient(
-                    rs.getString("nom"),
-                    rs.getString("prenom"),
-                    rs.getLong("num_secu"),
-                    rs.getString("email"),
-                    rs.getInt("tel"),
-                    rs.getString("rue"),
-                    rs.getInt("cp"),
-                    rs.getString("ville")
-                );
-                patient.setIdFichePatient(rs.getInt("id_patient"));
-                return patient;
+                return mapResultSet(rs);
             }
         } catch (SQLException e) {
-            System.err.println("Erreur lors de la recherche de la fiche patient: " + e.getMessage());
+            System.err.println("Erreur lors de la recherche de la fiche élève: " + e.getMessage());
         }
         return null;
     }
-    
-    public FichePatient trouverFichePatientParNumSecu(int numSecu) {
-        String sql = "SELECT * FROM fiche_patient WHERE num_secu = ?";
-        
+
+    public FichePatient trouverFichePatientParNumEtudiant(String numEtudiant) {
+        String sql = "SELECT * FROM fiche_eleve WHERE num_etudiant = ?";
+
         try (Connection cnx = Database.getConnexion();
              PreparedStatement stmt = cnx.prepareStatement(sql)) {
-            
-            stmt.setInt(1, numSecu);
+
+            stmt.setString(1, numEtudiant);
             ResultSet rs = stmt.executeQuery();
-            
+
             if (rs.next()) {
-                FichePatient patient = new FichePatient(
-                    rs.getString("nom"),
-                    rs.getString("prenom"),
-                    rs.getLong("num_secu"),
-                    rs.getString("email"),
-                    rs.getInt("tel"),
-                    rs.getString("rue"),
-                    rs.getInt("cp"),
-                    rs.getString("ville")
-                );
-                patient.setIdFichePatient(rs.getInt("id_patient"));
-                return patient;
+                return mapResultSet(rs);
             }
         } catch (SQLException e) {
-            System.err.println("Erreur lors de la recherche par numéro de sécurité sociale: " + e.getMessage());
+            System.err.println("Erreur lors de la recherche par numéro étudiant: " + e.getMessage());
         }
         return null;
     }
-    
+
     public List<FichePatient> getAllFichePatients() {
         List<FichePatient> fichePatients = new ArrayList<>();
-        String sql = "SELECT * FROM fiche_patient";
-        
+        String sql = "SELECT * FROM fiche_eleve";
+
         try (Connection cnx = Database.getConnexion();
              PreparedStatement stmt = cnx.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
-            
-            // Afficher les métadonnées des colonnes
-            java.sql.ResultSetMetaData metaData = rs.getMetaData();
-            int columnCount = metaData.getColumnCount();
-            System.out.println("Colonnes dans la table fiche_patient:");
-            for (int i = 1; i <= columnCount; i++) {
-                System.out.println("  Colonne " + i + ": " + metaData.getColumnName(i) + " (Type: " + metaData.getColumnTypeName(i) + ")");
-            }
-            
+
             while (rs.next()) {
-                System.out.println("\nPatient trouvé - ID: " + rs.getString("id_patient"));
-                
-                // Récupérer les données en tant que String pour éviter les erreurs de conversion
-                String idStr = rs.getString("id_patient");
-                String nom = rs.getString("nom");
-                String prenom = rs.getString("prenom");
-                String numSecuStr = rs.getString("num_secu");
-                String email = rs.getString("email");
-                String telStr = rs.getString("tel");
-                String rue = rs.getString("rue");
-                String cpStr = rs.getString("cp");
-                String ville = rs.getString("ville");
-                
-                System.out.println("  Nom: '" + nom + "' (null? " + (nom == null) + ")");
-                System.out.println("  Prénom: '" + prenom + "' (null? " + (prenom == null) + ")");
-                System.out.println("  Email: '" + email + "' (null? " + (email == null) + ")");
-                
-                // Convertir en entier/long avec gestion des erreurs
-                int id = 0;
-                long numSecu = 0;
-                int tel = 0;
-                int cp = 0;
-                
-                try {
-                    if (idStr != null) id = Integer.parseInt(idStr);
-                } catch (NumberFormatException e) {
-                    System.err.println("Erreur conversion ID: " + idStr);
-                }
-                
-                try {
-                    if (numSecuStr != null) numSecu = Long.parseLong(numSecuStr);
-                } catch (NumberFormatException e) {
-                    System.err.println("Erreur conversion numSecu: " + numSecuStr);
-                }
-                
-                try {
-                    if (telStr != null) tel = Integer.parseInt(telStr);
-                } catch (NumberFormatException e) {
-                    System.err.println("Erreur conversion tel: " + telStr);
-                }
-                
-                try {
-                    if (cpStr != null) cp = Integer.parseInt(cpStr);
-                } catch (NumberFormatException e) {
-                    System.err.println("Erreur conversion cp: " + cpStr);
-                }
-                
-                FichePatient patient = new FichePatient(
-                    nom != null ? nom : "",
-                    prenom != null ? prenom : "",
-                    numSecu,
-                    email != null ? email : "",
-                    tel,
-                    rue != null ? rue : "",
-                    cp,
-                    ville != null ? ville : ""
-                );
-                patient.setIdFichePatient(id);
-                fichePatients.add(patient);
+                fichePatients.add(mapResultSet(rs));
             }
         } catch (SQLException e) {
-            System.err.println("Erreur lors de la récupération des fiches patients: " + e.getMessage());
+            System.err.println("Erreur lors de la récupération des fiches élèves: " + e.getMessage());
         }
-        System.out.println("\nTotal patients récupérés: " + fichePatients.size());
+        System.out.println("Total élèves récupérés: " + fichePatients.size());
         return fichePatients;
     }
-    
+
     public boolean modifierFichePatient(FichePatient fichePatient) {
-        String sql = "UPDATE fiche_patient SET nom = ?, prenom = ?, num_secu = ?, email = ?, tel = ?, rue = ?, cp = ?, ville = ? WHERE id_patient = ?";
-        
+        String sql = "UPDATE fiche_eleve SET nom = ?, prenom = ?, num_etudiant = ?, email = ?, tel = ?, rue = ?, cp = ?, ville = ?, candidature = ? WHERE id_eleve = ?";
+
         try (Connection cnx = Database.getConnexion();
              PreparedStatement stmt = cnx.prepareStatement(sql)) {
-            
+
             stmt.setString(1, fichePatient.getNom());
             stmt.setString(2, fichePatient.getPrenom());
-            stmt.setLong(3, fichePatient.getNum_secu());
+            stmt.setString(3, fichePatient.getNum_etudiant());
             stmt.setString(4, fichePatient.getEmail());
             stmt.setInt(5, fichePatient.getTel());
             stmt.setString(6, fichePatient.getRue());
             stmt.setInt(7, fichePatient.getCp());
             stmt.setString(8, fichePatient.getVille());
-            stmt.setInt(9, fichePatient.getIdFichePatient());
-            
+            if (fichePatient.getCandidature() == null) {
+                stmt.setNull(9, java.sql.Types.TINYINT);
+            } else {
+                stmt.setInt(9, fichePatient.getCandidature());
+            }
+            stmt.setInt(10, fichePatient.getIdFichePatient());
+
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
-            System.err.println("Erreur lors de la modification de la fiche patient: " + e.getMessage());
+            System.err.println("Erreur lors de la modification de la fiche élève: " + e.getMessage());
             return false;
         }
     }
-    
+
     public boolean supprimerFichePatient(int id) {
-        String sql = "DELETE FROM fiche_patient WHERE id_patient = ?";
-        
+        String sql = "DELETE FROM fiche_eleve WHERE id_eleve = ?";
+
         try (Connection cnx = Database.getConnexion();
              PreparedStatement stmt = cnx.prepareStatement(sql)) {
-            
+
             stmt.setInt(1, id);
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
-            System.err.println("Erreur lors de la suppression de la fiche patient: " + e.getMessage());
+            System.err.println("Erreur lors de la suppression de la fiche élève: " + e.getMessage());
             return false;
         }
+    }
+
+    private FichePatient mapResultSet(ResultSet rs) throws SQLException {
+        String candidatureStr = rs.getString("candidature");
+        Integer candidature = null;
+        if (candidatureStr != null) {
+            try { candidature = Integer.parseInt(candidatureStr); } catch (NumberFormatException ignored) {}
+        }
+
+        int tel = 0;
+        int cp = 0;
+        try { tel = rs.getInt("tel"); } catch (Exception ignored) {}
+        try { cp = rs.getInt("cp"); } catch (Exception ignored) {}
+
+        FichePatient eleve = new FichePatient(
+            rs.getString("nom") != null ? rs.getString("nom") : "",
+            rs.getString("prenom") != null ? rs.getString("prenom") : "",
+            rs.getString("num_etudiant") != null ? rs.getString("num_etudiant") : "",
+            rs.getString("email") != null ? rs.getString("email") : "",
+            tel,
+            rs.getString("rue") != null ? rs.getString("rue") : "",
+            cp,
+            rs.getString("ville") != null ? rs.getString("ville") : "",
+            candidature
+        );
+        eleve.setIdFichePatient(rs.getInt("id_eleve"));
+        return eleve;
     }
 }

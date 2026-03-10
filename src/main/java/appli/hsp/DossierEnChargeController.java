@@ -44,16 +44,13 @@ public class DossierEnChargeController {
     private ListView<DossierEnCharge> dossiersListView;
 
     @FXML
-    private TextField rechercheField;
+    private Button nouveauButton;
 
     @FXML
     private Button modifierButton;
 
     @FXML
     private Button supprimerButton;
-
-    @FXML
-    private Button nouveauButton;
 
     private DossierEnChargeRepository dossierRepository;
     private FichePatientRepository patientRepository;
@@ -67,7 +64,6 @@ public class DossierEnChargeController {
             
             initialiserComposants();
             chargerListeDossiers();
-            configurerRecherche();
             configurerSelectionDossier();
         } catch (Exception e) {
             ErrorHandler.handleException(
@@ -179,12 +175,6 @@ public class DossierEnChargeController {
         mettreAJourBoutonsEdition(false);
     }
     
-    private void configurerRecherche() {
-        rechercheField.textProperty().addListener((observable, oldValue, newValue) -> {
-            filtrerListeDossiers(newValue);
-        });
-    }
-    
     private void configurerSelectionDossier() {
         dossiersListView.getSelectionModel().selectedItemProperty().addListener(
             (observable, oldValue, newValue) -> {
@@ -204,28 +194,7 @@ public class DossierEnChargeController {
         nouveauButton.setDisable(editionActive);
     }
     
-    private void filtrerListeDossiers(String texteRecherche) {
-        try {
-            java.util.List<DossierEnCharge> tousDossiers = dossierRepository.getAllDossiers();
-            java.util.List<DossierEnCharge> dossiersFiltres = tousDossiers.stream()
-                .filter(dossier -> 
-                    texteRecherche.isEmpty() ||
-                    dossier.getSymptomes().toLowerCase().contains(texteRecherche.toLowerCase()) ||
-                    dossier.getDateArrivee().toString().contains(texteRecherche) ||
-                    String.valueOf(dossier.getNiveauGravite()).contains(texteRecherche)
-                )
-                .collect(java.util.stream.Collectors.toList());
-            
-            dossiersListView.getItems().clear();
-            dossiersListView.getItems().addAll(dossiersFiltres);
-        } catch (Exception e) {
-            ErrorHandler.handleException(
-                new HSPException(ErrorCode.DATA_ACCESS_ERROR, "Erreur lors du filtrage des dossiers", e),
-                "Filtrage dossiers"
-            );
-        }
-    }
-    
+        
     private void chargerDossierDansFormulaire(DossierEnCharge dossier, boolean modeEdition) {
         dossierEnEdition = modeEdition ? dossier : null;
         
@@ -568,8 +537,19 @@ public class DossierEnChargeController {
     private void chargerListeDossiers() {
         try {
             java.util.List<DossierEnCharge> dossiers = dossierRepository.getAllDossiers();
+            System.out.println("Nombre de dossiers récupérés: " + dossiers.size());
+            
             dossiersListView.getItems().clear();
             dossiersListView.getItems().addAll(dossiers);
+            
+            // Forcer le rafraîchissement de la ListView
+            dossiersListView.refresh();
+            
+            // Rafraîchir aussi dans le thread UI pour être sûr
+            Platform.runLater(() -> {
+                dossiersListView.refresh();
+                System.out.println("ListView rafraîchie - Items: " + dossiersListView.getItems().size());
+            });
         } catch (Exception e) {
             ErrorHandler.handleException(
                 new HSPException(ErrorCode.DATA_ACCESS_ERROR, "Erreur lors du chargement des dossiers", e),

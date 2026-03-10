@@ -57,7 +57,7 @@ public class PlanningController {
     private FichePatientRepository fichePatientRepository;
     private ObservableList<RendezVous> rendezVousObservable;
     private LocalDate debutSemaineActuelle;
-    private User medecinSelectionne;
+    private User profSelectionne;
 
     @FXML
     public void initialize() {
@@ -93,21 +93,21 @@ public class PlanningController {
 
     private void ouvrirDialogCreationRdv(LocalDateTime dateHeure) {
         try {
-            List<FichePatient> patients = fichePatientRepository.getAllFichePatients();
-            if (patients.isEmpty()) {
-                afficherMessage("❌ Aucun patient disponible", "#dc3545");
+            List<FichePatient> eleves = fichePatientRepository.getAllFichePatients();
+            if (eleves.isEmpty()) {
+                afficherMessage("❌ Aucun élève disponible", "#dc3545");
                 return;
             }
 
             List<User> users = userRepository.getAllUsers();
-            ObservableList<User> medecins = FXCollections.observableArrayList();
+            ObservableList<User> profs = FXCollections.observableArrayList();
             for (User u : users) {
-                if (u != null && u.getRole() != null && u.getRole().equalsIgnoreCase("MEDECIN")) {
-                    medecins.add(u);
+                if (u != null && u.getRole() != null && u.getRole().equalsIgnoreCase("PROF")) {
+                    profs.add(u);
                 }
             }
-            if (medecins.isEmpty()) {
-                afficherMessage("❌ Aucun médecin disponible", "#dc3545");
+            if (profs.isEmpty()) {
+                afficherMessage("❌ Aucun prof disponible", "#dc3545");
                 return;
             }
 
@@ -115,16 +115,16 @@ public class PlanningController {
             dialog.setTitle("Nouveau rendez-vous");
             dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
-            ComboBox<FichePatient> patientCombo = new ComboBox<>(FXCollections.observableArrayList(patients));
-            patientCombo.setValue(patients.get(0));
-            patientCombo.setCellFactory(param -> new ListCell<>() {
+            ComboBox<FichePatient> eleveCombo = new ComboBox<>(FXCollections.observableArrayList(eleves));
+            eleveCombo.setValue(eleves.get(0));
+            eleveCombo.setCellFactory(param -> new ListCell<>() {
                 @Override
                 protected void updateItem(FichePatient item, boolean empty) {
                     super.updateItem(item, empty);
                     setText(empty || item == null ? null : (item.getPrenom() + " " + item.getNom() + " (ID: " + item.getIdFichePatient() + ")"));
                 }
             });
-            patientCombo.setButtonCell(new ListCell<>() {
+            eleveCombo.setButtonCell(new ListCell<>() {
                 @Override
                 protected void updateItem(FichePatient item, boolean empty) {
                     super.updateItem(item, empty);
@@ -132,16 +132,16 @@ public class PlanningController {
                 }
             });
 
-            ComboBox<User> medecinCombo = new ComboBox<>(medecins);
-            medecinCombo.setValue(medecins.get(0));
-            medecinCombo.setCellFactory(param -> new ListCell<>() {
+            ComboBox<User> profCombo = new ComboBox<>(profs);
+            profCombo.setValue(profs.get(0));
+            profCombo.setCellFactory(param -> new ListCell<>() {
                 @Override
                 protected void updateItem(User item, boolean empty) {
                     super.updateItem(item, empty);
                     setText(empty || item == null ? null : (item.getPrenom() + " " + item.getNom() + " (ID: " + item.getIdUser() + ")"));
                 }
             });
-            medecinCombo.setButtonCell(new ListCell<>() {
+            profCombo.setButtonCell(new ListCell<>() {
                 @Override
                 protected void updateItem(User item, boolean empty) {
                     super.updateItem(item, empty);
@@ -164,10 +164,10 @@ public class PlanningController {
             grid.setVgap(10);
             grid.add(new Label("Date/heure:"), 0, 0);
             grid.add(new Label(dateHeure.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))), 1, 0);
-            grid.add(new Label("Patient:"), 0, 1);
-            grid.add(patientCombo, 1, 1);
-            grid.add(new Label("Médecin:"), 0, 2);
-            grid.add(medecinCombo, 1, 2);
+            grid.add(new Label("Élève:"), 0, 1);
+            grid.add(eleveCombo, 1, 1);
+            grid.add(new Label("Prof:"), 0, 2);
+            grid.add(profCombo, 1, 2);
             grid.add(new Label("Motif:"), 0, 3);
             grid.add(motifField, 1, 3);
             grid.add(new Label("Statut:"), 0, 4);
@@ -182,16 +182,16 @@ public class PlanningController {
                     return;
                 }
 
-                FichePatient patient = patientCombo.getValue();
-                User medecin = medecinCombo.getValue();
+                FichePatient eleve = eleveCombo.getValue();
+                User prof = profCombo.getValue();
                 String motif = motifField.getText();
 
-                if (patient == null || medecin == null || motif == null || motif.trim().isEmpty()) {
-                    afficherMessage("❌ Patient, médecin et motif sont obligatoires", "#dc3545");
+                if (eleve == null || prof == null || motif == null || motif.trim().isEmpty()) {
+                    afficherMessage("❌ Élève, prof et motif sont obligatoires", "#dc3545");
                     return;
                 }
 
-                RendezVous rdv = new RendezVous(patient.getIdFichePatient(), medecin.getIdUser(), dateHeure, motif.trim());
+                RendezVous rdv = new RendezVous(eleve.getIdFichePatient(), prof.getIdUser(), dateHeure, motif.trim());
                 rdv.setNotes(notesArea.getText());
                 rdv.setStatut(statutCombo.getValue());
 
@@ -212,26 +212,25 @@ public class PlanningController {
 
     private void configurerMedecins() {
         try {
-            List<User> medecins = userRepository.getAllUsers();
-            ObservableList<User> medecinsList = FXCollections.observableArrayList();
-            
-            for (User user : medecins) {
-                if (user.getRole() != null && user.getRole().equalsIgnoreCase("medecin")) {
-                    medecinsList.add(user);
+            List<User> users = userRepository.getAllUsers();
+            ObservableList<User> profsList = FXCollections.observableArrayList();
+
+            for (User user : users) {
+                if (user.getRole() != null && user.getRole().equalsIgnoreCase("PROF")) {
+                    profsList.add(user);
                 }
             }
-            
-            medecinComboBox.setItems(medecinsList);
-            medecinComboBox.setPromptText("Tous les médecins");
-            
-            // Écouteur de changement de sélection
+
+            medecinComboBox.setItems(profsList);
+            medecinComboBox.setPromptText("Tous les profs");
+
             medecinComboBox.setOnAction(event -> {
-                medecinSelectionne = medecinComboBox.getValue();
+                profSelectionne = medecinComboBox.getValue();
                 chargerRendezVous();
             });
-            
+
         } catch (Exception e) {
-            System.err.println("Erreur lors du chargement des médecins: " + e.getMessage());
+            System.err.println("Erreur lors du chargement des profs: " + e.getMessage());
         }
     }
 
@@ -318,9 +317,8 @@ public class PlanningController {
             System.out.println("Chargement des rendez-vous pour la semaine du " + debutSemaineActuelle);
             
             List<RendezVous> rdvs;
-            if (medecinSelectionne != null) {
-                rdvs = rdvRepository.getRendezVousParMedecin(medecinSelectionne.getIdUser());
-                // Filtrer pour la semaine actuelle
+            if (profSelectionne != null) {
+                rdvs = rdvRepository.getRendezVousParProf(profSelectionne.getIdUser());
                 rdvs.removeIf(rdv -> !rdv.estDansSemaine(debutSemaineActuelle));
             } else {
                 rdvs = rdvRepository.getRendezVousParSemaine(debutSemaineActuelle);
@@ -388,11 +386,10 @@ public class PlanningController {
                 break;
         }
         
-        // Tooltip avec plus d'informations
-        Tooltip tooltip = new Tooltip("ID: " + rdv.getIdRdv() + 
-                                    "\nPatient: " + rdv.getIdPatient() + 
-                                    "\nMédecin: " + rdv.getIdMedecin() + 
-                                    "\nMotif: " + rdv.getMotif() + 
+        Tooltip tooltip = new Tooltip("ID: " + rdv.getIdRdv() +
+                                    "\nÉlève: " + rdv.getIdEleve() +
+                                    "\nProf: " + rdv.getIdProf() +
+                                    "\nMotif: " + rdv.getMotif() +
                                     "\nStatut: " + rdv.getStatut());
         rdvLabel.setTooltip(tooltip);
         

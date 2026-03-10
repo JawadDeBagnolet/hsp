@@ -43,7 +43,7 @@ public class DossierEnChargeRepository {
             stmt.setString(3, dossier.getSymptomes());
             // `niveau_gravite` est un enum('1','2','3','4','5')
             stmt.setString(4, String.valueOf(dossier.getNiveauGravite()));
-            stmt.setInt(5, dossier.getRefUser()); // id_patient
+            stmt.setInt(5, dossier.getIdPatient()); // id_patient
             stmt.setInt(6, SessionManager.getUtilisateurConnecte().getIdUser()); // id_user (utilisateur connecté)
             
             System.out.println("Paramètres préparés:");
@@ -51,7 +51,7 @@ public class DossierEnChargeRepository {
             System.out.println("  2. Heure arrivée (SQL Timestamp): " + sqlHeureArrivee + " -> " + sqlHeureArrivee.getClass().getSimpleName());
             System.out.println("  3. Symptômes: " + dossier.getSymptomes());
             System.out.println("  4. Niveau gravité: " + dossier.getNiveauGravite());
-            System.out.println("  5. ID Patient: " + dossier.getRefUser());
+            System.out.println("  5. ID Patient: " + dossier.getIdPatient());
             System.out.println("  6. ID User (connecté): " + SessionManager.getUtilisateurConnecte().getIdUser());
 
             int rowsAffected = stmt.executeUpdate();
@@ -123,12 +123,25 @@ public class DossierEnChargeRepository {
     public List<DossierEnCharge> getAllDossiers() {
         List<DossierEnCharge> dossiers = new ArrayList<>();
         String sql = "SELECT * FROM dossier_charge";
+        System.out.println("=== REQUÊTE TOUS LES DOSSIERS ===");
+        System.out.println("SQL: " + sql);
 
         try (Connection cnx = Database.getConnexion();
              PreparedStatement stmt = cnx.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
 
+            System.out.println("Connexion établie, exécution de la requête...");
+            
             while (rs.next()) {
+                System.out.println("Dossier trouvé dans la base:");
+                System.out.println("  ID: " + rs.getInt("id_dossier"));
+                System.out.println("  Date: " + rs.getTimestamp("date_arrivee"));
+                System.out.println("  Heure: " + rs.getTimestamp("heure_arrivee"));
+                System.out.println("  Symptômes: " + rs.getString("symptomes"));
+                System.out.println("  Gravité: " + rs.getString("niveau_gravite"));
+                System.out.println("  Ref User: " + rs.getInt("ref_user"));
+                System.out.println("  ID Patient: " + rs.getInt("id_patient"));
+                
                 dossiers.add(new DossierEnCharge(
                     rs.getInt("id_dossier"),
                     rs.getTimestamp("date_arrivee").toLocalDateTime().toLocalDate(),
@@ -139,9 +152,17 @@ public class DossierEnChargeRepository {
                     rs.getInt("id_patient")
                 ));
             }
+            
+            System.out.println("Nombre total de dossiers trouvés: " + dossiers.size());
+            
         } catch (SQLException e) {
-            System.err.println("Erreur lors de la récupération des dossiers: " + e.getMessage());
+            System.err.println("Erreur SQL lors de la récupération des dossiers: " + e.getMessage());
+            System.err.println("Code d'erreur: " + e.getErrorCode());
+            System.err.println("État SQL: " + e.getSQLState());
+            e.printStackTrace();
         }
+        
+        System.out.println("=== FIN REQUÊTE DOSSIERS ===");
         return dossiers;
     }
 

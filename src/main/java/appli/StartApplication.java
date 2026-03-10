@@ -20,7 +20,7 @@ public class StartApplication extends Application {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(StartApplication.class.getResource("/appli/hsp/helloView.fxml"));
             Scene scene = new Scene(fxmlLoader.load(), mainStage.getMaxWidth(), mainStage.getMaxHeight());
-            mainStage.setTitle("HSP - Hôpital de Santé Publique");
+            mainStage.setTitle("HSP - Lycée de Santé Publique");
             mainStage.setScene(scene);
             mainStage.show();
         } catch (Exception e) {

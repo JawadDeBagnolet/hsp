@@ -93,17 +93,17 @@ public class PageAccueil {
     }
 
     @FXML
-    public void versHospitalisations(ActionEvent event) {
+    public void versVisiteInfirmerie(ActionEvent event) {
         try {
-            StartApplication.changeScene("hospitalisationsView");
+            StartApplication.changeScene("visiteInfirmerieView");
         } catch (Exception e) {
             ErrorHandler.handleException(
-                new HSPException(ErrorCode.NAVIGATION_ERROR, "Impossible d'accéder à la gestion des hospitalisations", e),
-                "Navigation vers Hospitalisations"
+                new HSPException(ErrorCode.NAVIGATION_ERROR, "Impossible d'accéder aux visites infirmerie", e),
+                "Navigation vers Visites Infirmerie"
             );
         }
     }
-    
+
     @FXML
     public void versFournisseursProduits(ActionEvent event) {
         try {

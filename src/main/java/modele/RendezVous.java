@@ -4,59 +4,59 @@ import java.time.LocalDateTime;
 
 public class RendezVous {
     private int idRdv;
-    private int idPatient;
-    private int idMedecin;
+    private int idEleve;
+    private int idProf;
     private LocalDateTime dateHeure;
     private String motif;
     private String statut;
     private String notes;
-    
+
     // Constructeurs
     public RendezVous() {
         this.statut = "PLANIFIE";
     }
-    
-    public RendezVous(int idPatient, int idMedecin, LocalDateTime dateHeure, String motif) {
-        this.idPatient = idPatient;
-        this.idMedecin = idMedecin;
+
+    public RendezVous(int idEleve, int idProf, LocalDateTime dateHeure, String motif) {
+        this.idEleve = idEleve;
+        this.idProf = idProf;
         this.dateHeure = dateHeure;
         this.motif = motif;
         this.statut = "PLANIFIE";
     }
-    
-    public RendezVous(int idRdv, int idPatient, int idMedecin, LocalDateTime dateHeure, String motif, String statut, String notes) {
+
+    public RendezVous(int idRdv, int idEleve, int idProf, LocalDateTime dateHeure, String motif, String statut, String notes) {
         this.idRdv = idRdv;
-        this.idPatient = idPatient;
-        this.idMedecin = idMedecin;
+        this.idEleve = idEleve;
+        this.idProf = idProf;
         this.dateHeure = dateHeure;
         this.motif = motif;
         this.statut = statut;
         this.notes = notes;
     }
-    
+
     // Getters et Setters
     public int getIdRdv() {
         return idRdv;
     }
-    
+
     public void setIdRdv(int idRdv) {
         this.idRdv = idRdv;
     }
-    
-    public int getIdPatient() {
-        return idPatient;
+
+    public int getIdEleve() {
+        return idEleve;
     }
-    
-    public void setIdPatient(int idPatient) {
-        this.idPatient = idPatient;
+
+    public void setIdEleve(int idEleve) {
+        this.idEleve = idEleve;
     }
-    
-    public int getIdMedecin() {
-        return idMedecin;
+
+    public int getIdProf() {
+        return idProf;
     }
-    
-    public void setIdMedecin(int idMedecin) {
-        this.idMedecin = idMedecin;
+
+    public void setIdProf(int idProf) {
+        this.idProf = idProf;
     }
     
     public LocalDateTime getDateHeure() {
@@ -127,8 +127,8 @@ public class RendezVous {
     public String toString() {
         return "RendezVous{" +
                 "idRdv=" + idRdv +
-                ", idPatient=" + idPatient +
-                ", idMedecin=" + idMedecin +
+                ", idEleve=" + idEleve +
+                ", idProf=" + idProf +
                 ", dateHeure=" + dateHeure +
                 ", motif='" + motif + '\'' +
                 ", statut='" + statut + '\'' +
@@ -136,7 +136,7 @@ public class RendezVous {
     }
     
     public boolean isValid() {
-        return idPatient > 0 && idMedecin > 0 && dateHeure != null && 
+        return idEleve > 0 && idProf > 0 && dateHeure != null &&
                motif != null && !motif.trim().isEmpty();
     }
 }

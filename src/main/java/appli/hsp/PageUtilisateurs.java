@@ -137,7 +137,7 @@ public class PageUtilisateurs {
         if (role == null) return "#6c757d";
         switch (role) {
             case "ADMIN": return "#dc3545";
-            case "MEDECIN": return "#007bff";
+            case "PROF": return "#007bff";
             case "INFIRMIER": return "#28a745";
             case "SECRETAIRE": return "#ffc107";
             case "GESTIONNAIRE_DE_STOCK": return "#6f42c1";
@@ -147,10 +147,10 @@ public class PageUtilisateurs {
 
     private void configurerRoles() {
         roleComboBox.setItems(FXCollections.observableArrayList(
-            "ADMIN", 
-            "MEDECIN", 
-            "INFIRMIER", 
-            "SECRETAIRE", 
+            "ADMIN",
+            "PROF",
+            "INFIRMIER",
+            "SECRETAIRE",
             "GESTIONNAIRE_DE_STOCK"
         ));
         roleComboBox.setPromptText("Sélectionner un rôle");
@@ -180,7 +180,8 @@ public class PageUtilisateurs {
         System.out.println("Total: " + utilisateursObservable.size() + " utilisateur" + (utilisateursObservable.size() > 1 ? "s" : ""));
         System.out.println("\n=== 🎭 RÔLES DISPONIBLES ===");
         System.out.println("🔴 ADMIN");
-        System.out.println("🔵 MEDECIN");
+        System.out.println("🔵 PROF");
+        System.out.println("🔵 PROF");
         System.out.println("🟢 INFIRMIER");
         System.out.println("🟡 SECRETAIRE");
         System.out.println("🟣 GESTIONNAIRE_DE_STOCK");
