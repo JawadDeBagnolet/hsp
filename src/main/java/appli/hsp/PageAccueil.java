@@ -1,5 +1,6 @@
 package appli.hsp;
 
+import appli.SessionManager;
 import appli.StartApplication;
 import appli.hsp.exception.ErrorCode;
 import appli.hsp.exception.LPRSException;
@@ -59,7 +60,13 @@ public class PageAccueil {
     @FXML
     public void versCommandes(ActionEvent event) {
         try {
-            StartApplication.changeScene("commandeView");
+            // Le gestionnaire accède à la page de commandes fournisseurs
+            // Les autres rôles (infirmier, etc.) accèdent à la page de demandes
+            String role = SessionManager.estConnecte()
+                    ? SessionManager.getUtilisateurConnecte().getRole()
+                    : "";
+            String page = "GESTIONNAIRE_DE_STOCK".equals(role) ? "pageCommandes" : "commandeView";
+            StartApplication.changeScene(page);
         } catch (Exception e) {
             ErrorHandler.handleException(
                 new LPRSException(ErrorCode.NAVIGATION_ERROR, "Impossible d'accéder à la gestion des commandes", e),

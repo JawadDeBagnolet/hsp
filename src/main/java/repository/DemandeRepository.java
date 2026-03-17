@@ -40,11 +40,14 @@ public class DemandeRepository {
             ResultSet rs = stmt.executeQuery();
             
             if (rs.next()) {
+                String statut = "En attente";
+                try { statut = rs.getString("statut"); } catch (SQLException ignored) {}
                 return new Demande(
                     rs.getInt("id_demande"),
                     rs.getInt("id_user"),
                     rs.getObject("date_demande", LocalDateTime.class),
-                    rs.getInt("quantite")
+                    rs.getInt("quantite"),
+                    statut
                 );
             }
         } catch (SQLException e) {
@@ -55,18 +58,21 @@ public class DemandeRepository {
     
     public List<Demande> getAllDemandes() {
         List<Demande> demandes = new ArrayList<>();
-        String sql = "SELECT * FROM demande";
-        
+        String sql = "SELECT * FROM demande ORDER BY date_demande DESC";
+
         try (Connection cnx = Database.getConnexion();
              PreparedStatement stmt = cnx.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
-            
+
             while (rs.next()) {
+                String statut = "En attente";
+                try { statut = rs.getString("statut"); } catch (SQLException ignored) {}
                 demandes.add(new Demande(
                     rs.getInt("id_demande"),
                     rs.getInt("id_user"),
                     rs.getObject("date_demande", LocalDateTime.class),
-                    rs.getInt("quantite")
+                    rs.getInt("quantite"),
+                    statut
                 ));
             }
         } catch (SQLException e) {
@@ -95,15 +101,49 @@ public class DemandeRepository {
     
     public boolean supprimerDemande(int id) {
         String sql = "DELETE FROM demande WHERE id_demande = ?";
-        
+
         try (Connection cnx = Database.getConnexion();
              PreparedStatement stmt = cnx.prepareStatement(sql)) {
-            
+
             stmt.setInt(1, id);
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             System.err.println("Erreur lors de la suppression de la demande: " + e.getMessage());
             return false;
         }
+    }
+
+    public boolean updateStatut(int idDemande, String statut) {
+        String sql = "UPDATE demande SET statut = ? WHERE id_demande = ?";
+        try (Connection cnx = Database.getConnexion();
+             PreparedStatement stmt = cnx.prepareStatement(sql)) {
+            stmt.setString(1, statut);
+            stmt.setInt(2, idDemande);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.err.println("Erreur updateStatut demande: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public List<Demande> getDemandesParStatut(String statut) {
+        List<Demande> demandes = new ArrayList<>();
+        String sql = "SELECT * FROM demande WHERE statut = ? ORDER BY date_demande DESC";
+        try (Connection cnx = Database.getConnexion();
+             PreparedStatement stmt = cnx.prepareStatement(sql)) {
+            stmt.setString(1, statut);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                demandes.add(new Demande(
+                    rs.getInt("id_demande"),
+                    rs.getInt("id_user"),
+                    rs.getObject("date_demande", LocalDateTime.class),
+                    rs.getInt("quantite")
+                ));
+            }
+        } catch (SQLException e) {
+            System.err.println("Erreur getDemandesParStatut: " + e.getMessage());
+        }
+        return demandes;
     }
 }

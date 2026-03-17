@@ -1,6 +1,7 @@
 package appli.hsp;
 
 import appli.StartApplication;
+import appli.hsp.utils.NavigationHelper;
 import appli.SessionManager;
 import appli.hsp.exception.ErrorCode;
 import appli.hsp.exception.LPRSException;
@@ -481,12 +482,9 @@ public class DossierEnChargeController {
     @FXML
     private void versCommandes() {
         try {
-            StartApplication.changeScene("commandeView");
+            NavigationHelper.versCommandes();
         } catch (Exception e) {
-            ErrorHandler.handleException(
-                new LPRSException(ErrorCode.NAVIGATION_ERROR, "Impossible d'accéder à la gestion des commandes", e),
-                "Navigation vers Commandes"
-            );
+            System.err.println("Erreur navigation vers commandes: " + e.getMessage());
         }
     }
 

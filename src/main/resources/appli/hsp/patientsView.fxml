@@ -130,6 +130,14 @@
 
                         <Button fx:id="viderButton" text="Vider Formulaire" onAction="#viderChamps"
                                 style="-fx-background-color: #64748b; -fx-text-fill: #ffffff; -fx-font-size: 12px; -fx-font-weight: bold; -fx-padding: 8; -fx-background-radius: 8; -fx-cursor: hand;" maxWidth="1.7976931348623157E308" />
+
+                        <Separator/>
+
+                        <Button text="Envoyer à l'infirmerie" onAction="#envoyerInfirmerie"
+                                style="-fx-background-color: #f59e0b; -fx-text-fill: #ffffff; -fx-font-size: 13px; -fx-font-weight: bold; -fx-padding: 10; -fx-background-radius: 8; -fx-cursor: hand;" maxWidth="1.7976931348623157E308" />
+
+                        <Button text="Voir les tickets" onAction="#versTickets"
+                                style="-fx-background-color: #6366f1; -fx-text-fill: #ffffff; -fx-font-size: 13px; -fx-font-weight: bold; -fx-padding: 10; -fx-background-radius: 8; -fx-cursor: hand;" maxWidth="1.7976931348623157E308" />
                     </VBox>
                 </children>
             </VBox>

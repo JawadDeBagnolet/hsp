@@ -1,6 +1,7 @@
 package appli.hsp;
 
 import appli.StartApplication;
+import appli.hsp.utils.NavigationHelper;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import modele.FicheProduit;
@@ -38,8 +39,8 @@ public class FicheProduitController {
                     String danger = (niv >= 0 && niv < niveaux.length) ? niveaux[niv] : String.valueOf(niv);
                     String desc = (produit.getDescription() != null && !produit.getDescription().isEmpty())
                             ? produit.getDescription() : "—";
-                    setText(String.format("📦 %s  |  %s  |  Danger: %s",
-                            produit.getLibelle(), desc, danger));
+                    setText(String.format("📦 %s  |  %s  |  Danger: %s  |  Stock: %d",
+                            produit.getLibelle(), desc, danger, produit.getStockActuel()));
                     setStyle("-fx-background-color: #f8f9fa; -fx-border-color: #dee2e6; -fx-border-width: 0 0 1 0; -fx-padding: 8;");
                 }
             }
@@ -201,7 +202,11 @@ public class FicheProduitController {
         try { StartApplication.changeScene("dossierEnChargeView"); } catch (Exception e) { System.err.println(e.getMessage()); }
     }
     @FXML private void versCommandes() {
-        try { StartApplication.changeScene("commandeView"); } catch (Exception e) { System.err.println(e.getMessage()); }
+        try {
+            NavigationHelper.versCommandes();
+        } catch (Exception e) {
+            System.err.println("Erreur navigation vers commandes: " + e.getMessage());
+        }
     }
     @FXML private void versFicheProduit() {
         System.out.println("Déjà sur la page catalogue produits");

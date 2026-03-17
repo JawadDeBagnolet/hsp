@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:8889
--- Generation Time: Mar 17, 2026 at 11:37 AM
+-- Generation Time: Mar 17, 2026 at 12:37 PM
 -- Server version: 8.0.40
 -- PHP Version: 8.3.14
 
@@ -115,7 +115,7 @@ CREATE TABLE `fiche_eleve` (
 INSERT INTO `fiche_eleve` (`id_eleve`, `nom`, `prenom`, `num_etudiant`, `email`, `tel`, `rue`, `cp`, `ville`, `candidature`) VALUES
 (1, 'lak', 'reda', '1234567891234', 'r@r.com', '763456080', '7 rue de afg', 94000, 'creteil', NULL),
 (3, 'Lemoine', 'Sébastien', '123', 'test@test.te', 'aze', '', 99, '', NULL),
-(4, 'lemoine', 'seb', '0009', '@l.com', '0909090909', '', 99999, 'lol', NULL);
+(4, 'lemoine', 'sebas', '0009', '@l.com', '0909090909', '', 99999, 'lol', NULL);
 
 -- --------------------------------------------------------
 
@@ -198,7 +198,11 @@ CREATE TABLE `user` (
 --
 
 INSERT INTO `user` (`id_user`, `nom`, `prenom`, `email`, `role`, `mdp`) VALUES
-(1, 'Lakhledj', 'Reda', 'red@gmail.com', 'ADMIN', '9999');
+(1, 'Lakhledj', 'Reda', 'red@gmail.com', 'ADMIN', '9999'),
+(2, 'admin', 'admin', 'admin@gmail.com', 'ADMIN', 'test'),
+(4, 'infirmier', 'infirmier', 'infirmier@gmail.com', 'INFIRMIER', 'test'),
+(5, 'secretaire', 'secretaire', 'secretaire@gmail.com', 'SECRETAIRE', 'test'),
+(6, 'gestionnaire', 'gestionnaire', 'gestionnaire@gmail.com', 'GESTIONNAIRE_DE_STOCK', 'test');
 
 -- --------------------------------------------------------
 
@@ -220,7 +224,7 @@ CREATE TABLE `visite_infirmerie` (
 --
 
 INSERT INTO `visite_infirmerie` (`id_visite`, `id_eleve`, `date_visite`, `heure_visite`, `motif`, `id_infirmier`) VALUES
-(1, 1, '2026-03-17', '22:00:00', 'sida', NULL);
+(1, 1, '2026-03-17', '22:00:00', 'fatigue', NULL);
 
 --
 -- Indexes for dumped tables
@@ -342,7 +346,7 @@ ALTER TABLE `fournisseur_produit`
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `id_user` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id_user` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `visite_infirmerie`

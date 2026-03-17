@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            xmlns="http://javafx.com/javafx/25"
+            fx:controller="appli.hsp.PageTickets"
+            style="-fx-background-color: linear-gradient(to bottom, #0f172a, #1e1b4b);">
+
+    <top>
+        <HBox style="-fx-background-color: #080c14; -fx-border-color: #6366f1; -fx-border-width: 0 0 2 0;">
+            <padding><Insets top="14" right="28" bottom="14" left="28"/></padding>
+            <VBox spacing="2" HBox.hgrow="ALWAYS">
+                <Text text="LPRS" style="-fx-font-size: 22px; -fx-fill: #818cf8; -fx-font-weight: bold;"/>
+                <Text text="Lycée de Santé Publique" style="-fx-font-size: 11px; -fx-fill: #64748b;"/>
+            </VBox>
+            <HBox spacing="4" alignment="CENTER">
+                <Button text="Accueil" onAction="#versAccueil"
+                        style="-fx-background-color: transparent; -fx-text-fill: #94a3b8; -fx-font-size: 13px; -fx-border-color: transparent; -fx-cursor: hand; -fx-padding: 8 14;"/>
+                <Button text="Secrétariat" onAction="#versPatients"
+                        style="-fx-background-color: transparent; -fx-text-fill: #94a3b8; -fx-font-size: 13px; -fx-border-color: transparent; -fx-cursor: hand; -fx-padding: 8 14;"/>
+                <Button text="Tickets"
+                        style="-fx-background-color: #6366f1; -fx-text-fill: #ffffff; -fx-font-size: 13px; -fx-background-radius: 20; -fx-border-radius: 20; -fx-cursor: hand; -fx-padding: 8 18; -fx-font-weight: bold;"/>
+                <Button text="Commandes" onAction="#versCommandes"
+                        style="-fx-background-color: transparent; -fx-text-fill: #94a3b8; -fx-font-size: 13px; -fx-border-color: transparent; -fx-cursor: hand; -fx-padding: 8 14;"/>
+                <Button text="Planning" onAction="#versPlanning"
+                        style="-fx-background-color: transparent; -fx-text-fill: #94a3b8; -fx-font-size: 13px; -fx-border-color: transparent; -fx-cursor: hand; -fx-padding: 8 14;"/>
+                <Button text="Catalogue" onAction="#versFicheProduit"
+                        style="-fx-background-color: transparent; -fx-text-fill: #94a3b8; -fx-font-size: 13px; -fx-border-color: transparent; -fx-cursor: hand; -fx-padding: 8 14;"/>
+                <Button text="Mon espace" onAction="#versMonEspace"
+                        style="-fx-background-color: rgba(99,102,241,0.15); -fx-text-fill: #818cf8; -fx-font-size: 13px; -fx-background-radius: 20; -fx-border-radius: 20; -fx-border-color: rgba(99,102,241,0.5); -fx-border-width: 1; -fx-cursor: hand; -fx-padding: 8 18;"/>
+                <Button text="Déconnexion" onAction="#deconnexion"
+                        style="-fx-background-color: #ef4444; -fx-text-fill: #ffffff; -fx-font-size: 13px; -fx-background-radius: 20; -fx-border-radius: 20; -fx-cursor: hand; -fx-padding: 8 18;"/>
+            </HBox>
+        </HBox>
+    </top>
+
+    <center>
+        <ScrollPane fitToWidth="true" style="-fx-background: transparent; -fx-border-color: transparent; -fx-background-color: transparent;">
+            <VBox spacing="20" style="-fx-padding: 30;">
+
+                <VBox spacing="4">
+                    <Text text="Tickets infirmerie" style="-fx-font-size: 26px; -fx-fill: #ffffff; -fx-font-weight: bold;"/>
+                    <Text text="Gérer les élèves envoyés à l'infirmerie par la secrétaire"
+                          style="-fx-font-size: 13px; -fx-fill: #94a3b8;"/>
+                </VBox>
+
+                <!-- Filtres -->
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="Filtrer par statut :" style="-fx-text-fill: #94a3b8;"/>
+                    <ComboBox fx:id="filtreStatutCombo" prefWidth="220"
+                              style="-fx-background-color: rgba(248,250,252,0.95);"/>
+                    <Button text="Tout afficher" onAction="#handleToutAfficher"
+                            style="-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-background-radius: 5; -fx-cursor: hand; -fx-padding: 6 14;"/>
+                    <Button text="Rafraîchir" onAction="#handleRafraichir"
+                            style="-fx-background-color: #6366f1; -fx-text-fill: white; -fx-background-radius: 5; -fx-cursor: hand; -fx-padding: 6 14;"/>
+                </HBox>
+
+                <!-- Tableau tickets -->
+                <TableView fx:id="ticketsTable" prefHeight="480" VBox.vgrow="ALWAYS"
+                           style="-fx-background-color: rgba(248,250,252,0.97); -fx-border-color: rgba(99,102,241,0.2); -fx-border-radius: 6; -fx-background-radius: 6;">
+                    <columns>
+                        <TableColumn fx:id="colId"       prefWidth="55"  text="ID"      style="-fx-font-weight: bold; -fx-alignment: CENTER;"/>
+                        <TableColumn fx:id="colDate"     prefWidth="145" text="Date"    style="-fx-font-weight: bold;"/>
+                        <TableColumn fx:id="colEleve"    prefWidth="200" text="Élève"   style="-fx-font-weight: bold;"/>
+                        <TableColumn fx:id="colMotif"    prefWidth="250" text="Motif"   style="-fx-font-weight: bold;"/>
+                        <TableColumn fx:id="colStatut"       prefWidth="170" text="Statut"       style="-fx-font-weight: bold; -fx-alignment: CENTER;"/>
+                        <TableColumn fx:id="colPrescription" prefWidth="200" text="Prescription"  style="-fx-font-weight: bold;"/>
+                        <TableColumn fx:id="colActions"      prefWidth="160" text="Actions"       style="-fx-font-weight: bold; -fx-alignment: CENTER;"/>
+                    </columns>
+                    <placeholder>
+                        <Label text="Aucun ticket" style="-fx-text-fill: #64748b; -fx-font-size: 14px;"/>
+                    </placeholder>
+                </TableView>
+
+            </VBox>
+        </ScrollPane>
+    </center>
+
+</BorderPane>

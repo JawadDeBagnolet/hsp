@@ -7,18 +7,25 @@ public class Demande {
     private int idUser;
     private LocalDateTime dateDemande;
     private int quantite;
+    private String statut;
 
-    public Demande(int idDemande, int idUser, LocalDateTime dateDemande, int quantite) {
+    public Demande(int idDemande, int idUser, LocalDateTime dateDemande, int quantite, String statut) {
         this.idDemande = idDemande;
         this.idUser = idUser;
         this.dateDemande = dateDemande;
         this.quantite = quantite;
+        this.statut = statut != null ? statut : "En attente";
+    }
+
+    public Demande(int idDemande, int idUser, LocalDateTime dateDemande, int quantite) {
+        this(idDemande, idUser, dateDemande, quantite, "En attente");
     }
 
     public Demande(int idUser, LocalDateTime dateDemande, int quantite) {
         this.idUser = idUser;
         this.dateDemande = dateDemande;
         this.quantite = quantite;
+        this.statut = "En attente";
     }
 
     public int getIdDemande() {
@@ -51,5 +58,13 @@ public class Demande {
 
     public void setQuantite(int quantite) {
         this.quantite = quantite;
+    }
+
+    public String getStatut() {
+        return statut != null ? statut : "En attente";
+    }
+
+    public void setStatut(String statut) {
+        this.statut = statut;
     }
 }

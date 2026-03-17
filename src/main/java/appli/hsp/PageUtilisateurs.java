@@ -1,6 +1,7 @@
 package appli.hsp;
 
 import appli.StartApplication;
+import appli.hsp.utils.NavigationHelper;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -614,9 +615,9 @@ public class PageUtilisateurs {
     @FXML
     public void versCommandes(ActionEvent event) {
         try {
-            StartApplication.changeScene("commandeView");
+            NavigationHelper.versCommandes();
         } catch (Exception e) {
-            System.err.println("Erreur lors de la redirection vers commandes: " + e.getMessage());
+            System.err.println("Erreur navigation vers commandes: " + e.getMessage());
         }
     }
 

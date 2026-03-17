@@ -1,6 +1,7 @@
 package appli.hsp;
 
 import appli.StartApplication;
+import appli.hsp.utils.NavigationHelper;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -287,7 +288,11 @@ public class VisiteInfirmerieController {
         try { StartApplication.changeScene("patientsView"); } catch (Exception e) { System.err.println(e.getMessage()); }
     }
     @FXML private void versCommandes() {
-        try { StartApplication.changeScene("commandeView"); } catch (Exception e) { System.err.println(e.getMessage()); }
+        try {
+            NavigationHelper.versCommandes();
+        } catch (Exception e) {
+            System.err.println("Erreur navigation vers commandes: " + e.getMessage());
+        }
     }
     @FXML private void versMonEspace() {
         try { StartApplication.changeScene("pageMonEspace"); } catch (Exception e) { System.err.println(e.getMessage()); }

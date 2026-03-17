@@ -2,6 +2,7 @@ package appli.hsp;
 
 import appli.SessionManager;
 import appli.StartApplication;
+import appli.hsp.utils.NavigationHelper;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -159,9 +160,9 @@ public class PageMonEspace {
     @FXML
     public void versCommandes(ActionEvent event) {
         try {
-            StartApplication.changeScene("commandeView");
+            NavigationHelper.versCommandes();
         } catch (Exception e) {
-            System.err.println("Erreur lors de la redirection vers commandes: " + e.getMessage());
+            System.err.println("Erreur navigation vers commandes: " + e.getMessage());
         }
     }
 

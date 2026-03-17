@@ -1,5 +1,6 @@
 package appli.hsp;
 
+import appli.SessionManager;
 import appli.StartApplication;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -7,340 +8,356 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import modele.Commande;
+import modele.Demande;
+import modele.Fournisseur;
+import repository.*;
 
 import java.net.URL;
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class PageCommandes implements Initializable {
 
-    @FXML
-    private AnchorPane rootPane;
+    // --- Onglet Demandes ---
+    @FXML private TableView<Demande> demandesTable;
+    @FXML private TableColumn<Demande, Integer> demIdCol;
+    @FXML private TableColumn<Demande, String> demDateCol;
+    @FXML private TableColumn<Demande, String> demInfirmierCol;
+    @FXML private TableColumn<Demande, Integer> demQuantiteCol;
+    @FXML private TableColumn<Demande, String> demStatutCol;
+    @FXML private TableColumn<Demande, Void> demActionsCol;
 
-    @FXML
-    private TextField rechercheField;
+    // --- Onglet Commandes ---
+    @FXML private TableView<Commande> commandesTable;
+    @FXML private TableColumn<Commande, Integer> cmdIdCol;
+    @FXML private TableColumn<Commande, String> cmdDateCol;
+    @FXML private TableColumn<Commande, String> cmdFournisseurCol;
+    @FXML private TableColumn<Commande, String> cmdLibelleCol;
+    @FXML private TableColumn<Commande, String> cmdStatutCol;
+    @FXML private TableColumn<Commande, Void> cmdActionsCol;
 
-    @FXML
-    private ComboBox<String> filtreStatut;
+    private final DemandeRepository demandeRepo = new DemandeRepository();
+    private final CommandeRepository commandeRepo = new CommandeRepository();
+    private final FournisseurRepository fournisseurRepo = new FournisseurRepository();
+    private final DemandeProduitRepository demandeProduitRepo = new DemandeProduitRepository();
+    private final CommandeProduitRepository commandeProduitRepo = new CommandeProduitRepository();
+    private final UserRepository userRepo = new UserRepository();
 
-    @FXML
-    private TableView<Commande> commandesTable;
+    private final ObservableList<Demande> demandesData = FXCollections.observableArrayList();
+    private final ObservableList<Commande> commandesData = FXCollections.observableArrayList();
 
-    @FXML
-    private TableColumn<Commande, String> idColumn;
-
-    @FXML
-    private TableColumn<Commande, String> dateColumn;
-
-    @FXML
-    private TableColumn<Commande, String> fournisseurColumn;
-
-    @FXML
-    private TableColumn<Commande, String> typeColumn;
-
-    @FXML
-    private TableColumn<Commande, String> montantColumn;
-
-    @FXML
-    private TableColumn<Commande, String> statutColumn;
-
-    @FXML
-    private TableColumn<Commande, Void> actionsColumn;
-
-    @FXML
-    private VBox detailsPane;
-
-    @FXML
-    private Label numeroLabel;
-
-    @FXML
-    private Label dateLabel;
-
-    @FXML
-    private Label fournisseurLabel;
-
-    @FXML
-    private Label typeLabel;
-
-    @FXML
-    private Label montantLabel;
-
-    @FXML
-    private Label statutLabel;
-
-    private ObservableList<Commande> commandesList;
+    private static final DateTimeFormatter FMT = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        System.out.println("Page Commandes initialisée");
-        
-        // Initialisation des données
-        commandesList = FXCollections.observableArrayList();
-        chargerDonneesExemple();
-        
-        // Configuration du filtre
-        filtreStatut.setItems(FXCollections.observableArrayList("Tous", "En attente", "Validée", "Livrée", "Annulée"));
-        filtreStatut.setValue("Tous");
-        
-        // Configuration du tableau
-        configurerTableau();
-        
-        // Configuration des listeners
-        configurerListeners();
+        setupDemandesTable();
+        setupCommandesTable();
+        chargerDemandes();
+        chargerCommandes();
     }
 
-    private void chargerDonneesExemple() {
-        commandesList.addAll(
-            new Commande("CMD001", LocalDate.now().minusDays(5), "PharmaPlus", "Médicaments", "1250.00", "Livrée"),
-            new Commande("CMD002", LocalDate.now().minusDays(3), "MediSupply", "Matériel", "3500.00", "En attente"),
-            new Commande("CMD003", LocalDate.now().minusDays(1), "BioLab", "Réactifs", "890.00", "Validée"),
-            new Commande("CMD004", LocalDate.now(), "HealthTech", "Équipement", "15000.00", "En attente"),
-            new Commande("CMD005", LocalDate.now().plusDays(1), "PharmaPlus", "Médicaments", "2100.00", "Validée")
-        );
-    }
+    // ======================== SETUP TABLES ========================
 
-    private void configurerTableau() {
-        idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
-        dateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
-        fournisseurColumn.setCellValueFactory(new PropertyValueFactory<>("fournisseur"));
-        typeColumn.setCellValueFactory(new PropertyValueFactory<>("type"));
-        montantColumn.setCellValueFactory(new PropertyValueFactory<>("montant"));
-        statutColumn.setCellValueFactory(new PropertyValueFactory<>("statut"));
-        
-        // Configuration de la colonne actions
-        actionsColumn.setCellFactory(param -> new TableCell<Commande, Void>() {
-            private final Button voirButton = new Button("👁️");
-            private final HBox hbox = new HBox(5, voirButton);
-            
+    private void setupDemandesTable() {
+        demIdCol.setCellValueFactory(c -> new javafx.beans.property.SimpleIntegerProperty(c.getValue().getIdDemande()).asObject());
+        demDateCol.setCellValueFactory(c -> {
+            if (c.getValue().getDateDemande() == null) return new javafx.beans.property.SimpleStringProperty("");
+            return new javafx.beans.property.SimpleStringProperty(c.getValue().getDateDemande().format(FMT));
+        });
+        demInfirmierCol.setCellValueFactory(c -> new javafx.beans.property.SimpleStringProperty(getUserLabel(c.getValue().getIdUser())));
+        demQuantiteCol.setCellValueFactory(c -> new javafx.beans.property.SimpleIntegerProperty(c.getValue().getQuantite()).asObject());
+        demStatutCol.setCellValueFactory(c ->
+            new javafx.beans.property.SimpleStringProperty(c.getValue().getStatut()));
+
+        demActionsCol.setCellFactory(param -> new TableCell<>() {
+            private final Button creerBtn = new Button("Créer commande");
+
             {
-                voirButton.setStyle("-fx-background-color: #3498db; -fx-text-fill: white; -fx-cursor: hand;");
-                voirButton.setOnAction(event -> {
-                    Commande commande = getTableView().getItems().get(getIndex());
-                    afficherDetails(commande);
+                creerBtn.setStyle("-fx-background-color: #10b981; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5; -fx-cursor: hand; -fx-padding: 6 12;");
+                creerBtn.setOnAction(e -> {
+                    Demande d = getTableView().getItems().get(getIndex());
+                    ouvrirDialogCreerCommande(d);
                 });
             }
-            
+
             @Override
             protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);
-                setGraphic(empty ? null : hbox);
+                setGraphic(empty ? null : creerBtn);
             }
         });
-        
-        commandesTable.setItems(commandesList);
+
+        demandesTable.setItems(demandesData);
     }
 
-    private void configurerListeners() {
-        // Listener pour la sélection dans le tableau
-        commandesTable.getSelectionModel().selectedItemProperty().addListener(
-            (observable, oldValue, newValue) -> {
-                if (newValue != null) {
-                    afficherDetails(newValue);
+    private void setupCommandesTable() {
+        cmdIdCol.setCellValueFactory(c -> new javafx.beans.property.SimpleIntegerProperty(c.getValue().getIdCommande()).asObject());
+        cmdDateCol.setCellValueFactory(c -> {
+            if (c.getValue().getDateCommande() == null) return new javafx.beans.property.SimpleStringProperty("");
+            return new javafx.beans.property.SimpleStringProperty(c.getValue().getDateCommande().format(FMT));
+        });
+        cmdFournisseurCol.setCellValueFactory(c -> new javafx.beans.property.SimpleStringProperty(getFournisseurNom(c.getValue().getIdFournisseur())));
+        cmdLibelleCol.setCellValueFactory(c -> new javafx.beans.property.SimpleStringProperty(c.getValue().getLibelle()));
+        cmdStatutCol.setCellValueFactory(c -> new javafx.beans.property.SimpleStringProperty(c.getValue().getStatut()));
+
+        cmdActionsCol.setCellFactory(param -> new TableCell<>() {
+            private final Button voirBtn = new Button("Voir");
+            private final Button statutBtn = new Button("Statut");
+            private final HBox box = new HBox(6, voirBtn, statutBtn);
+
+            {
+                voirBtn.setStyle("-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-background-radius: 5; -fx-cursor: hand; -fx-padding: 5 10;");
+                statutBtn.setStyle("-fx-background-color: #f59e0b; -fx-text-fill: white; -fx-background-radius: 5; -fx-cursor: hand; -fx-padding: 5 10;");
+
+                voirBtn.setOnAction(e -> {
+                    Commande cmd = getTableView().getItems().get(getIndex());
+                    afficherDetailsCommande(cmd);
+                });
+                statutBtn.setOnAction(e -> {
+                    Commande cmd = getTableView().getItems().get(getIndex());
+                    changerStatutCommande(cmd);
+                });
+            }
+
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                setGraphic(empty ? null : box);
+            }
+        });
+
+        commandesTable.setItems(commandesData);
+    }
+
+    // ======================== CHARGEMENT ========================
+
+    private void chargerDemandes() {
+        demandesData.clear();
+        demandesData.addAll(demandeRepo.getAllDemandes());
+    }
+
+    private void chargerCommandes() {
+        commandesData.clear();
+        commandesData.addAll(commandeRepo.getAllCommandes());
+    }
+
+    // ======================== ACTIONS ========================
+
+    private void ouvrirDialogCreerCommande(Demande demande) {
+        List<Fournisseur> fournisseurs = fournisseurRepo.getAllFournisseurs();
+        if (fournisseurs.isEmpty()) {
+            new Alert(Alert.AlertType.WARNING, "Aucun fournisseur enregistré dans la base de données.", ButtonType.OK).showAndWait();
+            return;
+        }
+
+        // Charger les produits de la demande
+        List<DemandeProduitRepository.ProduitCommande> produitsDemande = demandeProduitRepo.getProduitsByDemande(demande.getIdDemande());
+
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setTitle("Créer une commande fournisseur");
+        dialog.setHeaderText("Commande basée sur la demande #" + demande.getIdDemande()
+                + " de " + getUserLabel(demande.getIdUser()));
+        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+
+        // Sélection du fournisseur
+        ComboBox<Fournisseur> fournisseurCombo = new ComboBox<>(FXCollections.observableArrayList(fournisseurs));
+        fournisseurCombo.setCellFactory(p -> new ListCell<>() {
+            @Override protected void updateItem(Fournisseur f, boolean empty) {
+                super.updateItem(f, empty);
+                setText(empty || f == null ? null : f.getNom() + " (" + f.getEmail() + ")");
+            }
+        });
+        fournisseurCombo.setButtonCell(new ListCell<>() {
+            @Override protected void updateItem(Fournisseur f, boolean empty) {
+                super.updateItem(f, empty);
+                setText(empty || f == null ? null : f.getNom());
+            }
+        });
+        fournisseurCombo.setValue(fournisseurs.get(0));
+        fournisseurCombo.setPrefWidth(300);
+
+        // Libellé
+        TextField libelleField = new TextField("Commande pour demande #" + demande.getIdDemande());
+        libelleField.setPrefWidth(300);
+
+        // Tableau des produits (lecture seule)
+        TableView<DemandeProduitRepository.ProduitCommande> produitsTable = new TableView<>();
+        TableColumn<DemandeProduitRepository.ProduitCommande, String> nomCol = new TableColumn<>("Produit");
+        nomCol.setPrefWidth(220);
+        nomCol.setCellValueFactory(c -> new javafx.beans.property.SimpleStringProperty(
+                c.getValue().getProduit() != null ? c.getValue().getProduit().getLibelle() : ""));
+        TableColumn<DemandeProduitRepository.ProduitCommande, Integer> qteCol = new TableColumn<>("Quantité");
+        qteCol.setPrefWidth(90);
+        qteCol.setCellValueFactory(c -> new javafx.beans.property.SimpleIntegerProperty(c.getValue().getQuantite()).asObject());
+        produitsTable.getColumns().addAll(nomCol, qteCol);
+        produitsTable.setItems(FXCollections.observableArrayList(produitsDemande));
+        produitsTable.setPrefHeight(150);
+
+        GridPane grid = new GridPane();
+        grid.setHgap(12);
+        grid.setVgap(12);
+        grid.add(new Label("Fournisseur :"), 0, 0);
+        grid.add(fournisseurCombo, 1, 0);
+        grid.add(new Label("Libellé :"), 0, 1);
+        grid.add(libelleField, 1, 1);
+        grid.add(new Label("Produits demandés :"), 0, 2);
+        grid.add(produitsTable, 0, 3, 2, 1);
+
+        dialog.getDialogPane().setContent(grid);
+        dialog.getDialogPane().setPrefWidth(450);
+
+        // Désactiver OK si aucun produit
+        Button okBtn = (Button) dialog.getDialogPane().lookupButton(ButtonType.OK);
+        okBtn.setDisable(produitsDemande.isEmpty());
+
+        dialog.showAndWait().ifPresent(result -> {
+            if (result != ButtonType.OK) return;
+
+            Fournisseur fournisseur = fournisseurCombo.getValue();
+            String libelle = libelleField.getText().trim();
+            if (fournisseur == null || libelle.isEmpty()) return;
+
+            int idUser = SessionManager.estConnecte() ? SessionManager.getUtilisateurConnecte().getIdUser() : 1;
+
+            // Convertir les lignes demande → lignes commande
+            List<CommandeProduitRepository.LigneCommandeProduit> lignes = new ArrayList<>();
+            for (DemandeProduitRepository.ProduitCommande pc : produitsDemande) {
+                lignes.add(new CommandeProduitRepository.LigneCommandeProduit(
+                        pc.getProduit().getIdProduit(), pc.getQuantite()));
+            }
+
+            int idCommande = commandeProduitRepo.creerCommandeAvecProduits(
+                    idUser, fournisseur.getIdFournisseur(), libelle, lignes, demande.getIdDemande());
+
+            if (idCommande > 0) {
+                Alert ok = new Alert(Alert.AlertType.INFORMATION);
+                ok.setTitle("Commande créée");
+                ok.setHeaderText(null);
+                ok.setContentText("Commande #" + idCommande + " envoyée à " + fournisseur.getNom() + ".\nLa demande a été marquée comme Traitée.");
+                ok.showAndWait();
+                chargerDemandes();
+                chargerCommandes();
+            } else {
+                String errDetail = commandeProduitRepo.getLastError();
+                new Alert(Alert.AlertType.ERROR,
+                        "Impossible de créer la commande.\n\nErreur : " + (errDetail.isEmpty() ? "inconnue" : errDetail),
+                        ButtonType.OK).showAndWait();
+            }
+        });
+    }
+
+    private void afficherDetailsCommande(Commande cmd) {
+        List<CommandeProduitRepository.ProduitCommande> produits = commandeProduitRepo.getProduitsByCommande(cmd.getIdCommande());
+
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Détails commande #" + cmd.getIdCommande());
+        alert.setHeaderText("Commande #" + cmd.getNumCommande() + " — " + cmd.getStatut());
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("Libellé : ").append(cmd.getLibelle()).append("\n");
+        sb.append("Fournisseur : ").append(getFournisseurNom(cmd.getIdFournisseur())).append("\n");
+        sb.append("Date : ").append(cmd.getDateCommande() != null ? cmd.getDateCommande().format(FMT) : "N/A").append("\n\n");
+        sb.append("Produits :\n");
+        if (produits.isEmpty()) {
+            sb.append("  (aucun produit enregistré)");
+        } else {
+            for (CommandeProduitRepository.ProduitCommande pc : produits) {
+                sb.append("  • ").append(pc.getProduit().getLibelle()).append(" × ").append(pc.getQuantite()).append("\n");
+            }
+        }
+        alert.setContentText(sb.toString());
+        alert.showAndWait();
+    }
+
+    private void changerStatutCommande(Commande cmd) {
+        ChoiceDialog<String> dialog = new ChoiceDialog<>(
+                cmd.getStatut(),
+                "En attente", "Validée", "Livrée", "Annulée");
+        dialog.setTitle("Changer le statut");
+        dialog.setHeaderText("Commande #" + cmd.getIdCommande());
+        dialog.setContentText("Nouveau statut :");
+        dialog.showAndWait().ifPresent(statut -> {
+            if (commandeRepo.updateStatut(cmd.getIdCommande(), statut)) {
+                chargerCommandes();
+                if ("Livrée".equals(statut)) {
+                    new Alert(Alert.AlertType.INFORMATION, "Commande marquée comme Livrée. Le stock a été mis à jour.", ButtonType.OK).showAndWait();
                 }
+            } else {
+                new Alert(Alert.AlertType.ERROR, "Impossible de modifier le statut.", ButtonType.OK).showAndWait();
             }
-        );
-        
-        // Listener pour le filtre
-        filtreStatut.getSelectionModel().selectedItemProperty().addListener(
-            (observable, oldValue, newValue) -> filtrerCommandes()
-        );
+        });
     }
 
-    private void afficherDetails(Commande commande) {
-        numeroLabel.setText(commande.getId());
-        dateLabel.setText(commande.getDate());
-        fournisseurLabel.setText(commande.getFournisseur());
-        typeLabel.setText(commande.getType());
-        montantLabel.setText(commande.getMontant() + " €");
-        statutLabel.setText(commande.getStatut());
-        
-        detailsPane.setVisible(true);
-    }
+    // ======================== HANDLERS FXML ========================
 
-    private void filtrerCommandes() {
-        String filtre = filtreStatut.getValue();
-        ObservableList<Commande> filteredList = FXCollections.observableArrayList();
-        
-        for (Commande commande : commandesList) {
-            if (filtre.equals("Tous") || commande.getStatut().equals(filtre)) {
-                filteredList.add(commande);
-            }
-        }
-        
-        commandesTable.setItems(filteredList);
+    @FXML
+    public void handleRafraichirDemandes(ActionEvent event) {
+        chargerDemandes();
     }
 
     @FXML
-    public void handleRecherche(ActionEvent event) {
-        String recherche = rechercheField.getText().toLowerCase();
-        ObservableList<Commande> filteredList = FXCollections.observableArrayList();
-        
-        for (Commande commande : commandesList) {
-            if (commande.getId().toLowerCase().contains(recherche) ||
-                commande.getFournisseur().toLowerCase().contains(recherche) ||
-                commande.getType().toLowerCase().contains(recherche)) {
-                filteredList.add(commande);
-            }
-        }
-        
-        commandesTable.setItems(filteredList);
+    public void handleRafraichirCommandes(ActionEvent event) {
+        chargerCommandes();
     }
 
-    @FXML
-    public void handleNouvelleCommande(ActionEvent event) {
-        // TODO: Ouvrir une fenêtre de dialogue pour créer une nouvelle commande
-        System.out.println("Nouvelle commande");
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Nouvelle commande");
-        alert.setHeaderText("Fonctionnalité à développer");
-        alert.setContentText("La création de nouvelles commandes sera disponible prochainement.");
-        alert.showAndWait();
-    }
+    // ======================== NAVIGATION ========================
 
-    @FXML
-    public void handleModifier(ActionEvent event) {
-        // TODO: Ouvrir une fenêtre de dialogue pour modifier la commande
-        System.out.println("Modifier commande");
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Modifier commande");
-        alert.setHeaderText("Fonctionnalité à développer");
-        alert.setContentText("La modification des commandes sera disponible prochainement.");
-        alert.showAndWait();
+    @FXML public void versAccueil(ActionEvent event) {
+        try { StartApplication.changeScene("pageAccueil"); } catch (Exception e) { e.printStackTrace(); }
     }
-
-    @FXML
-    public void handleSupprimer(ActionEvent event) {
-        Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
-        confirmation.setTitle("Supprimer commande");
-        confirmation.setHeaderText("Êtes-vous sûr de vouloir supprimer cette commande ?");
-        confirmation.setContentText("Cette action est irréversible.");
-        
-        if (confirmation.showAndWait().get() == ButtonType.OK) {
-            // TODO: Supprimer la commande
-            System.out.println("Commande supprimée");
-            detailsPane.setVisible(false);
-        }
+    @FXML public void versPatients(ActionEvent event) {
+        try { StartApplication.changeScene("patientsView"); } catch (Exception e) { e.printStackTrace(); }
     }
-
-    @FXML
-    public void handleImprimer(ActionEvent event) {
-        // TODO: Imprimer la commande
-        System.out.println("Imprimer commande");
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Imprimer commande");
-        alert.setHeaderText("Fonctionnalité à développer");
-        alert.setContentText("L'impression des commandes sera disponible prochainement.");
-        alert.showAndWait();
+    @FXML public void versDossiers(ActionEvent event) {
+        try { StartApplication.changeScene("dossierEnChargeView"); } catch (Exception e) { e.printStackTrace(); }
     }
-
-    // Méthodes de navigation
-    @FXML
-    public void versAccueil(ActionEvent event) {
-        try {
-            StartApplication.changeScene("pageAccueil");
-        } catch (Exception e) {
-            System.err.println("Erreur lors de la redirection vers l'accueil: " + e.getMessage());
-        }
-    }
-
-    @FXML
-    public void versPatients(ActionEvent event) {
-        try {
-            StartApplication.changeScene("patientsView");
-        } catch (Exception e) {
-            System.err.println("Erreur lors de la redirection vers patients: " + e.getMessage());
-        }
-    }
-
-    @FXML
-    public void versDossiers(ActionEvent event) {
-        try {
-            StartApplication.changeScene("dossierEnChargeView");
-        } catch (Exception e) {
-            System.err.println("Erreur lors de la redirection vers dossiers: " + e.getMessage());
-        }
-    }
-
-    @FXML
-    public void versCommandes(ActionEvent event) {
-        // Déjà sur la page commandes
+    @FXML public void versCommandes(ActionEvent event) {
         System.out.println("Déjà sur la page commandes");
     }
+    @FXML public void versPlanning(ActionEvent event) {
+        try { StartApplication.changeScene("planningView"); } catch (Exception e) { e.printStackTrace(); }
+    }
+    @FXML public void versFicheProduit(ActionEvent event) {
+        try { StartApplication.changeScene("ficheProduitView"); } catch (Exception e) { e.printStackTrace(); }
+    }
+    @FXML public void versUtilisateurs(ActionEvent event) {
+        try { StartApplication.changeScene("pageUtilisateurs"); } catch (Exception e) { e.printStackTrace(); }
+    }
+    @FXML public void versMonEspace(ActionEvent event) {
+        try { StartApplication.changeScene("pageMonEspace"); } catch (Exception e) { e.printStackTrace(); }
+    }
+    @FXML public void deconnexion(ActionEvent event) {
+        try { StartApplication.changeScene("helloView"); } catch (Exception e) { e.printStackTrace(); }
+    }
 
-    @FXML
-    public void versPlanning(ActionEvent event) {
+    // ======================== HELPERS ========================
+
+    private String getUserLabel(int idUser) {
+        if (idUser <= 0) return "";
         try {
-            StartApplication.changeScene("planningView");
+            modele.User u = userRepo.trouverUtilisateurParId(idUser);
+            if (u == null) return "Utilisateur #" + idUser;
+            String label = (u.getNom() + " " + u.getPrenom()).trim();
+            return label.isEmpty() ? "Utilisateur #" + idUser : label;
         } catch (Exception e) {
-            System.err.println("Erreur lors de la redirection vers planning: " + e.getMessage());
+            return "Utilisateur #" + idUser;
         }
     }
 
-    @FXML
-    public void versFicheProduit(ActionEvent event) {
+    private String getFournisseurNom(int idFournisseur) {
+        if (idFournisseur <= 0) return "-";
         try {
-            StartApplication.changeScene("ficheProduitView");
+            Fournisseur f = fournisseurRepo.trouverFournisseurParId(idFournisseur);
+            return f != null ? f.getNom() : "Fournisseur #" + idFournisseur;
         } catch (Exception e) {
-            System.err.println("Erreur lors de la redirection vers catalogue: " + e.getMessage());
+            return "Fournisseur #" + idFournisseur;
         }
-    }
-
-    @FXML
-    public void versUtilisateurs(ActionEvent event) {
-        try {
-            StartApplication.changeScene("pageUtilisateurs");
-        } catch (Exception e) {
-            System.err.println("Erreur lors de la redirection vers utilisateurs: " + e.getMessage());
-        }
-    }
-
-    @FXML
-    public void versMonEspace(ActionEvent event) {
-        try {
-            StartApplication.changeScene("pageMonEspace");
-        } catch (Exception e) {
-            System.err.println("Erreur lors de la redirection vers mon espace: " + e.getMessage());
-        }
-    }
-
-    @FXML
-    public void deconnexion(ActionEvent event) {
-        try {
-            StartApplication.changeScene("helloView");
-        } catch (Exception e) {
-            System.err.println("Erreur lors de la déconnexion: " + e.getMessage());
-        }
-    }
-
-    // Classe interne pour représenter une commande
-    public static class Commande {
-        private String id;
-        private LocalDate date;
-        private String fournisseur;
-        private String type;
-        private String montant;
-        private String statut;
-
-        public Commande(String id, LocalDate date, String fournisseur, String type, String montant, String statut) {
-            this.id = id;
-            this.date = date;
-            this.fournisseur = fournisseur;
-            this.type = type;
-            this.montant = montant;
-            this.statut = statut;
-        }
-
-        // Getters
-        public String getId() { return id; }
-        public String getDate() { return date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")); }
-        public String getFournisseur() { return fournisseur; }
-        public String getType() { return type; }
-        public String getMontant() { return montant; }
-        public String getStatut() { return statut; }
     }
 }
