@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="appli.hsp.FicheProduitController">
+
+    <!-- Barre de navigation en haut -->
+    <top>
+        <HBox style="-fx-background-color: #34495e; -fx-padding: 15;">
+            <padding>
+                <Insets top="10" right="20" bottom="10" left="20"/>
+            </padding>
+
+            <!-- Logo/Titre -->
+            <VBox spacing="5" HBox.hgrow="ALWAYS">
+                <Text text="HSP" style="-fx-font-size: 24px; -fx-fill: #3498db; -fx-font-weight: bold;" />
+                <Text text="Lycée de Santé Publique" style="-fx-font-size: 12px; -fx-fill: #ecf0f1;" />
+            </VBox>
+
+            <!-- Menu de navigation -->
+            <HBox spacing="20" alignment="CENTER">
+                <Button text="Accueil" onAction="#versAccueil" />
+                <Separator orientation="VERTICAL" />
+                <Button text="Secrétariat" onAction="#versPatients" />
+                <Separator orientation="VERTICAL" />
+                <Button text="Dossiers" onAction="#versDossiers" />
+                <Separator orientation="VERTICAL" />
+                <Button text="Commandes" onAction="#versCommandes" />
+                <Separator orientation="VERTICAL" />
+                <Button text="Catalogue" style="-fx-background-color: #27ae60; -fx-text-fill: white;" onAction="#versFicheProduit" />
+                <Separator orientation="VERTICAL" />
+                <Button text="Planning" onAction="#versPlanning" />
+                <Separator orientation="VERTICAL" />
+                <Button text="Utilisateurs" onAction="#versUtilisateurs" />
+                <Separator orientation="VERTICAL" />
+                <Button text="Mon espace" onAction="#versMonEspace" />
+                <Button text="Déconnexion" style="-fx-background-color: #e74c3c; -fx-text-fill: white;" onAction="#deconnexion" />
+            </HBox>
+        </HBox>
+    </top>
+
+    <!-- Contenu principal -->
+    <center>
+        <ScrollPane fitToWidth="true" fitToHeight="true">
+            <VBox alignment="CENTER" spacing="25" style="-fx-padding: 40; -fx-background-color: linear-gradient(to bottom, #2c3e50, #3498db);">
+                <padding>
+                    <Insets top="30" right="40" bottom="30" left="40"/>
+                </padding>
+
+                <!-- Titre -->
+                <VBox spacing="10" alignment="CENTER">
+                    <Text text="Catalogue des Produits" style="-fx-font-size: 36px; -fx-fill: white; -fx-font-weight: bold;" />
+                    <Text text="Gérer les produits disponibles pour les commandes" style="-fx-font-size: 16px; -fx-fill: #ecf0f1;" />
+                </VBox>
+
+                <!-- Formulaire -->
+                <VBox spacing="18" alignment="CENTER" style="-fx-background-color: white; -fx-padding: 30; -fx-background-radius: 15; -fx-pref-width: 650;">
+
+                    <Text text="Ajouter / Modifier un produit" style="-fx-font-size: 20px; -fx-fill: #2c3e50; -fx-font-weight: bold;" />
+                    <Separator style="-fx-pref-width: 100%;" />
+
+                    <!-- Libellé -->
+                    <VBox spacing="6" alignment="CENTER_LEFT" style="-fx-pref-width: 100%;">
+                        <Label text="Libellé *" style="-fx-font-size: 14px; -fx-font-weight: bold;" />
+                        <TextField fx:id="libelleField" promptText="Nom du produit..." style="-fx-pref-width: 100%;" />
+                    </VBox>
+
+                    <!-- Description -->
+                    <VBox spacing="6" alignment="CENTER_LEFT" style="-fx-pref-width: 100%;">
+                        <Label text="Description" style="-fx-font-size: 14px; -fx-font-weight: bold;" />
+                        <TextArea fx:id="descriptionArea" promptText="Description du produit..." prefRowCount="3" style="-fx-pref-width: 100%;" wrapText="true" />
+                    </VBox>
+
+                    <!-- Niveau de dangerosité -->
+                    <VBox spacing="6" alignment="CENTER_LEFT" style="-fx-pref-width: 100%;">
+                        <Label text="Niveau de dangerosité (0 = faible, 1 = moyen, 2 = élevé, 3 = critique)" style="-fx-font-size: 14px; -fx-font-weight: bold;" />
+                        <TextField fx:id="dangerositéField" promptText="0, 1, 2 ou 3" style="-fx-pref-width: 100%;" />
+                    </VBox>
+
+                    <!-- Message -->
+                    <Label fx:id="messageLabel" style="-fx-font-size: 14px; -fx-font-weight: bold;" />
+
+                    <!-- Boutons -->
+                    <HBox spacing="12" alignment="CENTER">
+                        <Button text="Ajouter" onAction="#handleAjouter"
+                                style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-pref-width: 130;" />
+                        <Button text="Modifier" onAction="#handleModifier"
+                                style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-pref-width: 130;" />
+                        <Button text="Supprimer" onAction="#handleSupprimer"
+                                style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-pref-width: 130;" />
+                        <Button text="Vider" onAction="#handleVider"
+                                style="-fx-background-color: #f39c12; -fx-text-fill: white; -fx-pref-width: 130;" />
+                    </HBox>
+                </VBox>
+
+                <!-- Liste des produits -->
+                <VBox spacing="15" alignment="CENTER" style="-fx-background-color: white; -fx-padding: 25; -fx-background-radius: 15; -fx-pref-width: 800;">
+                    <Text text="Produits enregistrés" style="-fx-font-size: 20px; -fx-fill: #2c3e50; -fx-font-weight: bold;" />
+                    <Separator style="-fx-pref-width: 100%;" />
+                    <Label text="Cliquez sur un produit pour le modifier ou le supprimer"
+                           style="-fx-font-size: 13px; -fx-font-style: italic; -fx-text-fill: #7f8c8d;" />
+                    <ListView fx:id="produitsListView" prefHeight="350" style="-fx-pref-width: 100%;" />
+                </VBox>
+
+                <!-- Espace bas -->
+                <VBox style="-fx-pref-height: 50;" />
+            </VBox>
+        </ScrollPane>
+    </center>
+</BorderPane>

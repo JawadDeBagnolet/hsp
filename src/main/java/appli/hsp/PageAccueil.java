@@ -105,6 +105,18 @@ public class PageAccueil {
     }
 
     @FXML
+    public void versFicheProduit(ActionEvent event) {
+        try {
+            StartApplication.changeScene("ficheProduitView");
+        } catch (Exception e) {
+            ErrorHandler.handleException(
+                new HSPException(ErrorCode.NAVIGATION_ERROR, "Impossible d'accéder au catalogue produits", e),
+                "Navigation vers Catalogue Produits"
+            );
+        }
+    }
+
+    @FXML
     public void versFournisseursProduits(ActionEvent event) {
         try {
             StartApplication.changeScene("fournisseursProduitsView");
