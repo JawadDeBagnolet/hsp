@@ -157,6 +157,34 @@ public class FournisseursProduitsController {
 
     @FXML
     public void handleNouveauFournisseurProduit(ActionEvent event) {
+        // Charger les fournisseurs avant d'ouvrir le dialog
+        List<String> fournisseurs;
+        try {
+            fournisseurs = getNomsFournisseurs();
+        } catch (Exception e) {
+            fournisseurs = new ArrayList<>();
+        }
+
+        if (fournisseurs.isEmpty()) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Aucun fournisseur disponible");
+            alert.setHeaderText("Impossible de créer un fournisseur produit");
+            alert.setContentText("Vous n'avez aucun fournisseur enregistré.\nVeuillez d'abord créer un fournisseur dans la section \"Fournisseurs\".");
+            ButtonType btnAllerFournisseurs = new ButtonType("Aller aux Fournisseurs");
+            ButtonType btnAnnuler = new ButtonType("Annuler", ButtonBar.ButtonData.CANCEL_CLOSE);
+            alert.getButtonTypes().setAll(btnAllerFournisseurs, btnAnnuler);
+            alert.showAndWait().ifPresent(r -> {
+                if (r == btnAllerFournisseurs) {
+                    try {
+                        StartApplication.changeScene("fournisseursView");
+                    } catch (Exception ex) {
+                        afficherMessage("Erreur de navigation: " + ex.getMessage(), "#e74c3c");
+                    }
+                }
+            });
+            return;
+        }
+
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.setTitle("Nouveau fournisseur produit");
         dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
@@ -164,18 +192,17 @@ public class FournisseursProduitsController {
         // ComboBox pour sélectionner le fournisseur
         ComboBox<String> fournisseurComboBox = new ComboBox<>();
         fournisseurComboBox.setPromptText("Sélectionner un fournisseur");
-        
-        // Charger les fournisseurs depuis la BDD
+        fournisseurComboBox.getItems().addAll(fournisseurs);
+
+        // ComboBox pour sélectionner le produit
+        ComboBox<String> produitComboBox = new ComboBox<>();
+        produitComboBox.setPromptText("Sélectionner un produit");
         try {
-            List<String> fournisseurs = getNomsFournisseurs();
-            fournisseurComboBox.getItems().addAll(fournisseurs);
+            produitComboBox.getItems().addAll(getNomsProduits());
         } catch (Exception e) {
-            System.err.println("Erreur lors du chargement des fournisseurs: " + e.getMessage());
+            System.err.println("Erreur lors du chargement des produits: " + e.getMessage());
         }
-        
-        TextField idProduitField = new TextField();
-        idProduitField.setPromptText("ID du produit");
-        
+
         TextField prixField = new TextField();
         prixField.setPromptText("Prix");
 
@@ -184,8 +211,8 @@ public class FournisseursProduitsController {
         grid.setVgap(10);
         grid.add(new Label("Fournisseur:"), 0, 0);
         grid.add(fournisseurComboBox, 1, 0);
-        grid.add(new Label("ID Produit:"), 0, 1);
-        grid.add(idProduitField, 1, 1);
+        grid.add(new Label("Produit:"), 0, 1);
+        grid.add(produitComboBox, 1, 1);
         grid.add(new Label("Prix:"), 0, 2);
         grid.add(prixField, 1, 2);
 
@@ -203,8 +230,14 @@ public class FournisseursProduitsController {
                     return;
                 }
                 
+                String selectedProduit = produitComboBox.getValue();
+                if (selectedProduit == null || selectedProduit.isEmpty()) {
+                    afficherMessage("Veuillez sélectionner un produit", "#e74c3c");
+                    return;
+                }
+
                 int idFournisseur = getIdFournisseurParNom(selectedFournisseur);
-                int idProduit = Integer.parseInt(idProduitField.getText().trim());
+                int idProduit = getIdProduitParNom(selectedProduit);
                 double prix = Double.parseDouble(prixField.getText().trim());
 
                 if (idFournisseur <= 0 || idProduit <= 0 || prix <= 0) {
@@ -260,8 +293,39 @@ public class FournisseursProduitsController {
         return -1;
     }
     
+    private List<String> getNomsProduits() {
+        List<String> noms = new ArrayList<>();
+        String sql = "SELECT libelle FROM fiche_produit ORDER BY libelle";
+        try (Connection cnx = database.Database.getConnexion();
+             PreparedStatement stmt = cnx.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                noms.add(rs.getString("libelle"));
+            }
+        } catch (SQLException e) {
+            System.err.println("Erreur lors de la récupération des produits: " + e.getMessage());
+        }
+        return noms;
+    }
+
+    private int getIdProduitParNom(String nom) {
+        String sql = "SELECT id_produit FROM fiche_produit WHERE libelle = ?";
+        try (Connection cnx = database.Database.getConnexion();
+             PreparedStatement stmt = cnx.prepareStatement(sql)) {
+            stmt.setString(1, nom);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("id_produit");
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Erreur lors de la récupération de l'ID produit: " + e.getMessage());
+        }
+        return -1;
+    }
+
     private String getNomProduitParId(int idProduit) {
-        String sql = "SELECT nom_produit FROM fiche_produit WHERE id_produit = ?";
+        String sql = "SELECT libelle FROM fiche_produit WHERE id_produit = ?";
         
         try (Connection cnx = database.Database.getConnexion();
              PreparedStatement stmt = cnx.prepareStatement(sql)) {
@@ -269,7 +333,7 @@ public class FournisseursProduitsController {
             stmt.setInt(1, idProduit);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    return rs.getString("nom_produit");
+                    return rs.getString("libelle");
                 }
             }
         } catch (SQLException e) {

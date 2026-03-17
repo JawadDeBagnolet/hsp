@@ -110,7 +110,7 @@ public class DossierEnChargeRepository {
                     rs.getTimestamp("heure_arrivee").toLocalDateTime().toLocalTime(),
                     rs.getString("symptomes"),
                     Integer.parseInt(rs.getString("niveau_gravite")),
-                    rs.getInt("ref_user"),
+                    rs.getInt("id_user"),
                     rs.getInt("id_eleve")
                 );
             }
@@ -139,7 +139,7 @@ public class DossierEnChargeRepository {
                 System.out.println("  Heure: " + rs.getTimestamp("heure_arrivee"));
                 System.out.println("  Symptômes: " + rs.getString("symptomes"));
                 System.out.println("  Gravité: " + rs.getString("niveau_gravite"));
-                System.out.println("  Ref User: " + rs.getInt("ref_user"));
+                System.out.println("  ID User: " + rs.getInt("id_user"));
                 System.out.println("  ID Élève: " + rs.getInt("id_eleve"));
                 
                 dossiers.add(new DossierEnCharge(
@@ -148,7 +148,7 @@ public class DossierEnChargeRepository {
                     rs.getTimestamp("heure_arrivee").toLocalDateTime().toLocalTime(),
                     rs.getString("symptomes"),
                     Integer.parseInt(rs.getString("niveau_gravite")),
-                    rs.getInt("ref_user"),
+                    rs.getInt("id_user"),
                     rs.getInt("id_eleve")
                 ));
             }

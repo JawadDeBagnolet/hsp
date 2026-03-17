@@ -186,7 +186,7 @@ public class PatientsController {
             prenomField.setText(eleveSelectionne.getPrenom());
             numEtudiantField.setText(eleveSelectionne.getNum_etudiant());
             emailField.setText(eleveSelectionne.getEmail());
-            telField.setText(String.valueOf(eleveSelectionne.getTel()));
+            telField.setText(eleveSelectionne.getTel());
             rueField.setText(eleveSelectionne.getRue());
             cpField.setText(String.valueOf(eleveSelectionne.getCp()));
             villeField.setText(eleveSelectionne.getVille());
@@ -210,7 +210,7 @@ public class PatientsController {
                 prenomField.getText().trim(),
                 numEtudiantField.getText().trim(),
                 emailField.getText().trim(),
-                Integer.parseInt(telField.getText().trim()),
+                telField.getText().trim(),
                 rueField.getText().trim(),
                 Integer.parseInt(cpField.getText().trim()),
                 villeField.getText().trim(),
@@ -244,7 +244,7 @@ public class PatientsController {
             eleveSelectionne.setPrenom(prenomField.getText().trim());
             eleveSelectionne.setNum_etudiant(numEtudiantField.getText().trim());
             eleveSelectionne.setEmail(emailField.getText().trim());
-            eleveSelectionne.setTel(Integer.parseInt(telField.getText().trim()));
+            eleveSelectionne.setTel(telField.getText().trim());
             eleveSelectionne.setRue(rueField.getText().trim());
             eleveSelectionne.setCp(Integer.parseInt(cpField.getText().trim()));
             eleveSelectionne.setVille(villeField.getText().trim());
@@ -351,10 +351,9 @@ public class PatientsController {
         if (cp.isEmpty()) { afficherMessage("Le code postal est obligatoire", "#e74c3c"); return false; }
 
         try {
-            Integer.parseInt(tel);
             Integer.parseInt(cp);
         } catch (NumberFormatException e) {
-            afficherMessage("Téléphone et code postal doivent être numériques", "#e74c3c");
+            afficherMessage("Le code postal doit être numérique", "#e74c3c");
             return false;
         }
         return true;

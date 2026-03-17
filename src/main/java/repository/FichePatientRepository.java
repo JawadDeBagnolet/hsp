@@ -22,7 +22,7 @@ public class FichePatientRepository {
             stmt.setString(2, fichePatient.getPrenom());
             stmt.setString(3, fichePatient.getNum_etudiant());
             stmt.setString(4, fichePatient.getEmail());
-            stmt.setInt(5, fichePatient.getTel());
+            stmt.setString(5, fichePatient.getTel());
             stmt.setString(6, fichePatient.getRue());
             stmt.setInt(7, fichePatient.getCp());
             stmt.setString(8, fichePatient.getVille());
@@ -103,7 +103,7 @@ public class FichePatientRepository {
             stmt.setString(2, fichePatient.getPrenom());
             stmt.setString(3, fichePatient.getNum_etudiant());
             stmt.setString(4, fichePatient.getEmail());
-            stmt.setInt(5, fichePatient.getTel());
+            stmt.setString(5, fichePatient.getTel());
             stmt.setString(6, fichePatient.getRue());
             stmt.setInt(7, fichePatient.getCp());
             stmt.setString(8, fichePatient.getVille());
@@ -142,9 +142,9 @@ public class FichePatientRepository {
             try { candidature = Integer.parseInt(candidatureStr); } catch (NumberFormatException ignored) {}
         }
 
-        int tel = 0;
+        String tel = "";
         int cp = 0;
-        try { tel = rs.getInt("tel"); } catch (Exception ignored) {}
+        try { tel = rs.getString("tel"); if (tel == null) tel = ""; } catch (Exception ignored) {}
         try { cp = rs.getInt("cp"); } catch (Exception ignored) {}
 
         FichePatient eleve = new FichePatient(

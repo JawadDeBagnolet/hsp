@@ -6,14 +6,14 @@ public class FichePatient {
     private String prenom;
     private String num_etudiant;
     private String email;
-    private int tel;
+    private String tel;
     private String rue;
     private int cp;
     private String ville;
     // null = candidature en cours, 0 = refus, 1 = validé
     private Integer candidature;
 
-    public FichePatient(int idFichePatient, String nom, String prenom, String num_etudiant, String email, int tel, String rue, int cp, String ville, Integer candidature) {
+    public FichePatient(int idFichePatient, String nom, String prenom, String num_etudiant, String email, String tel, String rue, int cp, String ville, Integer candidature) {
         this.idFichePatient = idFichePatient;
         this.nom = nom;
         this.prenom = prenom;
@@ -26,7 +26,7 @@ public class FichePatient {
         this.candidature = candidature;
     }
 
-    public FichePatient(String nom, String prenom, String num_etudiant, String email, int tel, String rue, int cp, String ville, Integer candidature) {
+    public FichePatient(String nom, String prenom, String num_etudiant, String email, String tel, String rue, int cp, String ville, Integer candidature) {
         this.nom = nom;
         this.prenom = prenom;
         this.num_etudiant = num_etudiant;
@@ -78,11 +78,11 @@ public class FichePatient {
         this.email = email;
     }
 
-    public int getTel() {
+    public String getTel() {
         return tel;
     }
 
-    public void setTel(int tel) {
+    public void setTel(String tel) {
         this.tel = tel;
     }
 

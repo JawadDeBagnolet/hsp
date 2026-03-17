@@ -31,7 +31,7 @@
                 <Separator orientation="VERTICAL" />
                 <Button text="Commandes" onAction="#versCommandes" />
                 <Separator orientation="VERTICAL" />
-                <Button text="Fournisseurs" style="-fx-background-color: #3498db; -fx-text-fill: white;" onAction="#versFournisseurs" />
+                <Button text="Fournisseurs" style="-fx-background-color: #3498db; -fx-text-fill: white;" />
                 <Separator orientation="VERTICAL" />
                 <Button text="Utilisateurs" onAction="#versUtilisateurs" />
                 <Separator orientation="VERTICAL" />
@@ -105,7 +105,7 @@
                     
                     <Separator style="-fx-pref-width: 100%;" />
                     
-                    <Text fx:id="fournisseurSelectionneLabel" text="Veuillez selectionner un fournisseur pour voir ses produits" style="-fx-font-size: 16px; -fx-font-style: italic;" />
+                    <Label fx:id="fournisseurSelectionneLabel" text="Veuillez selectionner un fournisseur pour voir ses produits" style="-fx-font-size: 16px; -fx-font-style: italic;" />
                     
                     <ListView fx:id="produitsListView" prefHeight="250" style="-fx-pref-width: 100%;" />
                 </VBox>
