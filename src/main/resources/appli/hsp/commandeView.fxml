@@ -21,7 +21,7 @@
             <VBox spacing="5" HBox.hgrow="ALWAYS">
                 <Text text="HSP"
                       style="-fx-font-size: 24px; -fx-fill: #3498db; -fx-font-weight: bold;" />
-                <Text text="Hôpital de Santé Publique"
+                <Text text="Lycée de Santé Publique"
                       style="-fx-font-size: 12px; -fx-fill: #ecf0f1;" />
             </VBox>
 

@@ -210,7 +210,7 @@ public class DossierEnChargeController {
         
         // Sélectionner le patient correspondant
         for (FichePatient patient : patientCombo.getItems()) {
-            if (patient.getIdFichePatient() == dossier.getIdPatient()) {
+            if (patient.getIdFichePatient() == dossier.getIdEleve()) {
                 patientCombo.setValue(patient);
                 break;
             }
@@ -416,7 +416,7 @@ public class DossierEnChargeController {
         }
         
         if (patientCombo.getValue() == null) {
-            afficherMessage("Veuillez sélectionner un patient", "error");
+            afficherMessage("Veuillez sélectionner un élève", "error");
             return false;
         }
         

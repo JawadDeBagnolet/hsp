@@ -10,24 +10,24 @@ public class DossierEnCharge {
     private String symptomes;
     private int niveauGravite;
     private int refUser;
-    private int idPatient;
+    private int idEleve;
 
-    public DossierEnCharge(int idDossier, LocalDate dateArrivee, LocalTime heureArrivee, String symptomes, int niveauGravite, int refUser, int idPatient) {
+    public DossierEnCharge(int idDossier, LocalDate dateArrivee, LocalTime heureArrivee, String symptomes, int niveauGravite, int refUser, int idEleve) {
         this.idDossier = idDossier;
         this.dateArrivee = dateArrivee;
         this.heureArrivee = heureArrivee;
         this.symptomes = symptomes;
         this.niveauGravite = niveauGravite;
         this.refUser = refUser;
-        this.idPatient = idPatient;
+        this.idEleve = idEleve;
     }
 
-    public DossierEnCharge(LocalDate dateArrivee, LocalTime heureArrivee, String symptomes, int niveauGravite, int idPatient) {
+    public DossierEnCharge(LocalDate dateArrivee, LocalTime heureArrivee, String symptomes, int niveauGravite, int idEleve) {
         this.dateArrivee = dateArrivee;
         this.heureArrivee = heureArrivee;
         this.symptomes = symptomes;
         this.niveauGravite = niveauGravite;
-        this.idPatient = idPatient;
+        this.idEleve = idEleve;
     }
 
     public int getIdDossier() {
@@ -78,12 +78,12 @@ public class DossierEnCharge {
         this.refUser = refUser;
     }
 
-    public int getIdPatient() {
-        return idPatient;
+    public int getIdEleve() {
+        return idEleve;
     }
 
-    public void setIdPatient(int idPatient) {
-        this.idPatient = idPatient;
+    public void setIdEleve(int idEleve) {
+        this.idEleve = idEleve;
     }
 
     @Override
@@ -95,7 +95,7 @@ public class DossierEnCharge {
                 ", symptomes='" + symptomes + '\'' +
                 ", niveauGravite=" + niveauGravite +
                 ", refUser=" + refUser +
-                ", idPatient=" + idPatient +
+                ", idEleve=" + idEleve +
                 '}';
     }
 }

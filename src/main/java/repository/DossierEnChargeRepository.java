@@ -19,7 +19,7 @@ public class DossierEnChargeRepository {
         System.out.println("Dossier à ajouter: " + dossier.toString());
         
         // Ne pas inclure l'ID dans l'INSERT si c'est auto-incrémenté
-        String sql = "INSERT INTO dossier_charge (date_arrivee, heure_arrivee, symptomes, niveau_gravite, id_patient, id_user) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO dossier_charge (date_arrivee, heure_arrivee, symptomes, niveau_gravite, id_eleve, id_user) VALUES (?, ?, ?, ?, ?, ?)";
         System.out.println("SQL: " + sql);
 
         try (Connection cnx = Database.getConnexion();
@@ -43,7 +43,7 @@ public class DossierEnChargeRepository {
             stmt.setString(3, dossier.getSymptomes());
             // `niveau_gravite` est un enum('1','2','3','4','5')
             stmt.setString(4, String.valueOf(dossier.getNiveauGravite()));
-            stmt.setInt(5, dossier.getIdPatient()); // id_patient
+            stmt.setInt(5, dossier.getIdEleve()); // id_eleve
             stmt.setInt(6, SessionManager.getUtilisateurConnecte().getIdUser()); // id_user (utilisateur connecté)
             
             System.out.println("Paramètres préparés:");
@@ -51,7 +51,7 @@ public class DossierEnChargeRepository {
             System.out.println("  2. Heure arrivée (SQL Timestamp): " + sqlHeureArrivee + " -> " + sqlHeureArrivee.getClass().getSimpleName());
             System.out.println("  3. Symptômes: " + dossier.getSymptomes());
             System.out.println("  4. Niveau gravité: " + dossier.getNiveauGravite());
-            System.out.println("  5. ID Patient: " + dossier.getIdPatient());
+            System.out.println("  5. ID Élève: " + dossier.getIdEleve());
             System.out.println("  6. ID User (connecté): " + SessionManager.getUtilisateurConnecte().getIdUser());
 
             int rowsAffected = stmt.executeUpdate();
@@ -111,7 +111,7 @@ public class DossierEnChargeRepository {
                     rs.getString("symptomes"),
                     Integer.parseInt(rs.getString("niveau_gravite")),
                     rs.getInt("ref_user"),
-                    rs.getInt("id_patient")
+                    rs.getInt("id_eleve")
                 );
             }
         } catch (SQLException e) {
@@ -140,7 +140,7 @@ public class DossierEnChargeRepository {
                 System.out.println("  Symptômes: " + rs.getString("symptomes"));
                 System.out.println("  Gravité: " + rs.getString("niveau_gravite"));
                 System.out.println("  Ref User: " + rs.getInt("ref_user"));
-                System.out.println("  ID Patient: " + rs.getInt("id_patient"));
+                System.out.println("  ID Élève: " + rs.getInt("id_eleve"));
                 
                 dossiers.add(new DossierEnCharge(
                     rs.getInt("id_dossier"),
@@ -149,7 +149,7 @@ public class DossierEnChargeRepository {
                     rs.getString("symptomes"),
                     Integer.parseInt(rs.getString("niveau_gravite")),
                     rs.getInt("ref_user"),
-                    rs.getInt("id_patient")
+                    rs.getInt("id_eleve")
                 ));
             }
             
@@ -167,7 +167,7 @@ public class DossierEnChargeRepository {
     }
 
     public boolean modifierDossier(DossierEnCharge dossier) {
-        String sql = "UPDATE dossier_charge SET date_arrivee = ?, heure_arrivee = ?, symptomes = ?, niveau_gravite = ?, id_patient = ?, id_user = ? WHERE id_dossier = ?";
+        String sql = "UPDATE dossier_charge SET date_arrivee = ?, heure_arrivee = ?, symptomes = ?, niveau_gravite = ?, id_eleve = ?, id_user = ? WHERE id_dossier = ?";
 
         try (Connection cnx = Database.getConnexion();
              PreparedStatement stmt = cnx.prepareStatement(sql)) {
@@ -179,7 +179,7 @@ public class DossierEnChargeRepository {
             stmt.setTimestamp(2, sqlHeureArrivee);
             stmt.setString(3, dossier.getSymptomes());
             stmt.setString(4, String.valueOf(dossier.getNiveauGravite()));
-            stmt.setInt(5, dossier.getRefUser()); // id_patient
+            stmt.setInt(5, dossier.getIdEleve()); // id_eleve
             stmt.setInt(6, SessionManager.getUtilisateurConnecte().getIdUser()); // id_user (utilisateur connecté)
             stmt.setInt(7, dossier.getIdDossier());
 
