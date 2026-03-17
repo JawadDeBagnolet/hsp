@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            xmlns="http://javafx.com/javafx/25"
+            fx:controller="appli.hsp.CommandeController"
+            style="-fx-background-color: linear-gradient(to bottom, #0f172a, #1e1b4b);">
+
+    <!-- Barre de navigation en haut -->
+    <top>
+        <HBox style="-fx-background-color: #080c14; -fx-border-color: #6366f1; -fx-border-width: 0 0 2 0;">
+            <padding>
+                <Insets top="14" right="28" bottom="14" left="28"/>
+            </padding>
+
+            <VBox spacing="2" HBox.hgrow="ALWAYS">
+                <Text text="LPRS"
+                      style="-fx-font-size: 22px; -fx-fill: #818cf8; -fx-font-weight: bold;" />
+                <Text text="Lycée de Santé Publique"
+                      style="-fx-font-size: 11px; -fx-fill: #64748b;" />
+            </VBox>
+
+            <HBox spacing="4" alignment="CENTER">
+                <Button text="Accueil" onAction="#versAccueil"
+                        style="-fx-background-color: transparent; -fx-text-fill: #94a3b8; -fx-font-size: 13px; -fx-border-color: transparent; -fx-cursor: hand; -fx-padding: 8 14;" />
+                <Button text="Secrétariat" onAction="#versPatients"
+                        style="-fx-background-color: transparent; -fx-text-fill: #94a3b8; -fx-font-size: 13px; -fx-border-color: transparent; -fx-cursor: hand; -fx-padding: 8 14;" />
+                <Button text="Dossiers" onAction="#versDossiers"
+                        style="-fx-background-color: transparent; -fx-text-fill: #94a3b8; -fx-font-size: 13px; -fx-border-color: transparent; -fx-cursor: hand; -fx-padding: 8 14;" />
+                <Button text="Commandes"
+                        style="-fx-background-color: #6366f1; -fx-text-fill: #ffffff; -fx-font-size: 13px; -fx-background-radius: 20; -fx-border-radius: 20; -fx-cursor: hand; -fx-padding: 8 18; -fx-font-weight: bold;" />
+                <Button text="Planning" onAction="#versPlanning"
+                        style="-fx-background-color: transparent; -fx-text-fill: #94a3b8; -fx-font-size: 13px; -fx-border-color: transparent; -fx-cursor: hand; -fx-padding: 8 14;" />
+                <Button text="Catalogue" onAction="#versFicheProduit"
+                        style="-fx-background-color: transparent; -fx-text-fill: #94a3b8; -fx-font-size: 13px; -fx-border-color: transparent; -fx-cursor: hand; -fx-padding: 8 14;" />
+                <Button text="Utilisateurs" onAction="#versUtilisateurs"
+                        style="-fx-background-color: transparent; -fx-text-fill: #94a3b8; -fx-font-size: 13px; -fx-border-color: transparent; -fx-cursor: hand; -fx-padding: 8 14;" />
+                <Button text="Mon espace" onAction="#versMonEspace"
+                        style="-fx-background-color: rgba(99,102,241,0.15); -fx-text-fill: #818cf8; -fx-font-size: 13px; -fx-background-radius: 20; -fx-border-radius: 20; -fx-border-color: rgba(99,102,241,0.5); -fx-border-width: 1; -fx-cursor: hand; -fx-padding: 8 18;" />
+                <Button text="Déconnexion" onAction="#deconnexion"
+                        style="-fx-background-color: #ef4444; -fx-text-fill: #ffffff; -fx-font-size: 13px; -fx-background-radius: 20; -fx-border-radius: 20; -fx-cursor: hand; -fx-padding: 8 18;" />
+            </HBox>
+        </HBox>
+    </top>
+
+    <!-- Zone principale -->
+    <center>
+        <ScrollPane fitToWidth="true" style="-fx-background: transparent; -fx-border-color: transparent; -fx-background-color: transparent;">
+            <VBox alignment="TOP_CENTER" spacing="20" style="-fx-padding: 30;">
+                <padding>
+                    <Insets bottom="30" left="30" right="30" top="30" />
+                </padding>
+
+                <!-- Section recherche -->
+                <VBox spacing="10" style="-fx-background-color: rgba(30, 41, 59, 0.5); -fx-padding: 20; -fx-background-radius: 10; -fx-border-color: rgba(99, 102, 241, 0.2); -fx-border-width: 1; -fx-border-radius: 10;">
+                    <Text style="-fx-font-size: 18px; -fx-fill: #ffffff; -fx-font-weight: bold;" text="Rechercher une commande" />
+                    <HBox alignment="CENTER_LEFT" spacing="15">
+                        <TextField fx:id="rechercheField" promptText="ID demande, ID utilisateur..."
+                                   style="-fx-pref-width: 300; -fx-pref-height: 35; -fx-background-color: rgba(248, 250, 252, 0.95); -fx-background-radius: 5; -fx-border-color: transparent; -fx-font-size: 14px;" />
+                        <Button onAction="#handleRecherche"
+                                style="-fx-background-color: #3b82f6; -fx-text-fill: #ffffff; -fx-font-size: 14px; -fx-pref-width: 120; -fx-pref-height: 35; -fx-background-radius: 5; -fx-cursor: hand;" text="Rechercher" />
+                    </HBox>
+                </VBox>
+
+                <!-- Tableau des commandes -->
+                <VBox spacing="8" style="-fx-background-color: rgba(30, 41, 59, 0.5); -fx-padding: 20; -fx-background-radius: 10; -fx-border-color: rgba(99, 102, 241, 0.2); -fx-border-width: 1; -fx-border-radius: 10;" VBox.vgrow="ALWAYS">
+                    <Text style="-fx-font-size: 18px; -fx-fill: #ffffff; -fx-font-weight: bold;" text="Liste des commandes" />
+
+                    <TableView fx:id="commandesTable" prefHeight="550" minHeight="300" maxHeight="Infinity" VBox.vgrow="ALWAYS"
+                               style="-fx-background-color: rgba(248, 250, 252, 0.97); -fx-border-color: rgba(99, 102, 241, 0.2); -fx-border-radius: 6; -fx-background-radius: 6;">
+                        <columns>
+                            <TableColumn fx:id="idColumn" prefWidth="60" text="ID" style="-fx-font-weight: bold; -fx-alignment: CENTER;" />
+                            <TableColumn fx:id="dateColumn" prefWidth="180" text="Date" style="-fx-font-weight: bold; -fx-alignment: CENTER;" />
+                            <TableColumn fx:id="patientColumn" prefWidth="140" text="Utilisateur" style="-fx-font-weight: bold; -fx-alignment: CENTER;" />
+                            <TableColumn fx:id="roleColumn" prefWidth="120" text="Rôle" style="-fx-font-weight: bold; -fx-alignment: CENTER;" />
+                            <TableColumn fx:id="statutColumn" prefWidth="140" text="Statut" style="-fx-font-weight: bold; -fx-alignment: CENTER;" />
+                            <TableColumn fx:id="actionsColumn" prefWidth="120" text="Actions" style="-fx-font-weight: bold; -fx-alignment: CENTER;" />
+                        </columns>
+                    </TableView>
+                </VBox>
+
+                <!-- Section actions -->
+                <HBox alignment="CENTER" spacing="15" style="-fx-padding: 5 0 0 0;">
+                    <Button onAction="#handleNouvelleCommande"
+                            style="-fx-background-color: #10b981; -fx-text-fill: #ffffff; -fx-font-size: 14px; -fx-pref-width: 150; -fx-pref-height: 40; -fx-background-radius: 5; -fx-cursor: hand;" text="Nouvelle commande" />
+                    <Button onAction="#handleRafraichir"
+                            style="-fx-background-color: #3b82f6; -fx-text-fill: #ffffff; -fx-font-size: 14px; -fx-pref-width: 120; -fx-pref-height: 40; -fx-background-radius: 5; -fx-cursor: hand;" text="Rafraîchir" />
+                </HBox>
+
+                <!-- Zone de détails -->
+                <VBox fx:id="detailsPane" spacing="15"
+                      style="-fx-background-color: rgba(30, 41, 59, 0.5); -fx-padding: 20; -fx-background-radius: 10; -fx-border-color: rgba(99, 102, 241, 0.2); -fx-border-width: 1; -fx-border-radius: 10;"
+                      visible="false">
+                    <Text style="-fx-font-size: 18px; -fx-fill: #ffffff; -fx-font-weight: bold;" text="Détails de la commande" />
+                    <GridPane hgap="15" vgap="10">
+                        <Label style="-fx-text-fill: #ffffff; -fx-font-weight: bold;" text="Numéro :" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                        <Label fx:id="numeroLabel" style="-fx-text-fill: #ecf0f1;" text="" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+
+                        <Label style="-fx-text-fill: #ffffff; -fx-font-weight: bold;" text="Date :" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                        <Label fx:id="dateLabel" style="-fx-text-fill: #ecf0f1;" text="" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+                        <Label style="-fx-text-fill: #ffffff; -fx-font-weight: bold;" text="Utilisateur :" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+                        <Label fx:id="patientLabel" style="-fx-text-fill: #ecf0f1;" text="" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+
+                        <Label style="-fx-text-fill: #ffffff; -fx-font-weight: bold;" text="Rôle :" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+                        <Label fx:id="roleLabel" style="-fx-text-fill: #ecf0f1;" text="" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+
+                        <Label style="-fx-text-fill: #ffffff; -fx-font-weight: bold;" text="Quantité :" GridPane.columnIndex="0" GridPane.rowIndex="4" />
+                        <Label fx:id="medecinLabel" style="-fx-text-fill: #ecf0f1;" text="" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+
+                        <Label style="-fx-text-fill: #ffffff; -fx-font-weight: bold;" text="Statut :" GridPane.columnIndex="0" GridPane.rowIndex="5" />
+                        <Label fx:id="statutLabel" style="-fx-text-fill: #ecf0f1;" text="" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                        <columnConstraints>
+                           <ColumnConstraints />
+                           <ColumnConstraints />
+                        </columnConstraints>
+                        <rowConstraints>
+                           <RowConstraints />
+                           <RowConstraints />
+                           <RowConstraints />
+                           <RowConstraints />
+                           <RowConstraints />
+                           <RowConstraints />
+                        </rowConstraints>
+                    </GridPane>
+
+                    <HBox spacing="10">
+                        <Button onAction="#handleModifier"
+                                style="-fx-background-color: #f59e0b; -fx-text-fill: #ffffff; -fx-font-size: 14px; -fx-pref-width: 100; -fx-pref-height: 35; -fx-background-radius: 5; -fx-cursor: hand;" text="Modifier" />
+                        <Button onAction="#handleSupprimer"
+                                style="-fx-background-color: #ef4444; -fx-text-fill: #ffffff; -fx-font-size: 14px; -fx-pref-width: 100; -fx-pref-height: 35; -fx-background-radius: 5; -fx-cursor: hand;" text="Supprimer" />
+                    </HBox>
+
+                    <!-- Détails des produits -->
+                    <VBox spacing="10" style="-fx-padding: 15; -fx-background-color: rgba(30, 41, 59, 0.5); -fx-background-radius: 6; -fx-border-color: rgba(99, 102, 241, 0.2); -fx-border-width: 1; -fx-border-radius: 6;">
+                        <Text style="-fx-font-size: 16px; -fx-fill: #ffffff; -fx-font-weight: bold;" text="Produits commandés" />
+                        <TableView fx:id="produitsTable" prefHeight="150"
+                                   style="-fx-background-color: rgba(248, 250, 252, 0.97); -fx-border-color: rgba(99, 102, 241, 0.2); -fx-border-radius: 4; -fx-background-radius: 4;">
+                            <columns>
+                                <TableColumn fx:id="produitNomColumn" prefWidth="200" text="Produit" style="-fx-font-weight: bold;" />
+                                <TableColumn fx:id="produitQuantiteDemandeeColumn" prefWidth="80" text="Qté demandée" style="-fx-font-weight: bold; -fx-alignment: CENTER;" />
+                            </columns>
+                        </TableView>
+                    </VBox>
+                </VBox>
+
+            </VBox>
+        </ScrollPane>
+    </center>
+
+</BorderPane>

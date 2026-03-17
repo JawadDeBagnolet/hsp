@@ -65,6 +65,12 @@
             <version>9.5.0</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.mindrot</groupId>
+            <artifactId>jbcrypt</artifactId>
+            <version>0.4</version>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -94,6 +100,11 @@
                             <noManPages>true</noManPages>
                             <stripDebug>true</stripDebug>
                             <noHeaderFiles>true</noHeaderFiles>
+                            <options>
+                                <option>-Dapple.awt.UIElement=true</option>
+                                <option>-Djava.awt.headless=false</option>
+                                <option>--add-modules=javafx.controls,javafx.fxml</option>
+                            </options>
                         </configuration>
                     </execution>
                 </executions>

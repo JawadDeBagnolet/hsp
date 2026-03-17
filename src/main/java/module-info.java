@@ -3,6 +3,7 @@ module com.example.hsp {
     requires javafx.controls;
     requires javafx.fxml;
     requires javafx.graphics;
+    requires jbcrypt;
 
     opens appli.hsp to javafx.fxml;
     opens appli to javafx.graphics;

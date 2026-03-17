@@ -4,33 +4,38 @@ public class FichePatient {
     private int idFichePatient;
     private String nom;
     private String prenom;
-    private int numSecu;
+    private String num_etudiant;
     private String email;
-    private int tel;
+    private String tel;
     private String rue;
     private int cp;
     private String ville;
+    // null = candidature en cours, 0 = refus, 1 = validé
+    private Integer candidature;
 
-    public FichePatient(int idFichePatient, String nom, String prenom, int numSecu, String email, int tel, String rue, int cp, String ville) {
+    public FichePatient(int idFichePatient, String nom, String prenom, String num_etudiant, String email, String tel, String rue, int cp, String ville, Integer candidature) {
         this.idFichePatient = idFichePatient;
         this.nom = nom;
         this.prenom = prenom;
-        this.numSecu = numSecu;
+        this.num_etudiant = num_etudiant;
         this.email = email;
         this.tel = tel;
         this.rue = rue;
         this.cp = cp;
         this.ville = ville;
+        this.candidature = candidature;
     }
-    public FichePatient(String nom, String prenom, int numSecu, String email, int tel, String rue, int cp, String ville) {
+
+    public FichePatient(String nom, String prenom, String num_etudiant, String email, String tel, String rue, int cp, String ville, Integer candidature) {
         this.nom = nom;
         this.prenom = prenom;
-        this.numSecu = numSecu;
+        this.num_etudiant = num_etudiant;
         this.email = email;
         this.tel = tel;
         this.rue = rue;
         this.cp = cp;
         this.ville = ville;
+        this.candidature = candidature;
     }
 
     public int getIdFichePatient() {
@@ -57,12 +62,12 @@ public class FichePatient {
         this.prenom = prenom;
     }
 
-    public int getNumSecu() {
-        return numSecu;
+    public String getNum_etudiant() {
+        return num_etudiant;
     }
 
-    public void setNumSecu(int numSecu) {
-        this.numSecu = numSecu;
+    public void setNum_etudiant(String num_etudiant) {
+        this.num_etudiant = num_etudiant;
     }
 
     public String getEmail() {
@@ -73,11 +78,11 @@ public class FichePatient {
         this.email = email;
     }
 
-    public int getTel() {
+    public String getTel() {
         return tel;
     }
 
-    public void setTel(int tel) {
+    public void setTel(String tel) {
         this.tel = tel;
     }
 
@@ -103,5 +108,20 @@ public class FichePatient {
 
     public void setVille(String ville) {
         this.ville = ville;
+    }
+
+    public Integer getCandidature() {
+        return candidature;
+    }
+
+    public void setCandidature(Integer candidature) {
+        this.candidature = candidature;
+    }
+
+    public String getCandidatureLibelle() {
+        if (candidature == null) return "En cours";
+        if (candidature == 0) return "Refusé";
+        if (candidature == 1) return "Validé";
+        return "Inconnu";
     }
 }

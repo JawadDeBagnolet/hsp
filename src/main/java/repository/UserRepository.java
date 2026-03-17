@@ -32,7 +32,7 @@ public class UserRepository {
     }
     
     public User trouverUtilisateurParId(int id) {
-        String sql = "SELECT * FROM user WHERE idUser = ?";
+        String sql = "SELECT * FROM user WHERE id_user = ?";
         
         try (Connection cnx = Database.getConnexion();
              PreparedStatement stmt = cnx.prepareStatement(sql)) {
@@ -42,7 +42,7 @@ public class UserRepository {
             
             if (rs.next()) {
                 return new User(
-                    rs.getInt("idUser"),
+                    rs.getInt("id_user"),
                     rs.getString("nom"),
                     rs.getString("prenom"),
                     rs.getString("email"),
@@ -57,17 +57,18 @@ public class UserRepository {
     }
     
     public User trouverUtilisateurParEmail(String email) {
-        String sql = "SELECT * FROM user WHERE email = ?";
+        String sql = "SELECT * FROM user WHERE LOWER(email) = LOWER(?)";
         
         try (Connection cnx = Database.getConnexion();
              PreparedStatement stmt = cnx.prepareStatement(sql)) {
-            
-            stmt.setString(1, email);
+
+            String safeEmail = (email == null) ? null : email.trim();
+            stmt.setString(1, safeEmail);
             ResultSet rs = stmt.executeQuery();
             
             if (rs.next()) {
                 return new User(
-                    rs.getInt("idUser"),
+                    rs.getInt("id_user"),
                     rs.getString("nom"),
                     rs.getString("prenom"),
                     rs.getString("email"),
@@ -89,24 +90,32 @@ public class UserRepository {
              PreparedStatement stmt = cnx.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
             
+            System.out.println("📡 Exécution de la requête: " + sql);
+            
             while (rs.next()) {
-                users.add(new User(
-                    rs.getInt("idUser"),
+                User user = new User(
+                    rs.getInt("id_user"),
                     rs.getString("nom"),
                     rs.getString("prenom"),
                     rs.getString("email"),
                     rs.getString("mdp"),
                     rs.getString("role")
-                ));
+                );
+                users.add(user);
+                System.out.println("✅ Utilisateur récupéré: " + user.toString());
             }
+            
+            System.out.println("📊 Total d'utilisateurs récupérés: " + users.size());
+            
         } catch (SQLException e) {
-            System.err.println("Erreur lors de la récupération des utilisateurs: " + e.getMessage());
+            System.err.println("❌ Erreur lors de la récupération des utilisateurs: " + e.getMessage());
+            e.printStackTrace();
         }
         return users;
     }
     
     public boolean modifierUtilisateur(User utilisateur) {
-        String sql = "UPDATE user SET nom = ?, prenom = ?, email = ?, mdp = ?, role = ? WHERE idUser = ?";
+        String sql = "UPDATE user SET nom = ?, prenom = ?, email = ?, mdp = ?, role = ? WHERE id_user = ?";
         
         try (Connection cnx = Database.getConnexion();
              PreparedStatement stmt = cnx.prepareStatement(sql)) {
@@ -126,7 +135,7 @@ public class UserRepository {
     }
     
     public boolean supprimerUtilisateur(int id) {
-        String sql = "DELETE FROM user WHERE idUser = ?";
+        String sql = "DELETE FROM user WHERE id_user = ?";
         
         try (Connection cnx = Database.getConnexion();
              PreparedStatement stmt = cnx.prepareStatement(sql)) {

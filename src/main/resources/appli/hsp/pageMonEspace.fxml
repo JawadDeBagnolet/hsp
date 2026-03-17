@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="appli.hsp.PageMonEspace"
+            style="-fx-background-color: linear-gradient(to bottom, #0f172a, #1e1b4b);">
+
+    <top>
+        <HBox style="-fx-background-color: #080c14; -fx-border-color: #6366f1; -fx-border-width: 0 0 2 0;">
+            <padding>
+                <Insets top="14" right="28" bottom="14" left="28"/>
+            </padding>
+            <VBox spacing="2" HBox.hgrow="ALWAYS">
+                <Text text="LPRS" style="-fx-font-size: 22px; -fx-fill: #818cf8; -fx-font-weight: bold;" />
+                <Text text="Lycée de Santé Publique" style="-fx-font-size: 11px; -fx-fill: #64748b;" />
+            </VBox>
+            <HBox spacing="4" alignment="CENTER">
+                <Button text="Accueil" onAction="#versAccueil"
+                        style="-fx-background-color: transparent; -fx-text-fill: #94a3b8; -fx-font-size: 13px; -fx-border-color: transparent; -fx-cursor: hand; -fx-padding: 8 14;" />
+                <Button text="Secrétariat" onAction="#versPatients"
+                        style="-fx-background-color: transparent; -fx-text-fill: #94a3b8; -fx-font-size: 13px; -fx-border-color: transparent; -fx-cursor: hand; -fx-padding: 8 14;" />
+                <Button text="Dossiers" onAction="#versDossiers"
+                        style="-fx-background-color: transparent; -fx-text-fill: #94a3b8; -fx-font-size: 13px; -fx-border-color: transparent; -fx-cursor: hand; -fx-padding: 8 14;" />
+                <Button text="Commandes" onAction="#versCommandes"
+                        style="-fx-background-color: transparent; -fx-text-fill: #94a3b8; -fx-font-size: 13px; -fx-border-color: transparent; -fx-cursor: hand; -fx-padding: 8 14;" />
+                <Button text="Planning" onAction="#versPlanning"
+                        style="-fx-background-color: transparent; -fx-text-fill: #94a3b8; -fx-font-size: 13px; -fx-border-color: transparent; -fx-cursor: hand; -fx-padding: 8 14;" />
+                <Button text="Catalogue" onAction="#versFicheProduit"
+                        style="-fx-background-color: transparent; -fx-text-fill: #94a3b8; -fx-font-size: 13px; -fx-border-color: transparent; -fx-cursor: hand; -fx-padding: 8 14;" />
+                <Button text="Utilisateurs" onAction="#versUtilisateurs"
+                        style="-fx-background-color: transparent; -fx-text-fill: #94a3b8; -fx-font-size: 13px; -fx-border-color: transparent; -fx-cursor: hand; -fx-padding: 8 14;" />
+                <Button text="Mon espace" onAction="#versMonEspace"
+                        style="-fx-background-color: #6366f1; -fx-text-fill: #ffffff; -fx-font-size: 13px; -fx-background-radius: 20; -fx-border-radius: 20; -fx-cursor: hand; -fx-padding: 8 18; -fx-font-weight: bold;" />
+                <Button text="Déconnexion" onAction="#deconnexion"
+                        style="-fx-background-color: #ef4444; -fx-text-fill: #ffffff; -fx-font-size: 13px; -fx-background-radius: 20; -fx-border-radius: 20; -fx-cursor: hand; -fx-padding: 8 18;" />
+            </HBox>
+        </HBox>
+    </top>
+
+    <center>
+        <ScrollPane fitToWidth="true" fitToHeight="true" style="-fx-background: transparent; -fx-border-color: transparent; -fx-background-color: transparent;">
+            <VBox alignment="CENTER" spacing="30" style="-fx-padding: 60;">
+                <Text text="Mon Espace Personnel"
+                      style="-fx-font-size: 36px; -fx-fill: #ffffff; -fx-font-weight: bold; -fx-font-family: 'Arial Black';" />
+
+                <VBox spacing="25" alignment="CENTER" style="-fx-background-color: rgba(30, 41, 59, 0.5); -fx-padding: 40; -fx-background-radius: 15; -fx-border-color: rgba(99, 102, 241, 0.2); -fx-border-width: 1; -fx-border-radius: 15; -fx-pref-width: 500;">
+
+                    <Text text="Informations personnelles"
+                          style="-fx-font-size: 20px; -fx-fill: #3b82f6; -fx-font-weight: bold;" />
+
+                    <HBox spacing="20" alignment="CENTER">
+                        <VBox spacing="8">
+                            <Label text="Nom :" style="-fx-font-size: 14px; -fx-text-fill: #ffffff; -fx-font-weight: bold;" />
+                            <TextField fx:id="nomField" editable="false"
+                                       style="-fx-pref-width: 200; -fx-pref-height: 35; -fx-background-color: rgba(248, 250, 252, 0.95); -fx-background-radius: 5; -fx-border-color: transparent;" />
+                        </VBox>
+
+                        <VBox spacing="8">
+                            <Label text="Prénom :" style="-fx-font-size: 14px; -fx-text-fill: #ffffff; -fx-font-weight: bold;" />
+                            <TextField fx:id="prenomField" editable="false"
+                                       style="-fx-pref-width: 200; -fx-pref-height: 35; -fx-background-color: rgba(248, 250, 252, 0.95); -fx-background-radius: 5; -fx-border-color: transparent;" />
+                        </VBox>
+                    </HBox>
+
+                    <Separator style="-fx-background-color: rgba(99, 102, 241, 0.2);" />
+
+                    <Text text="Coordonnées modifiables"
+                          style="-fx-font-size: 20px; -fx-fill: #10b981; -fx-font-weight: bold;" />
+
+                    <VBox spacing="8">
+                        <Label text="Email :" style="-fx-font-size: 14px; -fx-text-fill: #ffffff; -fx-font-weight: bold;" />
+                        <TextField fx:id="emailField" promptText="Entrez votre email"
+                                   style="-fx-pref-width: 350; -fx-pref-height: 35; -fx-background-color: rgba(248, 250, 252, 0.95); -fx-background-radius: 5; -fx-border-color: transparent;" />
+                    </VBox>
+
+                    <VBox spacing="8">
+                        <Label text="Nouveau mot de passe :" style="-fx-font-size: 14px; -fx-text-fill: #ffffff; -fx-font-weight: bold;" />
+                        <PasswordField fx:id="mdpField" promptText="Laissez vide pour ne pas modifier"
+                                       style="-fx-pref-width: 350; -fx-pref-height: 35; -fx-background-color: rgba(248, 250, 252, 0.95); -fx-background-radius: 5; -fx-border-color: transparent;" />
+                    </VBox>
+
+                    <VBox spacing="8">
+                        <Label text="Confirmer le mot de passe :" style="-fx-font-size: 14px; -fx-text-fill: #ffffff; -fx-font-weight: bold;" />
+                        <PasswordField fx:id="confirmMdpField" promptText="Confirmez le nouveau mot de passe"
+                                       style="-fx-pref-width: 350; -fx-pref-height: 35; -fx-background-color: rgba(248, 250, 252, 0.95); -fx-background-radius: 5; -fx-border-color: transparent;" />
+                    </VBox>
+
+                    <HBox spacing="20" alignment="CENTER">
+                        <Button text="Enregistrer" onAction="#enregistrerModifications"
+                                style="-fx-background-color: #10b981; -fx-text-fill: #ffffff; -fx-font-size: 16px; -fx-font-weight: bold; -fx-pref-width: 150; -fx-pref-height: 40; -fx-background-radius: 8; -fx-cursor: hand;" />
+                        <Button text="Annuler" onAction="#annulerModifications"
+                                style="-fx-background-color: #64748b; -fx-text-fill: #ffffff; -fx-font-size: 16px; -fx-font-weight: bold; -fx-pref-width: 120; -fx-pref-height: 40; -fx-background-radius: 8; -fx-cursor: hand;" />
+                    </HBox>
+
+                    <Label fx:id="messageLabel" text=""
+                           style="-fx-text-fill: #2ecc71; -fx-font-size: 14px; -fx-font-weight: bold;" />
+
+                </VBox>
+
+                <VBox style="-fx-pref-height: 100." />
+            </VBox>
+        </ScrollPane>
+    </center>
+
+</BorderPane>

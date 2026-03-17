@@ -18,6 +18,7 @@ public class User {
     }
     
     public User (String nom, String prenom, String email, String mdp, String role){
+        this.idUser = 0; // Initialiser l'ID à 0 pour les nouveaux utilisateurs
         this.nom = nom;
         this.prenom = prenom;
         this.email = email;
@@ -70,5 +71,24 @@ public class User {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "idUser=" + idUser +
+                ", nom='" + nom + '\'' +
+                ", prenom='" + prenom + '\'' +
+                ", email='" + email + '\'' +
+                ", role='" + role + '\'' +
+                '}';
+    }
+    
+    // Méthode pour vérifier que l'utilisateur est valide
+    public boolean isValid() {
+        return nom != null && !nom.trim().isEmpty() &&
+               prenom != null && !prenom.trim().isEmpty() &&
+               email != null && !email.trim().isEmpty() &&
+               role != null && !role.trim().isEmpty();
     }
 }

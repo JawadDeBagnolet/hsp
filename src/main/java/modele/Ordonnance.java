@@ -1,20 +1,24 @@
 package modele;
 
+import java.time.LocalDateTime;
+
 public class Ordonnance {
     private int idOrdonnance;
-    private int dateOrdonnance;
-    private String contenuOrdonnance;
+    private int idDossier;
+    private LocalDateTime dateOrdonnance;
+    private String contenu;
 
-    public Ordonnance(int idOrdonnance, int dateOrdonnance, String contenuOrdonnance) {
+    public Ordonnance(int idOrdonnance, int idDossier, LocalDateTime dateOrdonnance, String contenu) {
         this.idOrdonnance = idOrdonnance;
+        this.idDossier = idDossier;
         this.dateOrdonnance = dateOrdonnance;
-        this.contenuOrdonnance = contenuOrdonnance;
+        this.contenu = contenu;
     }
 
-
-    public Ordonnance( int dateOrdonnance, String contenuOrdonnance) {
+    public Ordonnance(int idDossier, LocalDateTime dateOrdonnance, String contenu) {
+        this.idDossier = idDossier;
         this.dateOrdonnance = dateOrdonnance;
-        this.contenuOrdonnance = contenuOrdonnance;
+        this.contenu = contenu;
     }
 
     public int getIdOrdonnance() {
@@ -25,19 +29,27 @@ public class Ordonnance {
         this.idOrdonnance = idOrdonnance;
     }
 
-    public int getDateOrdonnance() {
+    public int getIdDossier() {
+        return idDossier;
+    }
+
+    public void setIdDossier(int idDossier) {
+        this.idDossier = idDossier;
+    }
+
+    public LocalDateTime getDateOrdonnance() {
         return dateOrdonnance;
     }
 
-    public void setDateOrdonnance(int dateOrdonnance) {
+    public void setDateOrdonnance(LocalDateTime dateOrdonnance) {
         this.dateOrdonnance = dateOrdonnance;
     }
 
-    public String getContenuOrdonnance() {
-        return contenuOrdonnance;
+    public String getContenu() {
+        return contenu;
     }
 
-    public void setContenuOrdonnance(String contenuOrdonnance) {
-        this.contenuOrdonnance = contenuOrdonnance;
+    public void setContenu(String contenu) {
+        this.contenu = contenu;
     }
 }

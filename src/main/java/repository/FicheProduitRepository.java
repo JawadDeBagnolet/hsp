@@ -13,7 +13,7 @@ import java.util.List;
 public class FicheProduitRepository {
 
     public boolean ajouterFicheProduit(FicheProduit produit) {
-        String sql = "INSERT INTO ficheproduit (libelle, description, nivDangerosite, stockActuel) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO fiche_produit (libelle, description, niveau_dangerosite) VALUES (?, ?, ?)";
 
         try (Connection cnx = Database.getConnexion();
              PreparedStatement stmt = cnx.prepareStatement(sql)) {
@@ -21,7 +21,6 @@ public class FicheProduitRepository {
             stmt.setString(1, produit.getLibelle());
             stmt.setString(2, produit.getDescription());
             stmt.setInt(3, produit.getNivDangerosite());
-            stmt.setInt(4, produit.getStockActuel());
 
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -31,7 +30,7 @@ public class FicheProduitRepository {
     }
 
     public FicheProduit trouverFicheProduitParId(int id) {
-        String sql = "SELECT * FROM ficheproduit WHERE idProduit = ?";
+        String sql = "SELECT * FROM fiche_produit WHERE id_produit = ?";
 
         try (Connection cnx = Database.getConnexion();
              PreparedStatement stmt = cnx.prepareStatement(sql)) {
@@ -41,11 +40,11 @@ public class FicheProduitRepository {
 
             if (rs.next()) {
                 return new FicheProduit(
-                    rs.getInt("idProduit"),
+                    rs.getInt("id_produit"),
                     rs.getString("libelle"),
                     rs.getString("description"),
-                    rs.getInt("nivDangerosite"),
-                    rs.getInt("stockActuel")
+                    rs.getInt("niveau_dangerosite"),
+                    0
                 );
             }
         } catch (SQLException e) {
@@ -55,7 +54,7 @@ public class FicheProduitRepository {
     }
 
     public FicheProduit trouverFicheProduitParLibelle(String libelle) {
-        String sql = "SELECT * FROM ficheproduit WHERE libelle = ?";
+        String sql = "SELECT * FROM fiche_produit WHERE libelle = ?";
 
         try (Connection cnx = Database.getConnexion();
              PreparedStatement stmt = cnx.prepareStatement(sql)) {
@@ -65,11 +64,11 @@ public class FicheProduitRepository {
 
             if (rs.next()) {
                 return new FicheProduit(
-                    rs.getInt("idProduit"),
+                    rs.getInt("id_produit"),
                     rs.getString("libelle"),
                     rs.getString("description"),
-                    rs.getInt("nivDangerosite"),
-                    rs.getInt("stockActuel")
+                    rs.getInt("niveau_dangerosite"),
+                    0
                 );
             }
         } catch (SQLException e) {
@@ -80,7 +79,7 @@ public class FicheProduitRepository {
 
     public List<FicheProduit> getAllFicheProduits() {
         List<FicheProduit> produits = new ArrayList<>();
-        String sql = "SELECT * FROM ficheproduit";
+        String sql = "SELECT * FROM fiche_produit";
 
         try (Connection cnx = Database.getConnexion();
              PreparedStatement stmt = cnx.prepareStatement(sql);
@@ -88,11 +87,11 @@ public class FicheProduitRepository {
 
             while (rs.next()) {
                 produits.add(new FicheProduit(
-                    rs.getInt("idProduit"),
+                    rs.getInt("id_produit"),
                     rs.getString("libelle"),
                     rs.getString("description"),
-                    rs.getInt("nivDangerosite"),
-                    rs.getInt("stockActuel")
+                    rs.getInt("niveau_dangerosite"),
+                    0
                 ));
             }
         } catch (SQLException e) {
@@ -102,7 +101,7 @@ public class FicheProduitRepository {
     }
 
     public boolean modifierFicheProduit(FicheProduit produit) {
-        String sql = "UPDATE ficheproduit SET libelle = ?, description = ?, nivDangerosite = ?, stockActuel = ? WHERE idProduit = ?";
+        String sql = "UPDATE fiche_produit SET libelle = ?, description = ?, niveau_dangerosite = ? WHERE id_produit = ?";
 
         try (Connection cnx = Database.getConnexion();
              PreparedStatement stmt = cnx.prepareStatement(sql)) {
@@ -110,8 +109,7 @@ public class FicheProduitRepository {
             stmt.setString(1, produit.getLibelle());
             stmt.setString(2, produit.getDescription());
             stmt.setInt(3, produit.getNivDangerosite());
-            stmt.setInt(4, produit.getStockActuel());
-            stmt.setInt(5, produit.getIdProduit());
+            stmt.setInt(4, produit.getIdProduit());
 
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -121,7 +119,7 @@ public class FicheProduitRepository {
     }
 
     public boolean supprimerFicheProduit(int id) {
-        String sql = "DELETE FROM ficheproduit WHERE idProduit = ?";
+        String sql = "DELETE FROM fiche_produit WHERE id_produit = ?";
 
         try (Connection cnx = Database.getConnexion();
              PreparedStatement stmt = cnx.prepareStatement(sql)) {

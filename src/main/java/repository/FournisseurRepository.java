@@ -30,7 +30,7 @@ public class FournisseurRepository {
     }
 
     public Fournisseur trouverFournisseurParId(int id) {
-        String sql = "SELECT * FROM fournisseur WHERE idFournisseur = ?";
+        String sql = "SELECT * FROM fournisseur WHERE id_fournisseur = ?";
 
         try (Connection cnx = Database.getConnexion();
              PreparedStatement stmt = cnx.prepareStatement(sql)) {
@@ -40,7 +40,7 @@ public class FournisseurRepository {
 
             if (rs.next()) {
                 return new Fournisseur(
-                    rs.getInt("idFournisseur"),
+                    rs.getInt("id_fournisseur"),
                     rs.getString("nom"),
                     rs.getString("email"),
                     rs.getInt("tel")
@@ -63,7 +63,7 @@ public class FournisseurRepository {
 
             if (rs.next()) {
                 return new Fournisseur(
-                    rs.getInt("idFournisseur"),
+                    rs.getInt("id_fournisseur"),
                     rs.getString("nom"),
                     rs.getString("email"),
                     rs.getInt("tel")
@@ -85,7 +85,7 @@ public class FournisseurRepository {
 
             while (rs.next()) {
                 fournisseurs.add(new Fournisseur(
-                    rs.getInt("idFournisseur"),
+                    rs.getInt("id_fournisseur"),
                     rs.getString("nom"),
                     rs.getString("email"),
                     rs.getInt("tel")
@@ -98,7 +98,7 @@ public class FournisseurRepository {
     }
 
     public boolean modifierFournisseur(Fournisseur fournisseur) {
-        String sql = "UPDATE fournisseur SET nom = ?, email = ?, tel = ? WHERE idFournisseur = ?";
+        String sql = "UPDATE fournisseur SET nom = ?, email = ?, tel = ? WHERE id_fournisseur = ?";
 
         try (Connection cnx = Database.getConnexion();
              PreparedStatement stmt = cnx.prepareStatement(sql)) {
@@ -116,7 +116,7 @@ public class FournisseurRepository {
     }
 
     public boolean supprimerFournisseur(int id) {
-        String sql = "DELETE FROM fournisseur WHERE idFournisseur = ?";
+        String sql = "DELETE FROM fournisseur WHERE id_fournisseur = ?";
 
         try (Connection cnx = Database.getConnexion();
              PreparedStatement stmt = cnx.prepareStatement(sql)) {
