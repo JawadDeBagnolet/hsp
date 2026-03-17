@@ -1,7 +1,8 @@
 module com.example.hsp {
+    requires java.sql;
     requires javafx.controls;
     requires javafx.fxml;
-    requires java.sql;
+    requires javafx.graphics;
 
     opens appli.hsp to javafx.fxml;
     opens appli to javafx.graphics;
