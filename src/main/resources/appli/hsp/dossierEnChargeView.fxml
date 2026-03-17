@@ -7,68 +7,44 @@
 
 <BorderPane xmlns:fx="http://javafx.com/fxml"
             fx:controller="appli.hsp.DossierEnChargeController"
-            style="-fx-background-color: linear-gradient(to bottom, #2c3e50, #3498db);">
+            style="-fx-background-color: linear-gradient(to bottom, #0f172a, #1e1b4b);">
 
     <!-- Barre de navigation en haut -->
     <top>
-        <HBox style="-fx-background-color: #34495e; -fx-padding: 15; -fx-border-color: #2c3e50; -fx-border-width: 0 0 2 0;">
+        <HBox style="-fx-background-color: #080c14; -fx-border-color: #6366f1; -fx-border-width: 0 0 2 0;">
             <padding>
-                <Insets top="10" right="20" bottom="10" left="20"/>
+                <Insets top="14" right="28" bottom="14" left="28"/>
             </padding>
-            
-            <!-- Logo/Titre -->
-            <VBox spacing="5" HBox.hgrow="ALWAYS">
-                <Text text="HSP" 
-                      style="-fx-font-size: 24px; -fx-fill: #3498db; -fx-font-weight: bold;" />
-                <Text text="Lycée de Santé Publique"
-                      style="-fx-font-size: 12px; -fx-fill: #ecf0f1;" />
+            <VBox spacing="2" HBox.hgrow="ALWAYS">
+                <Text text="LPRS" style="-fx-font-size: 22px; -fx-fill: #818cf8; -fx-font-weight: bold;" />
+                <Text text="Lycée de Santé Publique" style="-fx-font-size: 11px; -fx-fill: #64748b;" />
             </VBox>
-            
-            <!-- Menu de navigation -->
-            <HBox spacing="20" alignment="CENTER">
-                <Button text="Accueil"
-                        style="-fx-background-color: transparent; -fx-text-fill: #ecf0f1; -fx-font-size: 14px; -fx-border-color: transparent; -fx-cursor: hand;"
-                        onAction="#versAccueil" />
-                
-                <Separator orientation="VERTICAL" style="-fx-background-color: #7f8c8d;" />
-                
-                <Button text="Secrétariat"
-                        style="-fx-background-color: transparent; -fx-text-fill: #ecf0f1; -fx-font-size: 14px; -fx-border-color: transparent; -fx-cursor: hand;"
-                        onAction="#versPatients" />
-                
-                <Separator orientation="VERTICAL" style="-fx-background-color: #7f8c8d;" />
-                
+            <HBox spacing="4" alignment="CENTER">
+                <Button text="Accueil" onAction="#versAccueil"
+                        style="-fx-background-color: transparent; -fx-text-fill: #94a3b8; -fx-font-size: 13px; -fx-border-color: transparent; -fx-cursor: hand; -fx-padding: 8 14;" />
+                <Button text="Secrétariat" onAction="#versPatients"
+                        style="-fx-background-color: transparent; -fx-text-fill: #94a3b8; -fx-font-size: 13px; -fx-border-color: transparent; -fx-cursor: hand; -fx-padding: 8 14;" />
                 <Button text="Dossiers"
-                        style="-fx-background-color: #3498db; -fx-text-fill: #ffffff; -fx-font-size: 14px; -fx-border-color: #2980b9; -fx-border-width: 1; -fx-border-radius: 5; -fx-background-radius: 5; -fx-cursor: hand;" />
-                
-                <Separator orientation="VERTICAL" style="-fx-background-color: #7f8c8d;" />
-                
-                <Button text="Commandes"
-                        style="-fx-background-color: transparent; -fx-text-fill: #ecf0f1; -fx-font-size: 14px; -fx-border-color: transparent; -fx-cursor: hand;"
-                        onAction="#versCommandes" />
-                
-                <Separator orientation="VERTICAL" style="-fx-background-color: #7f8c8d;" />
-                
-                <Button text="Utilisateurs"
-                        style="-fx-background-color: transparent; -fx-text-fill: #ecf0f1; -fx-font-size: 14px; -fx-border-color: transparent; -fx-cursor: hand;"
-                        onAction="#versUtilisateurs" />
-                
-                <Separator orientation="VERTICAL" style="-fx-background-color: #7f8c8d;" />
-                
-                <Button text="Mon espace"
-                        style="-fx-background-color: transparent; -fx-text-fill: #ecf0f1; -fx-font-size: 14px; -fx-border-color: transparent; -fx-cursor: hand;"
-                        onAction="#versMonEspace" />
-                
-                <Button text="Déconnexion"
-                        style="-fx-background-color: #e74c3c; -fx-text-fill: #ffffff; -fx-font-size: 14px; -fx-border-color: #c0392b; -fx-border-width: 1; -fx-border-radius: 5; -fx-background-radius: 5; -fx-cursor: hand;"
-                        onAction="#deconnexion" />
+                        style="-fx-background-color: #6366f1; -fx-text-fill: #ffffff; -fx-font-size: 13px; -fx-background-radius: 20; -fx-border-radius: 20; -fx-cursor: hand; -fx-padding: 8 18; -fx-font-weight: bold;" />
+                <Button text="Commandes" onAction="#versCommandes"
+                        style="-fx-background-color: transparent; -fx-text-fill: #94a3b8; -fx-font-size: 13px; -fx-border-color: transparent; -fx-cursor: hand; -fx-padding: 8 14;" />
+                <Button text="Planning" onAction="#versPlanning"
+                        style="-fx-background-color: transparent; -fx-text-fill: #94a3b8; -fx-font-size: 13px; -fx-border-color: transparent; -fx-cursor: hand; -fx-padding: 8 14;" />
+                <Button text="Catalogue" onAction="#versFicheProduit"
+                        style="-fx-background-color: transparent; -fx-text-fill: #94a3b8; -fx-font-size: 13px; -fx-border-color: transparent; -fx-cursor: hand; -fx-padding: 8 14;" />
+                <Button text="Utilisateurs" onAction="#versUtilisateurs"
+                        style="-fx-background-color: transparent; -fx-text-fill: #94a3b8; -fx-font-size: 13px; -fx-border-color: transparent; -fx-cursor: hand; -fx-padding: 8 14;" />
+                <Button text="Mon espace" onAction="#versMonEspace"
+                        style="-fx-background-color: rgba(99,102,241,0.15); -fx-text-fill: #818cf8; -fx-font-size: 13px; -fx-background-radius: 20; -fx-border-radius: 20; -fx-border-color: rgba(99,102,241,0.5); -fx-border-width: 1; -fx-cursor: hand; -fx-padding: 8 18;" />
+                <Button text="Déconnexion" onAction="#deconnexion"
+                        style="-fx-background-color: #ef4444; -fx-text-fill: #ffffff; -fx-font-size: 13px; -fx-background-radius: 20; -fx-border-radius: 20; -fx-cursor: hand; -fx-padding: 8 18;" />
             </HBox>
         </HBox>
     </top>
 
     <!-- Contenu principal -->
     <center>
-        <ScrollPane fitToWidth="true" fitToHeight="true" style="-fx-background: linear-gradient(to bottom, #2c3e50, #3498db); -fx-border-color: transparent;">
+        <ScrollPane fitToWidth="true" fitToHeight="true" style="-fx-background: transparent; -fx-border-color: transparent; -fx-background-color: transparent;">
             <VBox alignment="CENTER" spacing="25" style="-fx-padding: 40;">
                 <padding>
                     <Insets top="30" right="40" bottom="30" left="40"/>
@@ -84,55 +60,55 @@
                 </VBox>
 
                 <!-- Formulaire de création -->
-                <VBox spacing="20" alignment="CENTER" style="-fx-background-color: rgba(255, 255, 255, 0.95); -fx-padding: 30; -fx-background-radius: 15; -fx-border-color: rgba(255, 255, 255, 0.3); -fx-border-width: 1; -fx-border-radius: 15; -fx-pref-width: 500;">
+                <VBox spacing="20" alignment="CENTER" style="-fx-background-color: rgba(248, 250, 252, 0.97); -fx-padding: 30; -fx-background-radius: 15; -fx-border-color: rgba(99, 102, 241, 0.2); -fx-border-width: 1; -fx-border-radius: 15; -fx-pref-width: 500;">
                     
                     <!-- Date d'arrivée -->
                     <VBox spacing="8" alignment="CENTER_LEFT" style="-fx-pref-width: 100%;">
                         <Label text="Date d'arrivée *" 
-                               style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" />
+                               style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #1e293b;" />
                         <DatePicker fx:id="dateArriveeField" 
                                    editable="false"
-                                   style="-fx-pref-width: 100%; -fx-font-size: 14px; -fx-background-color: white; -fx-border-color: #bdc3c7; -fx-border-width: 2; -fx-border-radius: 5; -fx-cursor: hand; -fx-opacity: 1;" />
+                                   style="-fx-pref-width: 100%; -fx-font-size: 14px; -fx-background-color: white; -fx-border-color: rgba(99,102,241,0.3); -fx-border-width: 2; -fx-border-radius: 5; -fx-cursor: hand; -fx-opacity: 1;" />
                     </VBox>
 
                     <!-- Heure d'arrivée -->
                     <VBox spacing="8" alignment="CENTER_LEFT" style="-fx-pref-width: 100%;">
                         <Label text="Heure d'arrivée *" 
-                               style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" />
+                               style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #1e293b;" />
                         <HBox spacing="10">
                             <ComboBox fx:id="heureCombo" 
-                                     style="-fx-pref-width: 80; -fx-font-size: 14px; -fx-background-color: white; -fx-border-color: #bdc3c7; -fx-border-width: 2; -fx-border-radius: 5; -fx-cursor: hand; -fx-text-fill: #2c3e50; -fx-opacity: 1;" />
-                            <Label text=":" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" />
+                                     style="-fx-pref-width: 80; -fx-font-size: 14px; -fx-background-color: white; -fx-border-color: rgba(99,102,241,0.3); -fx-border-width: 2; -fx-border-radius: 5; -fx-cursor: hand; -fx-text-fill: #1e293b; -fx-opacity: 1;" />
+                            <Label text=":" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #1e293b;" />
                             <ComboBox fx:id="minuteCombo" 
-                                     style="-fx-pref-width: 80; -fx-font-size: 14px; -fx-background-color: white; -fx-border-color: #bdc3c7; -fx-border-width: 2; -fx-border-radius: 5; -fx-cursor: hand; -fx-text-fill: #2c3e50; -fx-opacity: 1;" />
+                                     style="-fx-pref-width: 80; -fx-font-size: 14px; -fx-background-color: white; -fx-border-color: rgba(99,102,241,0.3); -fx-border-width: 2; -fx-border-radius: 5; -fx-cursor: hand; -fx-text-fill: #1e293b; -fx-opacity: 1;" />
                         </HBox>
                     </VBox>
 
                     <!-- Symptômes -->
                     <VBox spacing="8" alignment="CENTER_LEFT" style="-fx-pref-width: 100%;">
                         <Label text="Symptômes *" 
-                               style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" />
+                               style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #1e293b;" />
                         <TextArea fx:id="symptomesField"
                                  promptText="Décrivez les symptômes de l'élève..."
                                  prefRowCount="4"
                                  wrapText="true"
-                                 style="-fx-pref-width: 100%; -fx-font-size: 14px; -fx-background-color: white; -fx-border-color: #bdc3c7; -fx-border-width: 2; -fx-border-radius: 5;" />
+                                 style="-fx-pref-width: 100%; -fx-font-size: 14px; -fx-background-color: white; -fx-border-color: rgba(99,102,241,0.3); -fx-border-width: 2; -fx-border-radius: 5;" />
                     </VBox>
 
                     <!-- Niveau de gravité -->
                     <VBox spacing="8" alignment="CENTER_LEFT" style="-fx-pref-width: 100%;">
                         <Label text="Niveau de gravité *" 
-                               style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" />
+                               style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #1e293b;" />
                         <ComboBox fx:id="niveauGraviteCombo" 
-                                 style="-fx-pref-width: 100%; -fx-font-size: 14px; -fx-background-color: white; -fx-border-color: #bdc3c7; -fx-border-width: 2; -fx-border-radius: 5; -fx-cursor: hand; -fx-text-fill: #2c3e50; -fx-opacity: 1;" />
+                                 style="-fx-pref-width: 100%; -fx-font-size: 14px; -fx-background-color: white; -fx-border-color: rgba(99,102,241,0.3); -fx-border-width: 2; -fx-border-radius: 5; -fx-cursor: hand; -fx-text-fill: #1e293b; -fx-opacity: 1;" />
                     </VBox>
 
                     <!-- Patient -->
                     <VBox spacing="8" alignment="CENTER_LEFT" style="-fx-pref-width: 100%;">
                         <Label text="Élève *"
-                               style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" />
+                               style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #1e293b;" />
                         <ComboBox fx:id="patientCombo" 
-                                 style="-fx-pref-width: 100%; -fx-font-size: 14px; -fx-background-color: white; -fx-border-color: #bdc3c7; -fx-border-width: 2; -fx-border-radius: 5; -fx-cursor: hand; -fx-text-fill: #2c3e50; -fx-opacity: 1;" />
+                                 style="-fx-pref-width: 100%; -fx-font-size: 14px; -fx-background-color: white; -fx-border-color: rgba(99,102,241,0.3); -fx-border-width: 2; -fx-border-radius: 5; -fx-cursor: hand; -fx-text-fill: #1e293b; -fx-opacity: 1;" />
                     </VBox>
 
                 <!-- Boutons d'action -->
@@ -140,57 +116,57 @@
                         <Button fx:id="nouveauButton" 
                                 text="🆕 Nouveau" 
                                 onAction="#handleNouveauDossier"
-                                style="-fx-background-color: #3498db; -fx-text-fill: #ffffff; -fx-font-size: 14px; -fx-font-weight: bold; -fx-padding: 8 15; -fx-background-radius: 5; -fx-cursor: hand;" />
+                                style="-fx-background-color: #3b82f6; -fx-text-fill: #ffffff; -fx-font-size: 14px; -fx-font-weight: bold; -fx-padding: 8 15; -fx-background-radius: 5; -fx-cursor: hand;" />
                         
                         <Button fx:id="modifierButton" 
                                 text="✏️ Modifier" 
                                 onAction="#handleModifierDossier"
                                 disable="true"
-                                style="-fx-background-color: #f39c12; -fx-text-fill: #ffffff; -fx-font-size: 14px; -fx-font-weight: bold; -fx-padding: 8 15; -fx-background-radius: 5; -fx-cursor: hand;" />
+                                style="-fx-background-color: #f59e0b; -fx-text-fill: #ffffff; -fx-font-size: 14px; -fx-font-weight: bold; -fx-padding: 8 15; -fx-background-radius: 5; -fx-cursor: hand;" />
                         
                         <Button fx:id="supprimerButton" 
                                 text="🗑️ Supprimer" 
                                 onAction="#handleSupprimerDossier"
                                 disable="true"
-                                style="-fx-background-color: #e74c3c; -fx-text-fill: #ffffff; -fx-font-size: 14px; -fx-font-weight: bold; -fx-padding: 8 15; -fx-background-radius: 5; -fx-cursor: hand;" />
+                                style="-fx-background-color: #ef4444; -fx-text-fill: #ffffff; -fx-font-size: 14px; -fx-font-weight: bold; -fx-padding: 8 15; -fx-background-radius: 5; -fx-cursor: hand;" />
                     </HBox>
 
                     <!-- Message de statut -->
                     <Label fx:id="messageLabel" 
-                           style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #e74c3c;" />
+                           style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #ef4444;" />
 
                     <!-- Boutons d'action -->
                     <HBox spacing="15" alignment="CENTER">
                         <Button text="✅ Créer le dossier" 
                                 onAction="#handleCreerDossier"
-                                style="-fx-background-color: #27ae60; -fx-text-fill: #ffffff; -fx-font-size: 16px; -fx-font-weight: bold; -fx-padding: 12 25; -fx-background-radius: 8; -fx-cursor: hand; -fx-pref-width: 180;" />
+                                style="-fx-background-color: #10b981; -fx-text-fill: #ffffff; -fx-font-size: 16px; -fx-font-weight: bold; -fx-padding: 12 25; -fx-background-radius: 8; -fx-cursor: hand; -fx-pref-width: 180;" />
                         
                         <Button text="🔄 Vider les champs" 
                                 onAction="#handleViderChamps"
-                                style="-fx-background-color: #f39c12; -fx-text-fill: #ffffff; -fx-font-size: 16px; -fx-font-weight: bold; -fx-padding: 12 25; -fx-background-radius: 8; -fx-cursor: hand; -fx-pref-width: 180;" />
+                                style="-fx-background-color: #f59e0b; -fx-text-fill: #ffffff; -fx-font-size: 16px; -fx-font-weight: bold; -fx-padding: 12 25; -fx-background-radius: 8; -fx-cursor: hand; -fx-pref-width: 180;" />
                     </HBox>
                 </VBox>
 
                 <!-- Bouton de retour -->
                 <HBox spacing="20" alignment="CENTER">
                     <Button text="🏠 Retour à l'accueil" onAction="#handleRetour" 
-                            style="-fx-background-color: #95a5a6; -fx-text-fill: #ffffff; -fx-font-size: 16px; -fx-font-weight: bold; -fx-padding: 15 30; -fx-background-radius: 25; -fx-cursor: hand;" />
+                            style="-fx-background-color: #64748b; -fx-text-fill: #ffffff; -fx-font-size: 16px; -fx-font-weight: bold; -fx-padding: 15 30; -fx-background-radius: 25; -fx-cursor: hand;" />
                 </HBox>
                 
                 <!-- Liste des dossiers existants -->
-                <VBox spacing="15" alignment="CENTER" style="-fx-background-color: rgba(255, 255, 255, 0.95); -fx-padding: 25; -fx-background-radius: 15; -fx-border-color: rgba(255, 255, 255, 0.3); -fx-border-width: 1; -fx-border-radius: 15; -fx-pref-width: 700;">
+                <VBox spacing="15" alignment="CENTER" style="-fx-background-color: rgba(248, 250, 252, 0.97); -fx-padding: 25; -fx-background-radius: 15; -fx-border-color: rgba(99, 102, 241, 0.2); -fx-border-width: 1; -fx-border-radius: 15; -fx-pref-width: 700;">
                     <Text text="📋 Liste des Dossiers de Prise en Charge"
-                          style="-fx-font-size: 20px; -fx-fill: #2c3e50; -fx-font-weight: bold;" />
+                          style="-fx-font-size: 20px; -fx-fill: #1e293b; -fx-font-weight: bold;" />
                     
-                    <Separator style="-fx-background-color: #bdc3c7; -fx-pref-width: 100%;" />
+                    <Separator style="-fx-background-color: rgba(99,102,241,0.3); -fx-pref-width: 100%;" />
                     
                     <Text text="💡 Cliquez sur un dossier pour le visualiser, puis utilisez les boutons Modifier/Supprimer"
-                          style="-fx-font-size: 12px; -fx-fill: #7f8c8d; -fx-font-style: italic;" />
+                          style="-fx-font-size: 12px; -fx-fill: #64748b; -fx-font-style: italic;" />
                     
                     <ScrollPane fitToWidth="true" fitToHeight="true" prefHeight="300" 
                                style="-fx-background-color: transparent; -fx-border-color: transparent;">
                         <ListView fx:id="dossiersListView" 
-                                 style="-fx-background-color: white; -fx-border-color: #bdc3c7; -fx-border-width: 1; -fx-border-radius: 5; -fx-font-size: 14px;" />
+                                 style="-fx-background-color: white; -fx-border-color: rgba(99,102,241,0.3); -fx-border-width: 1; -fx-border-radius: 5; -fx-font-size: 14px;" />
                     </ScrollPane>
                 </VBox>
                 

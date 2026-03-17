@@ -603,11 +603,38 @@ public class PageUtilisateurs {
     }
 
     @FXML
+    public void versDossiers(ActionEvent event) {
+        try {
+            StartApplication.changeScene("dossierEnChargeView");
+        } catch (Exception e) {
+            System.err.println("Erreur lors de la redirection vers dossiers: " + e.getMessage());
+        }
+    }
+
+    @FXML
     public void versCommandes(ActionEvent event) {
         try {
             StartApplication.changeScene("commandeView");
         } catch (Exception e) {
             System.err.println("Erreur lors de la redirection vers commandes: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    public void versPlanning(ActionEvent event) {
+        try {
+            StartApplication.changeScene("planningView");
+        } catch (Exception e) {
+            System.err.println("Erreur lors de la redirection vers planning: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    public void versFicheProduit(ActionEvent event) {
+        try {
+            StartApplication.changeScene("ficheProduitView");
+        } catch (Exception e) {
+            System.err.println("Erreur lors de la redirection vers catalogue: " + e.getMessage());
         }
     }
 

@@ -80,7 +80,7 @@ public class HelloController {
                             FXMLLoader loader = new FXMLLoader(resourceUrl);
                             Scene scene = new Scene(loader.load(), stage.getWidth(), stage.getHeight());
                             stage.setScene(scene);
-                            stage.setTitle("HSP - pageAccueil");
+                            stage.setTitle("LPRS - pageAccueil");
                             stage.show();
 
                             System.out.println("[HelloController] Scene changée vers pageAccueil.");

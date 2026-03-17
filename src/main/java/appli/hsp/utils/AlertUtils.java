@@ -73,7 +73,7 @@ public class AlertUtils {
         Platform.runLater(() -> {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.initModality(Modality.APPLICATION_MODAL);
-            alert.setTitle("Erreur - HSP");
+            alert.setTitle("Erreur - LPRS");
             alert.setHeaderText(title);
             alert.setContentText(message);
             
@@ -106,7 +106,7 @@ public class AlertUtils {
         Platform.runLater(() -> {
             Alert alert = new Alert(type);
             alert.initModality(Modality.APPLICATION_MODAL);
-            alert.setTitle(getTitlePrefix(type) + " - HSP");
+            alert.setTitle(getTitlePrefix(type) + " - LPRS");
             alert.setHeaderText(title);
             alert.setContentText(message);
             
@@ -130,7 +130,7 @@ public class AlertUtils {
     private static boolean showAlertAndWait(Alert.AlertType type, String title, String message, String details) {
         Alert alert = new Alert(type);
         alert.initModality(Modality.APPLICATION_MODAL);
-        alert.setTitle(getTitlePrefix(type) + " - HSP");
+        alert.setTitle(getTitlePrefix(type) + " - LPRS");
         alert.setHeaderText(title);
         alert.setContentText(message);
         

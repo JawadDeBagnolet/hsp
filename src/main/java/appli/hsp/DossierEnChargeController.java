@@ -3,7 +3,7 @@ package appli.hsp;
 import appli.StartApplication;
 import appli.SessionManager;
 import appli.hsp.exception.ErrorCode;
-import appli.hsp.exception.HSPException;
+import appli.hsp.exception.LPRSException;
 import appli.hsp.utils.ErrorHandler;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -67,7 +67,7 @@ public class DossierEnChargeController {
             configurerSelectionDossier();
         } catch (Exception e) {
             ErrorHandler.handleException(
-                new HSPException(ErrorCode.SYSTEM_ERROR, "Erreur lors de l'initialisation du contrôleur", e),
+                new LPRSException(ErrorCode.SYSTEM_ERROR, "Erreur lors de l'initialisation du contrôleur", e),
                 "Initialisation DossierEnChargeController"
             );
         }
@@ -136,7 +136,7 @@ public class DossierEnChargeController {
             
         } catch (Exception e) {
             ErrorHandler.handleException(
-                new HSPException(ErrorCode.DATA_ACCESS_ERROR, "Erreur lors du chargement des patients", e),
+                new LPRSException(ErrorCode.DATA_ACCESS_ERROR, "Erreur lors du chargement des patients", e),
                 "Chargement patients"
             );
         }
@@ -252,12 +252,12 @@ public class DossierEnChargeController {
                 viderChamps();
                 chargerListeDossiers();
             } else {
-                throw new HSPException(ErrorCode.DATA_ACCESS_ERROR, "Échec de la création du dossier");
+                throw new LPRSException(ErrorCode.DATA_ACCESS_ERROR, "Échec de la création du dossier");
             }
             
         } catch (Exception e) {
             ErrorHandler.handleException(
-                new HSPException(ErrorCode.DATA_ACCESS_ERROR, "Erreur lors de la création du dossier", e),
+                new LPRSException(ErrorCode.DATA_ACCESS_ERROR, "Erreur lors de la création du dossier", e),
                 "Création dossier"
             );
         }
@@ -299,12 +299,12 @@ public class DossierEnChargeController {
                     annulerEdition();
                     chargerListeDossiers();
                 } else {
-                    throw new HSPException(ErrorCode.DATA_ACCESS_ERROR, "Échec de la modification du dossier");
+                    throw new LPRSException(ErrorCode.DATA_ACCESS_ERROR, "Échec de la modification du dossier");
                 }
             }
         } catch (Exception e) {
             ErrorHandler.handleException(
-                new HSPException(ErrorCode.DATA_ACCESS_ERROR, "Erreur lors de la modification du dossier", e),
+                new LPRSException(ErrorCode.DATA_ACCESS_ERROR, "Erreur lors de la modification du dossier", e),
                 "Modification dossier"
             );
         }
@@ -332,12 +332,12 @@ public class DossierEnChargeController {
                     annulerEdition();
                     chargerListeDossiers();
                 } else {
-                    throw new HSPException(ErrorCode.DATA_ACCESS_ERROR, "Échec de la suppression du dossier");
+                    throw new LPRSException(ErrorCode.DATA_ACCESS_ERROR, "Échec de la suppression du dossier");
                 }
             }
         } catch (Exception e) {
             ErrorHandler.handleException(
-                new HSPException(ErrorCode.DATA_ACCESS_ERROR, "Erreur lors de la suppression du dossier", e),
+                new LPRSException(ErrorCode.DATA_ACCESS_ERROR, "Erreur lors de la suppression du dossier", e),
                 "Suppression dossier"
             );
         }
@@ -460,7 +460,7 @@ public class DossierEnChargeController {
             StartApplication.changeScene("pageAccueil");
         } catch (Exception e) {
             ErrorHandler.handleException(
-                new HSPException(ErrorCode.NAVIGATION_ERROR, "Impossible d'accéder à l'accueil", e),
+                new LPRSException(ErrorCode.NAVIGATION_ERROR, "Impossible d'accéder à l'accueil", e),
                 "Navigation vers Accueil"
             );
         }
@@ -472,7 +472,7 @@ public class DossierEnChargeController {
             StartApplication.changeScene("patientsView");
         } catch (Exception e) {
             ErrorHandler.handleException(
-                new HSPException(ErrorCode.NAVIGATION_ERROR, "Impossible d'accéder à la gestion des patients", e),
+                new LPRSException(ErrorCode.NAVIGATION_ERROR, "Impossible d'accéder à la gestion des patients", e),
                 "Navigation vers Patients"
             );
         }
@@ -484,8 +484,32 @@ public class DossierEnChargeController {
             StartApplication.changeScene("commandeView");
         } catch (Exception e) {
             ErrorHandler.handleException(
-                new HSPException(ErrorCode.NAVIGATION_ERROR, "Impossible d'accéder à la gestion des commandes", e),
+                new LPRSException(ErrorCode.NAVIGATION_ERROR, "Impossible d'accéder à la gestion des commandes", e),
                 "Navigation vers Commandes"
+            );
+        }
+    }
+
+    @FXML
+    private void versPlanning() {
+        try {
+            StartApplication.changeScene("planningView");
+        } catch (Exception e) {
+            ErrorHandler.handleException(
+                new LPRSException(ErrorCode.NAVIGATION_ERROR, "Impossible d'accéder au planning", e),
+                "Navigation vers Planning"
+            );
+        }
+    }
+
+    @FXML
+    private void versFicheProduit() {
+        try {
+            StartApplication.changeScene("ficheProduitView");
+        } catch (Exception e) {
+            ErrorHandler.handleException(
+                new LPRSException(ErrorCode.NAVIGATION_ERROR, "Impossible d'accéder au catalogue produits", e),
+                "Navigation vers Catalogue"
             );
         }
     }
@@ -496,7 +520,7 @@ public class DossierEnChargeController {
             StartApplication.changeScene("pageUtilisateurs");
         } catch (Exception e) {
             ErrorHandler.handleException(
-                new HSPException(ErrorCode.NAVIGATION_ERROR, "Impossible d'accéder à la gestion des utilisateurs", e),
+                new LPRSException(ErrorCode.NAVIGATION_ERROR, "Impossible d'accéder à la gestion des utilisateurs", e),
                 "Navigation vers Utilisateurs"
             );
         }
@@ -508,7 +532,7 @@ public class DossierEnChargeController {
             StartApplication.changeScene("pageMonEspace");
         } catch (Exception e) {
             ErrorHandler.handleException(
-                new HSPException(ErrorCode.NAVIGATION_ERROR, "Impossible d'accéder à votre espace personnel", e),
+                new LPRSException(ErrorCode.NAVIGATION_ERROR, "Impossible d'accéder à votre espace personnel", e),
                 "Navigation vers Mon Espace"
             );
         }
@@ -528,7 +552,7 @@ public class DossierEnChargeController {
             }
         } catch (Exception e) {
             ErrorHandler.handleException(
-                new HSPException(ErrorCode.NAVIGATION_ERROR, "Erreur lors de la déconnexion", e),
+                new LPRSException(ErrorCode.NAVIGATION_ERROR, "Erreur lors de la déconnexion", e),
                 "Déconnexion"
             );
         }
@@ -552,7 +576,7 @@ public class DossierEnChargeController {
             });
         } catch (Exception e) {
             ErrorHandler.handleException(
-                new HSPException(ErrorCode.DATA_ACCESS_ERROR, "Erreur lors du chargement des dossiers", e),
+                new LPRSException(ErrorCode.DATA_ACCESS_ERROR, "Erreur lors du chargement des dossiers", e),
                 "Chargement liste dossiers"
             );
         }

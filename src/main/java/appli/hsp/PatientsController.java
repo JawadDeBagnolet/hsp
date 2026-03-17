@@ -145,6 +145,15 @@ public class PatientsController {
     }
 
     @FXML
+    private void versDossiers() {
+        try {
+            StartApplication.changeScene("dossierEnChargeView");
+        } catch (Exception e) {
+            System.err.println("Erreur: " + e.getMessage());
+        }
+    }
+
+    @FXML
     private void versCommandes() {
         try {
             StartApplication.changeScene("commandeView");
@@ -154,9 +163,27 @@ public class PatientsController {
     }
 
     @FXML
+    private void versPlanning() {
+        try {
+            StartApplication.changeScene("planningView");
+        } catch (Exception e) {
+            System.err.println("Erreur: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    private void versFicheProduit() {
+        try {
+            StartApplication.changeScene("ficheProduitView");
+        } catch (Exception e) {
+            System.err.println("Erreur: " + e.getMessage());
+        }
+    }
+
+    @FXML
     private void versUtilisateurs() {
         try {
-            StartApplication.changeScene("pageMonEspace");
+            StartApplication.changeScene("pageUtilisateurs");
         } catch (Exception e) {
             System.err.println("Erreur: " + e.getMessage());
         }
@@ -240,6 +267,7 @@ public class PatientsController {
         if (!validerChamps()) return;
 
         try {
+            System.out.println("[DEBUG] Modification élève ID: " + eleveSelectionne.getIdFichePatient());
             eleveSelectionne.setNom(nomField.getText().trim());
             eleveSelectionne.setPrenom(prenomField.getText().trim());
             eleveSelectionne.setNum_etudiant(numEtudiantField.getText().trim());

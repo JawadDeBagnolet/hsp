@@ -1,5 +1,5 @@
 -- ============================================================
--- MIGRATION HSP : Hôpital -> Lycée de Santé Publique
+-- MIGRATION LPRS : Hôpital -> Lycée de Santé Publique
 -- À exécuter dans l'ordre dans votre BDD MySQL (hsp)
 -- ============================================================
 

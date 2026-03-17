@@ -598,6 +598,24 @@ public class CommandeController {
     }
 
     @FXML
+    public void versPlanning(ActionEvent event) {
+        try {
+            StartApplication.changeScene("planningView");
+        } catch (Exception e) {
+            System.err.println("Erreur lors de la redirection vers planning: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    public void versFicheProduit(ActionEvent event) {
+        try {
+            StartApplication.changeScene("ficheProduitView");
+        } catch (Exception e) {
+            System.err.println("Erreur lors de la redirection vers catalogue: " + e.getMessage());
+        }
+    }
+
+    @FXML
     public void versUtilisateurs(ActionEvent event) {
         try {
             StartApplication.changeScene("pageUtilisateurs");

@@ -2,7 +2,7 @@ package appli.hsp;
 
 import appli.StartApplication;
 import appli.hsp.exception.ErrorCode;
-import appli.hsp.exception.HSPException;
+import appli.hsp.exception.LPRSException;
 import appli.hsp.utils.ErrorHandler;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -38,7 +38,7 @@ public class PageAccueil {
             StartApplication.changeScene("patientsView");
         } catch (Exception e) {
             ErrorHandler.handleException(
-                new HSPException(ErrorCode.NAVIGATION_ERROR, "Impossible d'accéder à la gestion des patients", e),
+                new LPRSException(ErrorCode.NAVIGATION_ERROR, "Impossible d'accéder à la gestion des patients", e),
                 "Navigation vers Patients"
             );
         }
@@ -50,7 +50,7 @@ public class PageAccueil {
             StartApplication.changeScene("dossierEnChargeView");
         } catch (Exception e) {
             ErrorHandler.handleException(
-                new HSPException(ErrorCode.NAVIGATION_ERROR, "Impossible d'accéder à la gestion des dossiers", e),
+                new LPRSException(ErrorCode.NAVIGATION_ERROR, "Impossible d'accéder à la gestion des dossiers", e),
                 "Navigation vers Dossiers"
             );
         }
@@ -62,7 +62,7 @@ public class PageAccueil {
             StartApplication.changeScene("commandeView");
         } catch (Exception e) {
             ErrorHandler.handleException(
-                new HSPException(ErrorCode.NAVIGATION_ERROR, "Impossible d'accéder à la gestion des commandes", e),
+                new LPRSException(ErrorCode.NAVIGATION_ERROR, "Impossible d'accéder à la gestion des commandes", e),
                 "Navigation vers Commandes"
             );
         }
@@ -74,7 +74,7 @@ public class PageAccueil {
             StartApplication.changeScene("pageUtilisateurs");
         } catch (Exception e) {
             ErrorHandler.handleException(
-                new HSPException(ErrorCode.NAVIGATION_ERROR, "Impossible d'accéder à la gestion des utilisateurs", e),
+                new LPRSException(ErrorCode.NAVIGATION_ERROR, "Impossible d'accéder à la gestion des utilisateurs", e),
                 "Navigation vers Utilisateurs"
             );
         }
@@ -86,7 +86,7 @@ public class PageAccueil {
             StartApplication.changeScene("planningView");
         } catch (Exception e) {
             ErrorHandler.handleException(
-                new HSPException(ErrorCode.NAVIGATION_ERROR, "Impossible d'accéder au planning", e),
+                new LPRSException(ErrorCode.NAVIGATION_ERROR, "Impossible d'accéder au planning", e),
                 "Navigation vers Planning"
             );
         }
@@ -98,7 +98,7 @@ public class PageAccueil {
             StartApplication.changeScene("visiteInfirmerieView");
         } catch (Exception e) {
             ErrorHandler.handleException(
-                new HSPException(ErrorCode.NAVIGATION_ERROR, "Impossible d'accéder aux visites infirmerie", e),
+                new LPRSException(ErrorCode.NAVIGATION_ERROR, "Impossible d'accéder aux visites infirmerie", e),
                 "Navigation vers Visites Infirmerie"
             );
         }
@@ -110,7 +110,7 @@ public class PageAccueil {
             StartApplication.changeScene("ficheProduitView");
         } catch (Exception e) {
             ErrorHandler.handleException(
-                new HSPException(ErrorCode.NAVIGATION_ERROR, "Impossible d'accéder au catalogue produits", e),
+                new LPRSException(ErrorCode.NAVIGATION_ERROR, "Impossible d'accéder au catalogue produits", e),
                 "Navigation vers Catalogue Produits"
             );
         }
@@ -122,7 +122,7 @@ public class PageAccueil {
             StartApplication.changeScene("fournisseursProduitsView");
         } catch (Exception e) {
             ErrorHandler.handleException(
-                new HSPException(ErrorCode.NAVIGATION_ERROR, "Impossible d'accéder à la gestion des fournisseurs et produits", e),
+                new LPRSException(ErrorCode.NAVIGATION_ERROR, "Impossible d'accéder à la gestion des fournisseurs et produits", e),
                 "Navigation vers Fournisseurs/Produits"
             );
         }
@@ -134,7 +134,7 @@ public class PageAccueil {
             StartApplication.changeScene("pageMonEspace");
         } catch (Exception e) {
             ErrorHandler.handleException(
-                new HSPException(ErrorCode.NAVIGATION_ERROR, "Impossible d'accéder à votre espace personnel", e),
+                new LPRSException(ErrorCode.NAVIGATION_ERROR, "Impossible d'accéder à votre espace personnel", e),
                 "Navigation vers Mon Espace"
             );
         }
@@ -153,7 +153,7 @@ public class PageAccueil {
             }
         } catch (Exception e) {
             ErrorHandler.handleException(
-                new HSPException(ErrorCode.NAVIGATION_ERROR, "Erreur lors de la déconnexion", e),
+                new LPRSException(ErrorCode.NAVIGATION_ERROR, "Erreur lors de la déconnexion", e),
                 "Déconnexion"
             );
         }

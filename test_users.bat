@@ -14,7 +14,7 @@ if %ERRORLEVEL% == 0 (
 )
 
 echo.
-echo Tentative de connexion a la base de donnees HSP...
+echo Tentative de connexion a la base de donnees LPRS...
 echo.
 
 echo Configuration testees:

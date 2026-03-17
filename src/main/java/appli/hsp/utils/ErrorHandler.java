@@ -1,7 +1,7 @@
 package appli.hsp.utils;
 
 import appli.hsp.exception.ErrorCode;
-import appli.hsp.exception.HSPException;
+import appli.hsp.exception.LPRSException;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
@@ -16,7 +16,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Gestionnaire centralisé des erreurs pour l'application HSP.
+ * Gestionnaire centralisé des erreurs pour l'application LPRS.
  * Fournit un logging structuré et des alertes utilisateur appropriées.
  */
 public class ErrorHandler {
@@ -34,8 +34,8 @@ public class ErrorHandler {
         String timestamp = LocalDateTime.now().format(TIMESTAMP_FORMAT);
         
         // Logging détaillé
-        if (exception instanceof HSPException) {
-            HSPException hspException = (HSPException) exception;
+        if (exception instanceof LPRSException) {
+            LPRSException hspException = (LPRSException) exception;
             LOGGER.log(Level.SEVERE, 
                 "[{0}] {1} - Code: {2} - Message: {3}", 
                 new Object[]{timestamp, context, hspException.getErrorCode(), hspException.getMessage()});
@@ -70,12 +70,12 @@ public class ErrorHandler {
         Platform.runLater(() -> {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.initModality(Modality.APPLICATION_MODAL);
-            alert.setTitle("Erreur - HSP");
+            alert.setTitle("Erreur - LPRS");
             alert.setHeaderText(userMessage);
             
             String contentText = String.format("Contexte: %s", context);
-            if (exception instanceof HSPException) {
-                HSPException hspException = (HSPException) exception;
+            if (exception instanceof LPRSException) {
+                LPRSException hspException = (LPRSException) exception;
                 contentText += String.format("\nCode erreur: %s", hspException.getErrorCode().getCode());
             }
             
@@ -99,7 +99,7 @@ public class ErrorHandler {
      */
     private static void showTechnicalDetails(Exception exception, String context) {
         Alert detailsAlert = new Alert(Alert.AlertType.INFORMATION);
-        detailsAlert.setTitle("Détails techniques - HSP");
+        detailsAlert.setTitle("Détails techniques - LPRS");
         detailsAlert.setHeaderText("Informations techniques");
         
         StringWriter sw = new StringWriter();
@@ -110,8 +110,8 @@ public class ErrorHandler {
         pw.println("Contexte: " + context);
         pw.println("Type d'exception: " + exception.getClass().getSimpleName());
         
-        if (exception instanceof HSPException) {
-            HSPException hspException = (HSPException) exception;
+        if (exception instanceof LPRSException) {
+            LPRSException hspException = (LPRSException) exception;
             pw.println("Code erreur: " + hspException.getErrorCode().getCode());
             pw.println("Description: " + hspException.getErrorCode().getDescription());
             pw.println("Message utilisateur: " + hspException.getUserMessage());
@@ -140,7 +140,7 @@ public class ErrorHandler {
     public static void showInfoAlert(String title, String message) {
         Platform.runLater(() -> {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Information - HSP");
+            alert.setTitle("Information - LPRS");
             alert.setHeaderText(title);
             alert.setContentText(message);
             alert.showAndWait();
@@ -152,7 +152,7 @@ public class ErrorHandler {
      */
     public static boolean showConfirmationAlert(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Confirmation - HSP");
+        alert.setTitle("Confirmation - LPRS");
         alert.setHeaderText(title);
         alert.setContentText(message);
         
@@ -165,7 +165,7 @@ public class ErrorHandler {
     public static void showWarningAlert(String title, String message) {
         Platform.runLater(() -> {
             Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("Avertissement - HSP");
+            alert.setTitle("Avertissement - LPRS");
             alert.setHeaderText(title);
             alert.setContentText(message);
             alert.showAndWait();
@@ -173,10 +173,10 @@ public class ErrorHandler {
     }
     
     /**
-     * Crée une HSPException pour les erreurs de navigation.
+     * Crée une LPRSException pour les erreurs de navigation.
      */
-    public static HSPException createNavigationException(String message, String fxmlFile) {
-        return new HSPException(
+    public static LPRSException createNavigationException(String message, String fxmlFile) {
+        return new LPRSException(
             ErrorCode.FXML_NOT_FOUND, 
             message,
             new RuntimeException("Fichier FXML recherché: " + fxmlFile)
@@ -184,9 +184,9 @@ public class ErrorHandler {
     }
     
     /**
-     * Crée une HSPException pour les erreurs de données.
+     * Crée une LPRSException pour les erreurs de données.
      */
-    public static HSPException createDataException(String message, Throwable cause) {
-        return new HSPException(ErrorCode.DATA_ACCESS_ERROR, message, cause);
+    public static LPRSException createDataException(String message, Throwable cause) {
+        return new LPRSException(ErrorCode.DATA_ACCESS_ERROR, message, cause);
     }
 }

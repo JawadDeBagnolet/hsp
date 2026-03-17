@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:8889
--- Generation Time: Mar 10, 2026 at 10:38 AM
+-- Generation Time: Mar 17, 2026 at 11:37 AM
 -- Server version: 8.0.40
 -- PHP Version: 8.3.14
 
@@ -20,18 +20,6 @@ SET time_zone = "+00:00";
 --
 -- Database: `hsp`
 --
-
--- --------------------------------------------------------
-
---
--- Table structure for table `chambre`
---
-
-CREATE TABLE `chambre` (
-  `id_chambre` int NOT NULL,
-  `numero_chambre` int NOT NULL,
-  `disponible` tinyint(1) NOT NULL DEFAULT '1'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
@@ -71,6 +59,15 @@ CREATE TABLE `demande` (
   `quantite` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+--
+-- Dumping data for table `demande`
+--
+
+INSERT INTO `demande` (`id_demande`, `id_user`, `date_demande`, `quantite`) VALUES
+(1, 1, '2026-03-17 09:15:40', 10),
+(3, 1, '2026-03-17 11:51:52', 1),
+(4, 1, '2026-03-17 12:21:29', 1);
+
 -- --------------------------------------------------------
 
 --
@@ -83,29 +80,14 @@ CREATE TABLE `demande_produit` (
   `qte` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- --------------------------------------------------------
-
 --
--- Table structure for table `dossier_charge`
+-- Dumping data for table `demande_produit`
 --
 
-CREATE TABLE `dossier_charge` (
-  `id_dossier` int NOT NULL,
-  `id_patient` int NOT NULL,
-  `id_user` int NOT NULL,
-  `date_arrivee` datetime NOT NULL,
-  `heure_arrivee` datetime NOT NULL,
-  `symptomes` varchar(255) NOT NULL,
-  `niveau_gravite` enum('1','2','3','4','5') NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
---
--- Dumping data for table `dossier_charge`
---
-
-INSERT INTO `dossier_charge` (`id_dossier`, `id_patient`, `id_user`, `date_arrivee`, `heure_arrivee`, `symptomes`, `niveau_gravite`) VALUES
-(3, 1, 1, '2026-03-02 23:00:00', '2026-03-03 14:45:00', 'toux', '1'),
-(4, 1, 1, '2026-03-01 23:00:00', '2026-03-02 14:50:00', 'toux', '4');
+INSERT INTO `demande_produit` (`id_demande`, `id_produit`, `qte`) VALUES
+(1, 1, 10),
+(3, 1, 1),
+(4, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -131,7 +113,9 @@ CREATE TABLE `fiche_eleve` (
 --
 
 INSERT INTO `fiche_eleve` (`id_eleve`, `nom`, `prenom`, `num_etudiant`, `email`, `tel`, `rue`, `cp`, `ville`, `candidature`) VALUES
-(1, 'lak', 'reda', '1234567891234', 'r@r.com', '763456080', '7 rue de afg', 94000, 'creteil', NULL);
+(1, 'lak', 'reda', '1234567891234', 'r@r.com', '763456080', '7 rue de afg', 94000, 'creteil', NULL),
+(3, 'Lemoine', 'Sébastien', '123', 'test@test.te', 'aze', '', 99, '', NULL),
+(4, 'lemoine', 'seb', '0009', '@l.com', '0909090909', '', 99999, 'lol', NULL);
 
 -- --------------------------------------------------------
 
@@ -143,8 +127,16 @@ CREATE TABLE `fiche_produit` (
   `id_produit` int NOT NULL,
   `libelle` varchar(255) NOT NULL,
   `description` text NOT NULL,
-  `niveau_dangerosite` int NOT NULL
+  `niveau_dangerosite` int NOT NULL,
+  `stock` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `fiche_produit`
+--
+
+INSERT INTO `fiche_produit` (`id_produit`, `libelle`, `description`, `niveau_dangerosite`, `stock`) VALUES
+(1, 'dolipranes', '500 mg', 1, 0);
 
 -- --------------------------------------------------------
 
@@ -154,8 +146,17 @@ CREATE TABLE `fiche_produit` (
 
 CREATE TABLE `fournisseur` (
   `id_fournisseur` int NOT NULL,
-  `nom` varchar(150) NOT NULL
+  `nom` varchar(150) NOT NULL,
+  `email` varchar(255) DEFAULT NULL,
+  `tel` int DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `fournisseur`
+--
+
+INSERT INTO `fournisseur` (`id_fournisseur`, `nom`, `email`, `tel`) VALUES
+(1, 'pharma', 'pharma@gmail.com', 75643790);
 
 -- --------------------------------------------------------
 
@@ -164,54 +165,18 @@ CREATE TABLE `fournisseur` (
 --
 
 CREATE TABLE `fournisseur_produit` (
+  `id_fournisseur_produit` int NOT NULL,
   `id_fournisseur` int NOT NULL,
   `id_produit` int NOT NULL,
-  `prix` int NOT NULL
+  `prix` decimal(10,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- --------------------------------------------------------
-
 --
--- Table structure for table `hospitalisation`
+-- Dumping data for table `fournisseur_produit`
 --
 
-CREATE TABLE `hospitalisation` (
-  `id_hospitalisation` int NOT NULL,
-  `id_dossier` int NOT NULL,
-  `id_chambre` int NOT NULL,
-  `date_debut` datetime NOT NULL,
-  `date_fin` datetime DEFAULT NULL,
-  `desc_maladie` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `ordonnance`
---
-
-CREATE TABLE `ordonnance` (
-  `id_ordonnance` int NOT NULL,
-  `id_dossier` int NOT NULL,
-  `date_ordonnance` datetime NOT NULL,
-  `contenu` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `rendez_vous`
---
-
-CREATE TABLE `rendez_vous` (
-  `id_rdv` int NOT NULL,
-  `id_eleve` int NOT NULL,
-  `id_prof` int NOT NULL,
-  `date_heure` datetime NOT NULL,
-  `motif` varchar(500) NOT NULL,
-  `statut` varchar(50) NOT NULL DEFAULT 'PLANIFIE',
-  `notes` text
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+INSERT INTO `fournisseur_produit` (`id_fournisseur_produit`, `id_fournisseur`, `id_produit`, `prix`) VALUES
+(2, 1, 1, 10.00);
 
 -- --------------------------------------------------------
 
@@ -251,15 +216,15 @@ CREATE TABLE `visite_infirmerie` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
--- Indexes for dumped tables
+-- Dumping data for table `visite_infirmerie`
 --
 
+INSERT INTO `visite_infirmerie` (`id_visite`, `id_eleve`, `date_visite`, `heure_visite`, `motif`, `id_infirmier`) VALUES
+(1, 1, '2026-03-17', '22:00:00', 'sida', NULL);
+
 --
--- Indexes for table `chambre`
+-- Indexes for dumped tables
 --
-ALTER TABLE `chambre`
-  ADD PRIMARY KEY (`id_chambre`),
-  ADD UNIQUE KEY `uq_chambre_numero` (`numero_chambre`);
 
 --
 -- Indexes for table `commande`
@@ -291,14 +256,6 @@ ALTER TABLE `demande_produit`
   ADD KEY `fk_dp_produit` (`id_produit`);
 
 --
--- Indexes for table `dossier_charge`
---
-ALTER TABLE `dossier_charge`
-  ADD PRIMARY KEY (`id_dossier`),
-  ADD KEY `idx_dossier_patient` (`id_patient`),
-  ADD KEY `idx_dossier_user` (`id_user`);
-
---
 -- Indexes for table `fiche_eleve`
 --
 ALTER TABLE `fiche_eleve`
@@ -323,30 +280,8 @@ ALTER TABLE `fournisseur`
 --
 ALTER TABLE `fournisseur_produit`
   ADD PRIMARY KEY (`id_fournisseur`,`id_produit`),
+  ADD UNIQUE KEY `id_fournisseur_produit` (`id_fournisseur_produit`),
   ADD KEY `fk_fp_produit` (`id_produit`);
-
---
--- Indexes for table `hospitalisation`
---
-ALTER TABLE `hospitalisation`
-  ADD PRIMARY KEY (`id_hospitalisation`),
-  ADD UNIQUE KEY `uq_hospit_dossier` (`id_dossier`),
-  ADD KEY `idx_hospit_chambre` (`id_chambre`);
-
---
--- Indexes for table `ordonnance`
---
-ALTER TABLE `ordonnance`
-  ADD PRIMARY KEY (`id_ordonnance`),
-  ADD KEY `idx_ordonnance_dossier` (`id_dossier`);
-
---
--- Indexes for table `rendez_vous`
---
-ALTER TABLE `rendez_vous`
-  ADD PRIMARY KEY (`id_rdv`),
-  ADD KEY `id_eleve` (`id_eleve`),
-  ADD KEY `id_prof` (`id_prof`);
 
 --
 -- Indexes for table `user`
@@ -368,12 +303,6 @@ ALTER TABLE `visite_infirmerie`
 --
 
 --
--- AUTO_INCREMENT for table `chambre`
---
-ALTER TABLE `chambre`
-  MODIFY `id_chambre` int NOT NULL AUTO_INCREMENT;
-
---
 -- AUTO_INCREMENT for table `commande`
 --
 ALTER TABLE `commande`
@@ -383,49 +312,31 @@ ALTER TABLE `commande`
 -- AUTO_INCREMENT for table `demande`
 --
 ALTER TABLE `demande`
-  MODIFY `id_demande` int NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `dossier_charge`
---
-ALTER TABLE `dossier_charge`
-  MODIFY `id_dossier` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id_demande` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `fiche_eleve`
 --
 ALTER TABLE `fiche_eleve`
-  MODIFY `id_eleve` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id_eleve` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `fiche_produit`
 --
 ALTER TABLE `fiche_produit`
-  MODIFY `id_produit` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id_produit` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `fournisseur`
 --
 ALTER TABLE `fournisseur`
-  MODIFY `id_fournisseur` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id_fournisseur` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
--- AUTO_INCREMENT for table `hospitalisation`
+-- AUTO_INCREMENT for table `fournisseur_produit`
 --
-ALTER TABLE `hospitalisation`
-  MODIFY `id_hospitalisation` int NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `ordonnance`
---
-ALTER TABLE `ordonnance`
-  MODIFY `id_ordonnance` int NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `rendez_vous`
---
-ALTER TABLE `rendez_vous`
-  MODIFY `id_rdv` int NOT NULL AUTO_INCREMENT;
+ALTER TABLE `fournisseur_produit`
+  MODIFY `id_fournisseur_produit` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `user`
@@ -437,7 +348,7 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT for table `visite_infirmerie`
 --
 ALTER TABLE `visite_infirmerie`
-  MODIFY `id_visite` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id_visite` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- Constraints for dumped tables
@@ -470,38 +381,11 @@ ALTER TABLE `demande_produit`
   ADD CONSTRAINT `fk_dp_produit` FOREIGN KEY (`id_produit`) REFERENCES `fiche_produit` (`id_produit`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 --
--- Constraints for table `dossier_charge`
---
-ALTER TABLE `dossier_charge`
-  ADD CONSTRAINT `fk_dossier_patient` FOREIGN KEY (`id_patient`) REFERENCES `fiche_eleve` (`id_eleve`) ON DELETE RESTRICT ON UPDATE CASCADE,
-  ADD CONSTRAINT `fk_dossier_user` FOREIGN KEY (`id_user`) REFERENCES `user` (`id_user`) ON DELETE RESTRICT ON UPDATE CASCADE;
-
---
 -- Constraints for table `fournisseur_produit`
 --
 ALTER TABLE `fournisseur_produit`
   ADD CONSTRAINT `fk_fp_fournisseur` FOREIGN KEY (`id_fournisseur`) REFERENCES `fournisseur` (`id_fournisseur`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `fk_fp_produit` FOREIGN KEY (`id_produit`) REFERENCES `fiche_produit` (`id_produit`) ON DELETE RESTRICT ON UPDATE CASCADE;
-
---
--- Constraints for table `hospitalisation`
---
-ALTER TABLE `hospitalisation`
-  ADD CONSTRAINT `fk_hospit_chambre` FOREIGN KEY (`id_chambre`) REFERENCES `chambre` (`id_chambre`) ON DELETE RESTRICT ON UPDATE CASCADE,
-  ADD CONSTRAINT `fk_hospit_dossier` FOREIGN KEY (`id_dossier`) REFERENCES `dossier_charge` (`id_dossier`) ON DELETE RESTRICT ON UPDATE CASCADE;
-
---
--- Constraints for table `ordonnance`
---
-ALTER TABLE `ordonnance`
-  ADD CONSTRAINT `fk_ordonnance_dossier` FOREIGN KEY (`id_dossier`) REFERENCES `dossier_charge` (`id_dossier`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Constraints for table `rendez_vous`
---
-ALTER TABLE `rendez_vous`
-  ADD CONSTRAINT `rendez_vous_ibfk_1` FOREIGN KEY (`id_eleve`) REFERENCES `fiche_eleve` (`id_eleve`) ON DELETE CASCADE,
-  ADD CONSTRAINT `rendez_vous_ibfk_2` FOREIGN KEY (`id_prof`) REFERENCES `user` (`id_user`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `visite_infirmerie`

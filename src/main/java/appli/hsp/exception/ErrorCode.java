@@ -1,7 +1,7 @@
 package appli.hsp.exception;
 
 /**
- * Codes d'erreur pour l'application HSP.
+ * Codes d'erreur pour l'application LPRS.
  * Permet de classifier et traiter différemment les types d'erreurs.
  */
 public enum ErrorCode {
