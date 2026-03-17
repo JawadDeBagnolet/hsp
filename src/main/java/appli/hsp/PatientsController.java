@@ -1,13 +1,17 @@
 package appli.hsp;
 
+import appli.SessionManager;
 import appli.StartApplication;
+import appli.hsp.utils.NavigationHelper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.layout.GridPane;
 import modele.FichePatient;
 import repository.FichePatientRepository;
+import repository.TicketRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -66,6 +70,7 @@ public class PatientsController {
     private TextField rechercheField;
 
     private FichePatientRepository patientRepository;
+    private final TicketRepository ticketRepository = new TicketRepository();
     private ObservableList<FichePatient> patientsList;
     private FichePatient eleveSelectionne;
 
@@ -136,6 +141,35 @@ public class PatientsController {
     }
 
     @FXML
+    private void envoyerInfirmerie() {
+        if (eleveSelectionne == null) {
+            afficherMessage("Sélectionnez d'abord un élève dans la liste.", "#e74c3c");
+            return;
+        }
+
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Envoyer à l'infirmerie");
+        dialog.setHeaderText(eleveSelectionne.getPrenom() + " " + eleveSelectionne.getNom());
+        dialog.setContentText("Motif :");
+        dialog.showAndWait().ifPresent(motif -> {
+            if (motif.trim().isEmpty()) return;
+            int idSecretaire = SessionManager.estConnecte()
+                    ? SessionManager.getUtilisateurConnecte().getIdUser() : 1;
+            int id = ticketRepository.creerTicket(eleveSelectionne.getIdFichePatient(), idSecretaire, motif.trim());
+            if (id > 0) {
+                afficherMessage("Ticket #" + id + " créé — élève envoyé à l'infirmerie.", "#27ae60");
+            } else {
+                afficherMessage("Erreur lors de la création du ticket.", "#e74c3c");
+            }
+        });
+    }
+
+    @FXML
+    private void versTickets() {
+        try { StartApplication.changeScene("pageTickets"); } catch (Exception e) { System.err.println(e.getMessage()); }
+    }
+
+    @FXML
     private void versAccueil() {
         try {
             StartApplication.changeScene("pageAccueil");
@@ -156,9 +190,9 @@ public class PatientsController {
     @FXML
     private void versCommandes() {
         try {
-            StartApplication.changeScene("commandeView");
+            NavigationHelper.versCommandes();
         } catch (Exception e) {
-            System.err.println("Erreur: " + e.getMessage());
+            System.err.println("Erreur navigation vers commandes: " + e.getMessage());
         }
     }
 

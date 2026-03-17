@@ -44,7 +44,7 @@ public class FicheProduitRepository {
                     rs.getString("libelle"),
                     rs.getString("description"),
                     rs.getInt("niveau_dangerosite"),
-                    0
+                    rs.getInt("stock")
                 );
             }
         } catch (SQLException e) {
@@ -68,7 +68,7 @@ public class FicheProduitRepository {
                     rs.getString("libelle"),
                     rs.getString("description"),
                     rs.getInt("niveau_dangerosite"),
-                    0
+                    rs.getInt("stock")
                 );
             }
         } catch (SQLException e) {
@@ -91,7 +91,7 @@ public class FicheProduitRepository {
                     rs.getString("libelle"),
                     rs.getString("description"),
                     rs.getInt("niveau_dangerosite"),
-                    0
+                    rs.getInt("stock")
                 ));
             }
         } catch (SQLException e) {
@@ -114,6 +114,20 @@ public class FicheProduitRepository {
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             System.err.println("Erreur lors de la modification de la fiche produit: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean decrementerStock(int idProduit, int quantite) {
+        String sql = "UPDATE fiche_produit SET stock = stock - ? WHERE id_produit = ? AND stock >= ?";
+        try (Connection cnx = Database.getConnexion();
+             PreparedStatement stmt = cnx.prepareStatement(sql)) {
+            stmt.setInt(1, quantite);
+            stmt.setInt(2, idProduit);
+            stmt.setInt(3, quantite);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.err.println("Erreur decrementerStock: " + e.getMessage());
             return false;
         }
     }

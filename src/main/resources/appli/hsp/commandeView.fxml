@@ -33,6 +33,8 @@
                         style="-fx-background-color: transparent; -fx-text-fill: #94a3b8; -fx-font-size: 13px; -fx-border-color: transparent; -fx-cursor: hand; -fx-padding: 8 14;" />
                 <Button text="Commandes"
                         style="-fx-background-color: #6366f1; -fx-text-fill: #ffffff; -fx-font-size: 13px; -fx-background-radius: 20; -fx-border-radius: 20; -fx-cursor: hand; -fx-padding: 8 18; -fx-font-weight: bold;" />
+                <Button text="Tickets" onAction="#versTickets"
+                        style="-fx-background-color: transparent; -fx-text-fill: #94a3b8; -fx-font-size: 13px; -fx-border-color: transparent; -fx-cursor: hand; -fx-padding: 8 14;" />
                 <Button text="Planning" onAction="#versPlanning"
                         style="-fx-background-color: transparent; -fx-text-fill: #94a3b8; -fx-font-size: 13px; -fx-border-color: transparent; -fx-cursor: hand; -fx-padding: 8 14;" />
                 <Button text="Catalogue" onAction="#versFicheProduit"

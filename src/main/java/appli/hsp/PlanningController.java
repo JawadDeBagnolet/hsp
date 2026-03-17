@@ -1,6 +1,7 @@
 package appli.hsp;
 
 import appli.StartApplication;
+import appli.hsp.utils.NavigationHelper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -449,9 +450,9 @@ public class PlanningController {
     @FXML
     public void versCommandes(ActionEvent event) {
         try {
-            StartApplication.changeScene("commandeView");
+            NavigationHelper.versCommandes();
         } catch (Exception e) {
-            System.err.println("Erreur lors de la redirection vers commandes: " + e.getMessage());
+            System.err.println("Erreur navigation vers commandes: " + e.getMessage());
         }
     }
 

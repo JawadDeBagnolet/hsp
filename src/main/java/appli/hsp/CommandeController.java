@@ -593,8 +593,12 @@ public class CommandeController {
 
     @FXML
     public void versCommandes(ActionEvent event) {
-        // Déjà sur la page commandes
         System.out.println("Déjà sur la page commandes");
+    }
+
+    @FXML
+    public void versTickets(ActionEvent event) {
+        appli.hsp.utils.NavigationHelper.versTickets();
     }
 
     @FXML

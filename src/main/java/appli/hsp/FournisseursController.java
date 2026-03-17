@@ -1,6 +1,7 @@
 package appli.hsp;
 
 import appli.StartApplication;
+import appli.hsp.utils.NavigationHelper;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -274,9 +275,9 @@ public class FournisseursController {
     @FXML
     private void versCommandes() {
         try {
-            StartApplication.changeScene("commandeView");
+            NavigationHelper.versCommandes();
         } catch (Exception e) {
-            System.err.println("Erreur: " + e.getMessage());
+            System.err.println("Erreur navigation vers commandes: " + e.getMessage());
         }
     }
 
