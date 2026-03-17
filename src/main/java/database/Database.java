@@ -58,6 +58,14 @@ public class Database {
                     }
                 }
 
+                // commande.id_demande
+                try (ResultSet rs = meta.getColumns(null, null, "commande", "id_demande")) {
+                    if (!rs.next()) {
+                        stmt.executeUpdate("ALTER TABLE `commande` ADD COLUMN `id_demande` INT NOT NULL DEFAULT 0");
+                        System.out.println("Migration : colonne commande.id_demande ajoutée.");
+                    }
+                }
+
                 // table ticket
                 try (ResultSet rs = meta.getTables(null, null, "ticket", null)) {
                     if (!rs.next()) {

@@ -10,9 +10,10 @@ public class Commande {
     private int idFournisseur;
     private LocalDateTime dateCommande;
     private String statut;
+    private int idDemande;
 
     public Commande(int idCommande, int idUser, int numCommande, String libelle,
-                    int idFournisseur, LocalDateTime dateCommande, String statut) {
+                    int idFournisseur, LocalDateTime dateCommande, String statut, int idDemande) {
         this.idCommande = idCommande;
         this.idUser = idUser;
         this.numCommande = numCommande;
@@ -20,6 +21,7 @@ public class Commande {
         this.idFournisseur = idFournisseur;
         this.dateCommande = dateCommande;
         this.statut = statut;
+        this.idDemande = idDemande;
     }
 
     /** Constructeur pour la création (sans id ni date) */
@@ -51,4 +53,7 @@ public class Commande {
 
     public String getStatut() { return statut; }
     public void setStatut(String statut) { this.statut = statut; }
+
+    public int getIdDemande() { return idDemande; }
+    public void setIdDemande(int idDemande) { this.idDemande = idDemande; }
 }

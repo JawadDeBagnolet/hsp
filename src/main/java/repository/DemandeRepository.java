@@ -100,11 +100,10 @@ public class DemandeRepository {
     }
     
     public boolean supprimerDemande(int id) {
+        // La FK fk_dp_demande ON DELETE CASCADE supprime automatiquement demande_produit
         String sql = "DELETE FROM demande WHERE id_demande = ?";
-
         try (Connection cnx = Database.getConnexion();
              PreparedStatement stmt = cnx.prepareStatement(sql)) {
-
             stmt.setInt(1, id);
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -138,7 +137,8 @@ public class DemandeRepository {
                     rs.getInt("id_demande"),
                     rs.getInt("id_user"),
                     rs.getObject("date_demande", LocalDateTime.class),
-                    rs.getInt("quantite")
+                    rs.getInt("quantite"),
+                    rs.getString("statut")
                 ));
             }
         } catch (SQLException e) {
