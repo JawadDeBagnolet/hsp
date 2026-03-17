@@ -13,7 +13,7 @@ import java.util.List;
 public class FicheProduitRepository {
 
     public boolean ajouterFicheProduit(FicheProduit produit) {
-        String sql = "INSERT INTO fiche_produit (libelle, description, niveau_dangerosite) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO fiche_produit (libelle, description, niveau_dangerosite, stock) VALUES (?, ?, ?, ?)";
 
         try (Connection cnx = Database.getConnexion();
              PreparedStatement stmt = cnx.prepareStatement(sql)) {
@@ -21,6 +21,7 @@ public class FicheProduitRepository {
             stmt.setString(1, produit.getLibelle());
             stmt.setString(2, produit.getDescription());
             stmt.setInt(3, produit.getNivDangerosite());
+            stmt.setInt(4, produit.getStockActuel());
 
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
