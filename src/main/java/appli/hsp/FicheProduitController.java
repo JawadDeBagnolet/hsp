@@ -16,6 +16,7 @@ public class FicheProduitController {
     @FXML private TextArea descriptionArea;
     @FXML private TextField dangerositéField;
     @FXML private Label messageLabel;
+    @FXML private Label alerteStockLabel;
     @FXML private ListView<FicheProduit> produitsListView;
 
     @FXML private Button btnNavSecretariat;
@@ -45,11 +46,17 @@ public class FicheProduitController {
                     String[] niveaux = {"Faible", "Moyen", "Élevé", "Critique"};
                     int niv = produit.getNivDangerosite();
                     String danger = (niv >= 0 && niv < niveaux.length) ? niveaux[niv] : String.valueOf(niv);
-                    String desc = (produit.getDescription() != null && !produit.getDescription().isEmpty())
-                            ? produit.getDescription() : "—";
-                    setText(String.format("📦 %s  |  %s  |  Danger: %s  |  Stock: %d",
-                            produit.getLibelle(), desc, danger, produit.getStockActuel()));
-                    setStyle("-fx-background-color: #f8f9fa; -fx-border-color: #dee2e6; -fx-border-width: 0 0 1 0; -fx-padding: 8;");
+                    int stock = produit.getStockActuel();
+                    String stockTag = stock <= 0 ? " ⛔ RUPTURE" : (stock <= 5 ? " ⚠ STOCK FAIBLE" : "");
+                    setText(String.format("📦 %s  |  Danger: %s  |  Stock: %d%s",
+                            produit.getLibelle(), danger, stock, stockTag));
+                    if (stock <= 0) {
+                        setStyle("-fx-background-color: #fee2e2; -fx-border-color: #fca5a5; -fx-border-width: 0 0 1 0; -fx-padding: 8; -fx-font-weight: bold;");
+                    } else if (stock <= 5) {
+                        setStyle("-fx-background-color: #fef3c7; -fx-border-color: #fcd34d; -fx-border-width: 0 0 1 0; -fx-padding: 8;");
+                    } else {
+                        setStyle("-fx-background-color: #f8f9fa; -fx-border-color: #dee2e6; -fx-border-width: 0 0 1 0; -fx-padding: 8;");
+                    }
                 }
             }
         });
@@ -180,6 +187,25 @@ public class FicheProduitController {
         List<FicheProduit> produits = ficheProduitRepository.getAllFicheProduits();
         produitsListView.getItems().clear();
         produitsListView.getItems().addAll(produits);
+
+        // Bannière alerte stock faible
+        if (alerteStockLabel != null) {
+            long enRupture = produits.stream().filter(p -> p.getStockActuel() <= 0).count();
+            long faibles   = produits.stream().filter(p -> p.getStockActuel() > 0 && p.getStockActuel() <= 5).count();
+            if (enRupture > 0 || faibles > 0) {
+                StringBuilder msg = new StringBuilder("⚠  ");
+                if (enRupture > 0) msg.append(enRupture).append(" produit(s) en rupture de stock");
+                if (enRupture > 0 && faibles > 0) msg.append("  |  ");
+                if (faibles > 0) msg.append(faibles).append(" produit(s) avec stock faible (≤ 5)");
+                msg.append("  — Pensez à réapprovisionner !");
+                alerteStockLabel.setText(msg.toString());
+                alerteStockLabel.setVisible(true);
+                alerteStockLabel.setManaged(true);
+            } else {
+                alerteStockLabel.setVisible(false);
+                alerteStockLabel.setManaged(false);
+            }
+        }
     }
 
     private void viderChamps() {

@@ -1,6 +1,7 @@
 package repository;
 
 import database.Database;
+import modele.Fournisseur;
 import modele.FournisseurProduit;
 
 import java.sql.Connection;
@@ -9,6 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class FournisseurProduitRepository {
 
@@ -117,6 +119,51 @@ public class FournisseurProduitRepository {
         }
     }
     
+    /**
+     * Retourne les fournisseurs qui proposent UN produit donné.
+     */
+    public List<Fournisseur> getFournisseursParProduitObj(int idProduit) {
+        return getFournisseursCommuns(List.of(idProduit));
+    }
+
+    /**
+     * Retourne les fournisseurs qui proposent TOUS les produits de la liste.
+     * Utilise un GROUP BY + HAVING COUNT pour garantir l'intersection complète.
+     * Si la liste est vide, retourne tous les fournisseurs.
+     */
+    public List<Fournisseur> getFournisseursCommuns(List<Integer> idProduits) {
+        List<Fournisseur> result = new ArrayList<>();
+        if (idProduits == null || idProduits.isEmpty()) return result;
+
+        String placeholders = idProduits.stream().map(i -> "?").collect(Collectors.joining(","));
+        String sql = "SELECT f.id_fournisseur, f.nom, f.email, f.tel " +
+                     "FROM fournisseur f " +
+                     "INNER JOIN fournisseur_produit fp ON f.id_fournisseur = fp.id_fournisseur " +
+                     "WHERE fp.id_produit IN (" + placeholders + ") " +
+                     "GROUP BY f.id_fournisseur, f.nom, f.email, f.tel " +
+                     "HAVING COUNT(DISTINCT fp.id_produit) = ?";
+
+        try (Connection cnx = Database.getConnexion();
+             PreparedStatement stmt = cnx.prepareStatement(sql)) {
+            for (int i = 0; i < idProduits.size(); i++) {
+                stmt.setInt(i + 1, idProduits.get(i));
+            }
+            stmt.setInt(idProduits.size() + 1, idProduits.size());
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                result.add(new Fournisseur(
+                    rs.getInt("id_fournisseur"),
+                    rs.getString("nom"),
+                    rs.getString("email"),
+                    rs.getInt("tel")
+                ));
+            }
+        } catch (SQLException e) {
+            System.err.println("Erreur getFournisseursCommuns: " + e.getMessage());
+        }
+        return result;
+    }
+
     public List<FournisseurProduit> getAllFournisseursProduits() {
         List<FournisseurProduit> fournisseursProduits = new ArrayList<>();
         String sql = "SELECT * FROM fournisseur_produit";

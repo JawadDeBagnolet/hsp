@@ -104,6 +104,12 @@
                 <VBox spacing="15" alignment="CENTER" style="-fx-background-color: rgba(30, 41, 59, 0.5); -fx-padding: 25; -fx-background-radius: 15; -fx-border-color: rgba(99, 102, 241, 0.2); -fx-border-width: 1; -fx-border-radius: 15; -fx-pref-width: 800;">
                     <Text text="Produits enregistrés" style="-fx-font-size: 20px; -fx-fill: #ffffff; -fx-font-weight: bold;" />
                     <Separator style="-fx-background-color: rgba(99, 102, 241, 0.2); -fx-pref-width: 100%;" />
+
+                    <!-- Bannière alerte stock faible -->
+                    <Label fx:id="alerteStockLabel"
+                           style="-fx-background-color: #7f1d1d; -fx-text-fill: #fca5a5; -fx-font-size: 13px; -fx-font-weight: bold; -fx-padding: 10 18; -fx-background-radius: 8; -fx-pref-width: 100%;"
+                           visible="false" managed="false" />
+
                     <Label text="Cliquez sur un produit pour le modifier ou le supprimer"
                            style="-fx-font-size: 13px; -fx-font-style: italic; -fx-text-fill: #ecf0f1;" />
                     <ListView fx:id="produitsListView" prefHeight="350"

@@ -49,37 +49,41 @@
                 <!-- Titre -->
                 <VBox spacing="4">
                     <Text text="Gestion des commandes" style="-fx-font-size: 26px; -fx-fill: #ffffff; -fx-font-weight: bold;"/>
-                    <Text text="Gérez les demandes des infirmiers et les commandes aux fournisseurs"
+                    <Text text="Validez les demandes des professeurs et gérez les commandes fournisseurs"
                           style="-fx-font-size: 13px; -fx-fill: #94a3b8;"/>
                 </VBox>
 
                 <!-- TabPane -->
                 <TabPane tabClosingPolicy="UNAVAILABLE">
 
-                    <!-- ===== ONGLET 1 : Demandes infirmiers ===== -->
-                    <Tab text="Demandes des infirmiers">
+                    <!-- ===== ONGLET 1 : Demandes ===== -->
+                    <Tab text="Demandes des professeurs">
                         <VBox spacing="15" style="-fx-padding: 20; -fx-background-color: rgba(30,41,59,0.5); -fx-background-radius: 0 10 10 10; -fx-border-color: rgba(99,102,241,0.2); -fx-border-width: 0 1 1 1; -fx-border-radius: 0 10 10 10;">
 
+                            <!-- Header avec filtre -->
                             <HBox alignment="CENTER_LEFT" spacing="15">
-                                <Text text="Demandes de produits en attente" style="-fx-font-size: 16px; -fx-fill: #ffffff; -fx-font-weight: bold;" HBox.hgrow="ALWAYS"/>
-                                <Button text="Rafraichir" onAction="#handleRafraichirDemandes"
+                                <Text text="Demandes de fournitures" style="-fx-font-size: 16px; -fx-fill: #ffffff; -fx-font-weight: bold;" HBox.hgrow="ALWAYS"/>
+                                <Label text="Filtrer :" style="-fx-text-fill: #94a3b8; -fx-font-size: 13px;"/>
+                                <ComboBox fx:id="filtreStatutCombo" onAction="#handleFiltreStatut" prefWidth="150"
+                                          style="-fx-background-color: rgba(248,250,252,0.95); -fx-font-size: 13px;"/>
+                                <Button text="Rafraîchir" onAction="#handleRafraichirDemandes"
                                         style="-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-background-radius: 5; -fx-cursor: hand; -fx-padding: 7 16;"/>
                             </HBox>
 
-                            <TableView fx:id="demandesTable" prefHeight="400" VBox.vgrow="ALWAYS"
+                            <TableView fx:id="demandesTable" prefHeight="420" VBox.vgrow="ALWAYS"
                                        style="-fx-background-color: rgba(248,250,252,0.97); -fx-border-color: rgba(99,102,241,0.2); -fx-border-radius: 6; -fx-background-radius: 6;">
                                 <columns>
-                                    <TableColumn fx:id="demIdCol" prefWidth="60" text="ID"
+                                    <TableColumn fx:id="demIdCol" prefWidth="55" text="ID"
                                                  style="-fx-font-weight: bold; -fx-alignment: CENTER;"/>
-                                    <TableColumn fx:id="demDateCol" prefWidth="160" text="Date"
+                                    <TableColumn fx:id="demDateCol" prefWidth="145" text="Date"
                                                  style="-fx-font-weight: bold;"/>
-                                    <TableColumn fx:id="demInfirmierCol" prefWidth="180" text="Infirmier"
+                                    <TableColumn fx:id="demInfirmierCol" prefWidth="155" text="Demandeur"
                                                  style="-fx-font-weight: bold;"/>
-                                    <TableColumn fx:id="demQuantiteCol" prefWidth="90" text="Quantité"
+                                    <TableColumn fx:id="demQuantiteCol" prefWidth="75" text="Qté"
                                                  style="-fx-font-weight: bold; -fx-alignment: CENTER;"/>
-                                    <TableColumn fx:id="demStatutCol" prefWidth="110" text="Statut"
+                                    <TableColumn fx:id="demStatutCol" prefWidth="100" text="Statut"
                                                  style="-fx-font-weight: bold; -fx-alignment: CENTER;"/>
-                                    <TableColumn fx:id="demActionsCol" prefWidth="160" text="Action"
+                                    <TableColumn fx:id="demActionsCol" prefWidth="310" text="Actions"
                                                  style="-fx-font-weight: bold; -fx-alignment: CENTER;"/>
                                 </columns>
                                 <placeholder>
@@ -87,7 +91,7 @@
                                 </placeholder>
                             </TableView>
 
-                            <Label text="Cliquez sur 'Creer commande' pour transformer une demande en commande fournisseur."
+                            <Label text="✓ Approuver décrémente le stock. ✗ Refuser demande un motif. 'Cmd fournisseur' crée une commande liée."
                                    style="-fx-text-fill: #94a3b8; -fx-font-size: 12px; -fx-font-style: italic;"/>
                         </VBox>
                     </Tab>
@@ -97,31 +101,36 @@
                         <VBox spacing="15" style="-fx-padding: 20; -fx-background-color: rgba(30,41,59,0.5); -fx-background-radius: 0 10 10 10; -fx-border-color: rgba(99,102,241,0.2); -fx-border-width: 0 1 1 1; -fx-border-radius: 0 10 10 10;">
 
                             <HBox alignment="CENTER_LEFT" spacing="15">
-                                <Text text="Commandes envoyees aux fournisseurs" style="-fx-font-size: 16px; -fx-fill: #ffffff; -fx-font-weight: bold;" HBox.hgrow="ALWAYS"/>
-                                <Button text="Rafraichir" onAction="#handleRafraichirCommandes"
+                                <Text text="Commandes envoyées aux fournisseurs" style="-fx-font-size: 16px; -fx-fill: #ffffff; -fx-font-weight: bold;" HBox.hgrow="ALWAYS"/>
+                                <Button text="+ Réapprovisionnement" onAction="#handleNouvelleCommandeFournisseur"
+                                        style="-fx-background-color: #10b981; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5; -fx-cursor: hand; -fx-padding: 7 16;"/>
+                                <Button text="Rafraîchir" onAction="#handleRafraichirCommandes"
                                         style="-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-background-radius: 5; -fx-cursor: hand; -fx-padding: 7 16;"/>
                             </HBox>
 
-                            <TableView fx:id="commandesTable" prefHeight="400" VBox.vgrow="ALWAYS"
+                            <TableView fx:id="commandesTable" prefHeight="420" VBox.vgrow="ALWAYS"
                                        style="-fx-background-color: rgba(248,250,252,0.97); -fx-border-color: rgba(99,102,241,0.2); -fx-border-radius: 6; -fx-background-radius: 6;">
                                 <columns>
-                                    <TableColumn fx:id="cmdIdCol" prefWidth="60" text="ID"
+                                    <TableColumn fx:id="cmdIdCol" prefWidth="55" text="ID"
                                                  style="-fx-font-weight: bold; -fx-alignment: CENTER;"/>
-                                    <TableColumn fx:id="cmdDateCol" prefWidth="155" text="Date"
+                                    <TableColumn fx:id="cmdDateCol" prefWidth="145" text="Date"
                                                  style="-fx-font-weight: bold;"/>
-                                    <TableColumn fx:id="cmdFournisseurCol" prefWidth="155" text="Fournisseur"
+                                    <TableColumn fx:id="cmdFournisseurCol" prefWidth="145" text="Fournisseur"
                                                  style="-fx-font-weight: bold;"/>
-                                    <TableColumn fx:id="cmdLibelleCol" prefWidth="215" text="Libelle"
+                                    <TableColumn fx:id="cmdLibelleCol" prefWidth="195" text="Libellé"
                                                  style="-fx-font-weight: bold;"/>
-                                    <TableColumn fx:id="cmdStatutCol" prefWidth="110" text="Statut"
+                                    <TableColumn fx:id="cmdStatutCol" prefWidth="100" text="Statut"
                                                  style="-fx-font-weight: bold; -fx-alignment: CENTER;"/>
                                     <TableColumn fx:id="cmdActionsCol" prefWidth="160" text="Actions"
                                                  style="-fx-font-weight: bold; -fx-alignment: CENTER;"/>
                                 </columns>
                                 <placeholder>
-                                    <Label text="Aucune commande enregistree" style="-fx-text-fill: #64748b; -fx-font-size: 14px;"/>
+                                    <Label text="Aucune commande enregistrée" style="-fx-text-fill: #64748b; -fx-font-size: 14px;"/>
                                 </placeholder>
                             </TableView>
+
+                            <Label text="Passez une commande au statut 'Livrée' pour incrémenter automatiquement le stock."
+                                   style="-fx-text-fill: #94a3b8; -fx-font-size: 12px; -fx-font-style: italic;"/>
                         </VBox>
                     </Tab>
 

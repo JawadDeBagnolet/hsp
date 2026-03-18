@@ -8,6 +8,7 @@ public class Demande {
     private LocalDateTime dateDemande;
     private int quantite;
     private String statut;
+    private String motifRefus;
 
     public Demande(int idDemande, int idUser, LocalDateTime dateDemande, int quantite, String statut) {
         this.idDemande = idDemande;
@@ -67,4 +68,7 @@ public class Demande {
     public void setStatut(String statut) {
         this.statut = statut;
     }
+
+    public String getMotifRefus() { return motifRefus != null ? motifRefus : ""; }
+    public void setMotifRefus(String motifRefus) { this.motifRefus = motifRefus; }
 }

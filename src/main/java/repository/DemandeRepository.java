@@ -67,13 +67,15 @@ public class DemandeRepository {
             while (rs.next()) {
                 String statut = "En attente";
                 try { statut = rs.getString("statut"); } catch (SQLException ignored) {}
-                demandes.add(new Demande(
+                Demande d = new Demande(
                     rs.getInt("id_demande"),
                     rs.getInt("id_user"),
                     rs.getObject("date_demande", LocalDateTime.class),
                     rs.getInt("quantite"),
                     statut
-                ));
+                );
+                try { d.setMotifRefus(rs.getString("motif_refus")); } catch (SQLException ignored) {}
+                demandes.add(d);
             }
         } catch (SQLException e) {
             System.err.println("Erreur lors de la récupération des demandes: " + e.getMessage());
@@ -147,6 +149,25 @@ public class DemandeRepository {
             System.err.println("Erreur getDemandesByUser: " + e.getMessage());
         }
         return demandes;
+    }
+
+    /**
+     * Met à jour le statut et le motif de refus d'une demande.
+     * Nécessite la colonne motif_refus : ALTER TABLE demande ADD COLUMN motif_refus TEXT;
+     * Fallback automatique si la colonne n'existe pas.
+     */
+    public boolean updateStatutAvecMotif(int idDemande, String statut, String motif) {
+        try (Connection cnx = Database.getConnexion();
+             PreparedStatement stmt = cnx.prepareStatement(
+                     "UPDATE demande SET statut = ?, motif_refus = ? WHERE id_demande = ?")) {
+            stmt.setString(1, statut);
+            stmt.setString(2, motif);
+            stmt.setInt(3, idDemande);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.err.println("updateStatutAvecMotif (fallback sans motif): " + e.getMessage());
+            return updateStatut(idDemande, statut);
+        }
     }
 
     public List<Demande> getDemandesParStatut(String statut) {

@@ -50,4 +50,16 @@ public class Fournisseur {
     public void setTel(int tel) {
         this.tel = tel;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Fournisseur)) return false;
+        return idFournisseur == ((Fournisseur) o).idFournisseur;
+    }
+
+    @Override
+    public int hashCode() {
+        return Integer.hashCode(idFournisseur);
+    }
 }
