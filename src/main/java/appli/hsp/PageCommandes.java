@@ -2,6 +2,7 @@ package appli.hsp;
 
 import appli.SessionManager;
 import appli.StartApplication;
+import appli.hsp.utils.NavbarHelper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -55,8 +56,15 @@ public class PageCommandes implements Initializable {
 
     private static final DateTimeFormatter FMT = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
+    @FXML private Button btnNavSecretariat;
+    @FXML private Button btnNavDossiers;
+    @FXML private Button btnNavPlanning;
+    @FXML private Button btnNavCatalogue;
+    @FXML private Button btnNavUtilisateurs;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        NavbarHelper.appliquerNavbar(btnNavSecretariat, btnNavDossiers, null, null, null, btnNavPlanning, btnNavCatalogue, null, btnNavUtilisateurs, null);
         setupDemandesTable();
         setupCommandesTable();
         chargerDemandes();

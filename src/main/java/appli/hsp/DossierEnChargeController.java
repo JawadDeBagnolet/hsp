@@ -1,6 +1,7 @@
 package appli.hsp;
 
 import appli.StartApplication;
+import appli.hsp.utils.NavbarHelper;
 import appli.hsp.utils.NavigationHelper;
 import appli.SessionManager;
 import appli.hsp.exception.ErrorCode;
@@ -53,12 +54,20 @@ public class DossierEnChargeController {
     @FXML
     private Button supprimerButton;
 
+    @FXML private Button btnNavSecretariat;
+    @FXML private Button btnNavCommandes;
+    @FXML private Button btnNavPlanning;
+    @FXML private Button btnNavCatalogue;
+    @FXML private Button btnNavUtilisateurs;
+    @FXML private Button btnNavDemandes;
+
     private DossierEnChargeRepository dossierRepository;
     private FichePatientRepository patientRepository;
     private DossierEnCharge dossierEnEdition = null;
 
     @FXML
     public void initialize() {
+        NavbarHelper.appliquerNavbar(btnNavSecretariat, null, null, null, btnNavCommandes, btnNavPlanning, btnNavCatalogue, null, btnNavUtilisateurs, btnNavDemandes);
         try {
             dossierRepository = new DossierEnChargeRepository();
             patientRepository = new FichePatientRepository();
@@ -534,6 +543,11 @@ public class DossierEnChargeController {
                 "Navigation vers Mon Espace"
             );
         }
+    }
+
+    @FXML
+    private void versDemandes() {
+        try { StartApplication.changeScene("pageDemandeProduit"); } catch (Exception e) { e.printStackTrace(); }
     }
 
     @FXML

@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            xmlns="http://javafx.com/javafx/25"
+            fx:controller="appli.hsp.PageDemandeProduitController"
+            style="-fx-background-color: linear-gradient(to bottom, #0f172a, #1e1b4b);">
+
+    <!-- Barre de navigation -->
+    <top>
+        <HBox style="-fx-background-color: #080c14; -fx-border-color: #6366f1; -fx-border-width: 0 0 2 0;">
+            <padding><Insets top="14" right="28" bottom="14" left="28"/></padding>
+            <VBox spacing="2" HBox.hgrow="ALWAYS">
+                <Text text="LPRS" style="-fx-font-size: 22px; -fx-fill: #818cf8; -fx-font-weight: bold;"/>
+                <Text text="Lycée de Santé Publique" style="-fx-font-size: 11px; -fx-fill: #64748b;"/>
+            </VBox>
+            <HBox spacing="4" alignment="CENTER">
+                <Button text="Accueil" onAction="#versAccueil"
+                        style="-fx-background-color: transparent; -fx-text-fill: #94a3b8; -fx-font-size: 13px; -fx-border-color: transparent; -fx-cursor: hand; -fx-padding: 8 14;"/>
+                <Button fx:id="btnNavTickets" text="Tickets" onAction="#versTickets"
+                        style="-fx-background-color: transparent; -fx-text-fill: #94a3b8; -fx-font-size: 13px; -fx-border-color: transparent; -fx-cursor: hand; -fx-padding: 8 14;"/>
+                <Button fx:id="btnNavInfirmerie" text="Infirmerie" onAction="#versInfirmerie"
+                        style="-fx-background-color: transparent; -fx-text-fill: #94a3b8; -fx-font-size: 13px; -fx-border-color: transparent; -fx-cursor: hand; -fx-padding: 8 14;"/>
+                <Button fx:id="btnNavDossiers" text="Dossiers" onAction="#versDossiers"
+                        style="-fx-background-color: transparent; -fx-text-fill: #94a3b8; -fx-font-size: 13px; -fx-border-color: transparent; -fx-cursor: hand; -fx-padding: 8 14;"/>
+                <Button text="Mes Demandes"
+                        style="-fx-background-color: #6366f1; -fx-text-fill: #ffffff; -fx-font-size: 13px; -fx-background-radius: 20; -fx-border-radius: 20; -fx-cursor: hand; -fx-padding: 8 18; -fx-font-weight: bold;"/>
+                <Button text="Mon espace" onAction="#versMonEspace"
+                        style="-fx-background-color: rgba(99,102,241,0.15); -fx-text-fill: #818cf8; -fx-font-size: 13px; -fx-background-radius: 20; -fx-border-radius: 20; -fx-border-color: rgba(99,102,241,0.5); -fx-border-width: 1; -fx-cursor: hand; -fx-padding: 8 18;"/>
+                <Button text="Déconnexion" onAction="#deconnexion"
+                        style="-fx-background-color: #ef4444; -fx-text-fill: #ffffff; -fx-font-size: 13px; -fx-background-radius: 20; -fx-border-radius: 20; -fx-cursor: hand; -fx-padding: 8 18;"/>
+            </HBox>
+        </HBox>
+    </top>
+
+    <center>
+        <HBox spacing="20" style="-fx-padding: 24;">
+
+            <!-- ── Panneau gauche : Nouvelle demande ── -->
+            <VBox spacing="16" style="-fx-background-color: rgba(30,41,59,0.6); -fx-padding: 24; -fx-background-radius: 14; -fx-border-color: rgba(99,102,241,0.3); -fx-border-width: 1; -fx-border-radius: 14; -fx-pref-width: 420; -fx-min-width: 380;">
+
+                <Text text="Nouvelle demande de produits"
+                      style="-fx-font-size: 20px; -fx-fill: #818cf8; -fx-font-weight: bold;"/>
+                <Text text="Sélectionnez les produits à commander au gestionnaire."
+                      style="-fx-font-size: 12px; -fx-fill: #64748b;"/>
+
+                <!-- Sélecteur produit -->
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <ComboBox fx:id="produitCombo" promptText="Choisir un produit…" HBox.hgrow="ALWAYS"
+                              maxWidth="Infinity"
+                              style="-fx-background-color: rgba(248,250,252,0.95); -fx-background-radius: 6;"/>
+                    <Spinner fx:id="quantiteSpinner" min="1" max="999" initialValue="1" prefWidth="80" editable="true"
+                             style="-fx-background-color: rgba(248,250,252,0.95);"/>
+                    <Button text="+ Ajouter" onAction="#handleAjouterProduit"
+                            style="-fx-background-color: #6366f1; -fx-text-fill: white; -fx-background-radius: 6; -fx-cursor: hand; -fx-padding: 7 14;"/>
+                </HBox>
+
+                <!-- Tableau produits de la demande en cours -->
+                <TableView fx:id="panier" prefHeight="220" VBox.vgrow="ALWAYS"
+                           style="-fx-background-color: rgba(248,250,252,0.97); -fx-border-color: rgba(99,102,241,0.2); -fx-border-radius: 6; -fx-background-radius: 6;">
+                    <columns>
+                        <TableColumn fx:id="colProduitNom"  prefWidth="210" text="Produit"   style="-fx-font-weight: bold;"/>
+                        <TableColumn fx:id="colProduitQte"  prefWidth="70"  text="Quantité"  style="-fx-font-weight: bold; -fx-alignment: CENTER;"/>
+                        <TableColumn fx:id="colProduitRetirer" prefWidth="80" text="Retirer" style="-fx-font-weight: bold; -fx-alignment: CENTER;"/>
+                    </columns>
+                    <placeholder><Label text="Aucun produit ajouté" style="-fx-text-fill: #64748b;"/></placeholder>
+                </TableView>
+
+                <!-- Note optionnelle -->
+                <VBox spacing="6">
+                    <Label text="Note (facultatif)" style="-fx-text-fill: #94a3b8; -fx-font-size: 12px;"/>
+                    <TextArea fx:id="noteArea" promptText="Motif ou précisions…"
+                              prefRowCount="3" wrapText="true"
+                              style="-fx-background-color: rgba(248,250,252,0.95); -fx-background-radius: 6;"/>
+                </VBox>
+
+                <!-- Bouton envoyer -->
+                <Button text="Envoyer la demande" onAction="#handleEnvoyerDemande"
+                        maxWidth="Infinity"
+                        style="-fx-background-color: #10b981; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand; -fx-padding: 10 0;"/>
+
+                <Label fx:id="messageLabel" text="" wrapText="true"
+                       style="-fx-font-size: 13px; -fx-font-weight: bold;"/>
+            </VBox>
+
+            <!-- ── Panneau droit : Historique ── -->
+            <VBox spacing="14" HBox.hgrow="ALWAYS"
+                  style="-fx-background-color: rgba(30,41,59,0.6); -fx-padding: 24; -fx-background-radius: 14; -fx-border-color: rgba(99,102,241,0.3); -fx-border-width: 1; -fx-border-radius: 14;">
+
+                <HBox alignment="CENTER_LEFT" spacing="14">
+                    <Text text="Mes demandes" HBox.hgrow="ALWAYS"
+                          style="-fx-font-size: 20px; -fx-fill: #818cf8; -fx-font-weight: bold;"/>
+                    <Button text="Rafraîchir" onAction="#handleRafraichir"
+                            style="-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-background-radius: 6; -fx-cursor: hand; -fx-padding: 6 14;"/>
+                </HBox>
+
+                <TableView fx:id="demandesTable" VBox.vgrow="ALWAYS"
+                           style="-fx-background-color: rgba(248,250,252,0.97); -fx-border-color: rgba(99,102,241,0.2); -fx-border-radius: 6; -fx-background-radius: 6;">
+                    <columns>
+                        <TableColumn fx:id="colId"     prefWidth="55"  text="ID"     style="-fx-font-weight: bold; -fx-alignment: CENTER;"/>
+                        <TableColumn fx:id="colDate"   prefWidth="145" text="Date"   style="-fx-font-weight: bold;"/>
+                        <TableColumn fx:id="colStatut" prefWidth="120" text="Statut" style="-fx-font-weight: bold; -fx-alignment: CENTER;"/>
+                        <TableColumn fx:id="colQte"    prefWidth="80"  text="Qté totale" style="-fx-font-weight: bold; -fx-alignment: CENTER;"/>
+                        <TableColumn fx:id="colActions" prefWidth="160" text="Actions" style="-fx-font-weight: bold; -fx-alignment: CENTER;"/>
+                    </columns>
+                    <placeholder><Label text="Aucune demande" style="-fx-text-fill: #64748b; -fx-font-size: 14px;"/></placeholder>
+                </TableView>
+
+                <!-- Détail des produits d'une demande sélectionnée -->
+                <VBox fx:id="detailBox" spacing="8"
+                      style="-fx-background-color: rgba(15,23,42,0.6); -fx-padding: 16; -fx-background-radius: 10; -fx-border-color: rgba(99,102,241,0.25); -fx-border-width: 1; -fx-border-radius: 10;"
+                      visible="false" managed="false">
+                    <Text fx:id="detailTitre" text="Produits demandés"
+                          style="-fx-font-size: 14px; -fx-fill: #c7d2fe; -fx-font-weight: bold;"/>
+                    <TableView fx:id="detailTable" prefHeight="140"
+                               style="-fx-background-color: rgba(248,250,252,0.97); -fx-border-color: rgba(99,102,241,0.2); -fx-border-radius: 4; -fx-background-radius: 4;">
+                        <columns>
+                            <TableColumn fx:id="colDetailProduit" prefWidth="220" text="Produit" style="-fx-font-weight: bold;"/>
+                            <TableColumn fx:id="colDetailQte"     prefWidth="80"  text="Qté"     style="-fx-font-weight: bold; -fx-alignment: CENTER;"/>
+                        </columns>
+                    </TableView>
+                </VBox>
+            </VBox>
+        </HBox>
+    </center>
+
+</BorderPane>

@@ -1,6 +1,7 @@
 package appli.hsp;
 
 import appli.StartApplication;
+import appli.hsp.utils.NavbarHelper;
 import appli.hsp.utils.NavigationHelper;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -84,12 +85,19 @@ public class PageUtilisateurs {
     @FXML
     private TextField rechercheField;
 
+    @FXML private Button btnNavSecretariat;
+    @FXML private Button btnNavDossiers;
+    @FXML private Button btnNavCommandes;
+    @FXML private Button btnNavPlanning;
+    @FXML private Button btnNavCatalogue;
+
     private UserRepository userRepository;
     private ObservableList<User> utilisateursObservable;
     private User utilisateurSelectionne;
 
     @FXML
     public void initialize() {
+        NavbarHelper.appliquerNavbar(btnNavSecretariat, btnNavDossiers, null, null, btnNavCommandes, btnNavPlanning, btnNavCatalogue, null, null, null);
         try {
             System.out.println("Initialisation de la page utilisateurs...");
             

@@ -1,6 +1,7 @@
 package appli.hsp;
 
 import appli.StartApplication;
+import appli.hsp.utils.NavbarHelper;
 import appli.hsp.utils.NavigationHelper;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -17,11 +18,18 @@ public class FicheProduitController {
     @FXML private Label messageLabel;
     @FXML private ListView<FicheProduit> produitsListView;
 
+    @FXML private Button btnNavSecretariat;
+    @FXML private Button btnNavDossiers;
+    @FXML private Button btnNavCommandes;
+    @FXML private Button btnNavPlanning;
+    @FXML private Button btnNavUtilisateurs;
+
     private FicheProduitRepository ficheProduitRepository;
     private FicheProduit produitSelectionne;
 
     @FXML
     public void initialize() {
+        NavbarHelper.appliquerNavbar(btnNavSecretariat, btnNavDossiers, null, null, btnNavCommandes, btnNavPlanning, null, null, btnNavUtilisateurs, null);
         ficheProduitRepository = new FicheProduitRepository();
 
         chargerListeProduits();

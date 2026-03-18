@@ -1,6 +1,7 @@
 package appli.hsp;
 
 import appli.StartApplication;
+import appli.hsp.utils.NavbarHelper;
 import appli.hsp.utils.NavigationHelper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -53,6 +54,12 @@ public class PlanningController {
     @FXML
     private Label totalRdvLabel;
     
+    @FXML private Button btnNavSecretariat;
+    @FXML private Button btnNavDossiers;
+    @FXML private Button btnNavCommandes;
+    @FXML private Button btnNavCatalogue;
+    @FXML private Button btnNavUtilisateurs;
+
     private RendezVousRepository rdvRepository;
     private UserRepository userRepository;
     private FichePatientRepository fichePatientRepository;
@@ -62,6 +69,7 @@ public class PlanningController {
 
     @FXML
     public void initialize() {
+        NavbarHelper.appliquerNavbar(btnNavSecretariat, btnNavDossiers, null, null, btnNavCommandes, null, btnNavCatalogue, null, btnNavUtilisateurs, null);
         try {
             System.out.println("Initialisation du planning...");
             

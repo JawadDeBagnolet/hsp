@@ -2,9 +2,11 @@ package appli.hsp;
 
 import appli.SessionManager;
 import appli.StartApplication;
+import appli.hsp.utils.NavbarHelper;
 import appli.hsp.utils.NavigationHelper;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -31,11 +33,20 @@ public class PageMonEspace {
     @FXML
     private Label messageLabel;
 
+    @FXML private Button btnNavSecretariat;
+    @FXML private Button btnNavDossiers;
+    @FXML private Button btnNavCommandes;
+    @FXML private Button btnNavPlanning;
+    @FXML private Button btnNavCatalogue;
+    @FXML private Button btnNavUtilisateurs;
+    @FXML private Button btnNavDemandes;
+
     private User utilisateurConnecte;
     private UserRepository userRepository;
 
     @FXML
     public void initialize() {
+        NavbarHelper.appliquerNavbar(btnNavSecretariat, btnNavDossiers, null, null, btnNavCommandes, btnNavPlanning, btnNavCatalogue, null, btnNavUtilisateurs, btnNavDemandes);
         userRepository = new UserRepository();
         chargerUtilisateurConnecte();
     }
@@ -182,6 +193,11 @@ public class PageMonEspace {
         } catch (Exception e) {
             System.err.println("Erreur lors de la redirection vers catalogue: " + e.getMessage());
         }
+    }
+
+    @FXML
+    public void versDemandes(ActionEvent event) {
+        try { StartApplication.changeScene("pageDemandeProduit"); } catch (Exception e) { System.err.println(e.getMessage()); }
     }
 
     @FXML

@@ -1,6 +1,7 @@
 package appli.hsp;
 
 import appli.StartApplication;
+import appli.hsp.utils.NavbarHelper;
 import appli.hsp.utils.NavigationHelper;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -37,6 +38,10 @@ public class VisiteInfirmerieController {
     @FXML private Button filtrerButton;
     @FXML private Button toutAfficherButton;
 
+    @FXML private Button btnNavSecretariat;
+    @FXML private Button btnNavCommandes;
+    @FXML private Button btnNavDemandes;
+
     private VisiteInfirmerieRepository visiteRepository;
     private FichePatientRepository eleveRepository;
     private ObservableList<VisiteInfirmerie> visitesList;
@@ -45,6 +50,7 @@ public class VisiteInfirmerieController {
 
     @FXML
     public void initialize() {
+        NavbarHelper.appliquerNavbar(btnNavSecretariat, null, null, null, btnNavCommandes, null, null, null, null, btnNavDemandes);
         visiteRepository = new VisiteInfirmerieRepository();
         eleveRepository = new FichePatientRepository();
         visitesList = FXCollections.observableArrayList();
@@ -296,6 +302,9 @@ public class VisiteInfirmerieController {
     }
     @FXML private void versMonEspace() {
         try { StartApplication.changeScene("pageMonEspace"); } catch (Exception e) { System.err.println(e.getMessage()); }
+    }
+    @FXML private void versDemandes() {
+        try { StartApplication.changeScene("pageDemandeProduit"); } catch (Exception e) { System.err.println(e.getMessage()); }
     }
     @FXML private void deconnexion() {
         try { StartApplication.changeScene("helloView"); } catch (Exception e) { System.err.println(e.getMessage()); }

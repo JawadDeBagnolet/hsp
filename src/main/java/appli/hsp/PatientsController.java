@@ -2,6 +2,7 @@ package appli.hsp;
 
 import appli.SessionManager;
 import appli.StartApplication;
+import appli.hsp.utils.NavbarHelper;
 import appli.hsp.utils.NavigationHelper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -69,6 +70,12 @@ public class PatientsController {
     @FXML
     private TextField rechercheField;
 
+    @FXML private Button btnNavDossiers;
+    @FXML private Button btnNavCommandes;
+    @FXML private Button btnNavPlanning;
+    @FXML private Button btnNavCatalogue;
+    @FXML private Button btnNavUtilisateurs;
+
     private FichePatientRepository patientRepository;
     private final TicketRepository ticketRepository = new TicketRepository();
     private ObservableList<FichePatient> patientsList;
@@ -76,6 +83,7 @@ public class PatientsController {
 
     @FXML
     public void initialize() {
+        NavbarHelper.appliquerNavbar(null, btnNavDossiers, null, null, btnNavCommandes, btnNavPlanning, btnNavCatalogue, null, btnNavUtilisateurs, null);
         patientRepository = new FichePatientRepository();
         patientsList = FXCollections.observableArrayList();
 

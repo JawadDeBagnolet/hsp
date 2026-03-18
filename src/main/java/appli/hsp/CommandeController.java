@@ -2,6 +2,7 @@ package appli.hsp;
 
 import appli.StartApplication;
 import appli.SessionManager;
+import appli.hsp.utils.NavbarHelper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -123,8 +124,16 @@ public class CommandeController {
     private final ObservableList<Demande> demandesObservable = FXCollections.observableArrayList();
     private Demande demandeSelectionnee;
 
+    @FXML private Button btnNavSecretariat;
+    @FXML private Button btnNavDossiers;
+    @FXML private Button btnNavTickets;
+    @FXML private Button btnNavPlanning;
+    @FXML private Button btnNavCatalogue;
+    @FXML private Button btnNavUtilisateurs;
+
     @FXML
     public void initialize() {
+        NavbarHelper.appliquerNavbar(btnNavSecretariat, btnNavDossiers, btnNavTickets, null, null, btnNavPlanning, btnNavCatalogue, null, btnNavUtilisateurs, null);
         // Initialisation du contrôleur
         System.out.println("Page commande initialisée");
         

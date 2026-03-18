@@ -25,9 +25,11 @@ public class PageAccueil {
     @FXML private Button btnCatalogue;
     @FXML private Button btnFournisseurs;
     @FXML private Button btnUtilisateurs;
+    @FXML private Button btnDemandes;
 
     // ── Cards ─────────────────────────────────────────────────────
     @FXML private VBox cardSecretariat;
+    @FXML private VBox cardDemandes;
     @FXML private VBox cardPlanning;
     @FXML private VBox cardInfirmerie;
     @FXML private VBox cardCommandes;
@@ -99,6 +101,10 @@ public class PageAccueil {
 
         // Utilisateurs : ADMIN uniquement
         afficher(btnUtilisateurs, isAdmin);
+
+        // Demandes produits : ADMIN, INFIRMIER
+        afficher(btnDemandes,   isAdmin || isInfirmier);
+        afficher(cardDemandes,  isAdmin || isInfirmier);
     }
 
     private void afficher(Node node, boolean visible) {
@@ -233,6 +239,18 @@ public class PageAccueil {
             ErrorHandler.handleException(
                 new LPRSException(ErrorCode.NAVIGATION_ERROR, "Impossible d'accéder à la gestion des fournisseurs et produits", e),
                 "Navigation vers Fournisseurs/Produits"
+            );
+        }
+    }
+
+    @FXML
+    public void versDemandes(ActionEvent event) {
+        try {
+            StartApplication.changeScene("pageDemandeProduit");
+        } catch (Exception e) {
+            ErrorHandler.handleException(
+                new LPRSException(ErrorCode.NAVIGATION_ERROR, "Impossible d'accéder aux demandes de produits", e),
+                "Navigation vers Mes Demandes"
             );
         }
     }

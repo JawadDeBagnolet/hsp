@@ -126,6 +126,30 @@ public class DemandeRepository {
         }
     }
 
+    public List<Demande> getDemandesByUser(int idUser) {
+        List<Demande> demandes = new ArrayList<>();
+        String sql = "SELECT * FROM demande WHERE id_user = ? ORDER BY date_demande DESC";
+        try (Connection cnx = Database.getConnexion();
+             PreparedStatement stmt = cnx.prepareStatement(sql)) {
+            stmt.setInt(1, idUser);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                String statut = "En attente";
+                try { statut = rs.getString("statut"); } catch (SQLException ignored) {}
+                demandes.add(new Demande(
+                    rs.getInt("id_demande"),
+                    rs.getInt("id_user"),
+                    rs.getObject("date_demande", LocalDateTime.class),
+                    rs.getInt("quantite"),
+                    statut
+                ));
+            }
+        } catch (SQLException e) {
+            System.err.println("Erreur getDemandesByUser: " + e.getMessage());
+        }
+        return demandes;
+    }
+
     public List<Demande> getDemandesParStatut(String statut) {
         List<Demande> demandes = new ArrayList<>();
         String sql = "SELECT * FROM demande WHERE statut = ? ORDER BY date_demande DESC";

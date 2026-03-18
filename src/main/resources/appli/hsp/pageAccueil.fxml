@@ -60,6 +60,9 @@
                 <Button fx:id="btnUtilisateurs" text="Utilisateurs"
                         style="-fx-background-color: transparent; -fx-text-fill: #94a3b8; -fx-font-size: 12px; -fx-border-color: transparent; -fx-cursor: hand; -fx-padding: 7 10;"
                         onAction="#versUtilisateurs" />
+                <Button fx:id="btnDemandes" text="Mes Demandes"
+                        style="-fx-background-color: transparent; -fx-text-fill: #94a3b8; -fx-font-size: 12px; -fx-border-color: transparent; -fx-cursor: hand; -fx-padding: 7 10;"
+                        onAction="#versDemandes" />
                 <Button text="Mon espace"
                         style="-fx-background-color: rgba(99,102,241,0.15); -fx-text-fill: #818cf8; -fx-font-size: 12px; -fx-background-radius: 20; -fx-border-radius: 20; -fx-border-color: rgba(99,102,241,0.5); -fx-border-width: 1; -fx-cursor: hand; -fx-padding: 7 14;"
                         onAction="#versMonEspace" />
@@ -137,8 +140,18 @@
 
                 </HBox>
 
-                <!-- Ligne 2 : Catalogue · Tickets · Dossiers -->
+                <!-- Ligne 2 : Catalogue · Tickets · Dossiers · Demandes produits -->
                 <HBox spacing="20" alignment="CENTER">
+
+                    <!-- Demandes produits — ADMIN, INFIRMIER -->
+                    <VBox fx:id="cardDemandes" spacing="14" alignment="CENTER_LEFT"
+                          style="-fx-background-color: rgba(99,102,241,0.1); -fx-padding: 28; -fx-background-radius: 16; -fx-border-color: rgba(99,102,241,0.35); -fx-border-width: 1; -fx-border-radius: 16; -fx-pref-width: 200; -fx-min-height: 160;">
+                        <Text text="Mes Demandes" style="-fx-font-size: 18px; -fx-fill: #818cf8; -fx-font-weight: bold;" />
+                        <Text text="Demander des produits" style="-fx-font-size: 12px; -fx-fill: #64748b;" />
+                        <Region VBox.vgrow="ALWAYS" />
+                        <Button text="Accéder" onAction="#versDemandes"
+                                style="-fx-background-color: #6366f1; -fx-text-fill: white; -fx-font-size: 13px; -fx-background-radius: 20; -fx-cursor: hand; -fx-padding: 7 24;" />
+                    </VBox>
 
                     <!-- Catalogue — ADMIN, GESTIONNAIRE_DE_STOCK -->
                     <VBox fx:id="cardCatalogue" spacing="14" alignment="CENTER_LEFT"

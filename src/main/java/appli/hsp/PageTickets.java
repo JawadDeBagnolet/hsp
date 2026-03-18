@@ -1,6 +1,7 @@
 package appli.hsp;
 
 import appli.StartApplication;
+import appli.hsp.utils.NavbarHelper;
 import appli.hsp.utils.NavigationHelper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -34,6 +35,12 @@ public class PageTickets implements Initializable {
     @FXML private TableColumn<Ticket, Void>    colActions;
     @FXML private ComboBox<String>             filtreStatutCombo;
 
+    @FXML private Button btnNavSecretariat;
+    @FXML private Button btnNavCommandes;
+    @FXML private Button btnNavPlanning;
+    @FXML private Button btnNavCatalogue;
+    @FXML private Button btnNavDemandes;
+
     private final TicketRepository ticketRepo           = new TicketRepository();
     private final FicheProduitRepository produitRepo    = new FicheProduitRepository();
     private final ObservableList<Ticket> data  = FXCollections.observableArrayList();
@@ -48,6 +55,7 @@ public class PageTickets implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        NavbarHelper.appliquerNavbar(btnNavSecretariat, null, null, null, btnNavCommandes, btnNavPlanning, btnNavCatalogue, null, null, btnNavDemandes);
         filtreStatutCombo.setItems(FXCollections.observableArrayList(STATUTS));
         setupTable();
         charger();
@@ -280,5 +288,6 @@ public class PageTickets implements Initializable {
     @FXML public void versPlanning(ActionEvent e)    { try { StartApplication.changeScene("planningView"); } catch (Exception ex) { ex.printStackTrace(); } }
     @FXML public void versFicheProduit(ActionEvent e){ try { StartApplication.changeScene("ficheProduitView"); } catch (Exception ex) { ex.printStackTrace(); } }
     @FXML public void versMonEspace(ActionEvent e)   { try { StartApplication.changeScene("pageMonEspace"); } catch (Exception ex) { ex.printStackTrace(); } }
+    @FXML public void versDemandes(ActionEvent e)    { try { StartApplication.changeScene("pageDemandeProduit"); } catch (Exception ex) { ex.printStackTrace(); } }
     @FXML public void deconnexion(ActionEvent e)     { try { StartApplication.changeScene("helloView"); } catch (Exception ex) { ex.printStackTrace(); } }
 }

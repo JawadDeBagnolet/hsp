@@ -28,15 +28,15 @@
                         style="-fx-background-color: transparent; -fx-text-fill: #94a3b8; -fx-font-size: 13px; -fx-border-color: transparent; -fx-cursor: hand; -fx-padding: 8 14;" />
                 <Button text="Secrétariat"
                         style="-fx-background-color: #6366f1; -fx-text-fill: #ffffff; -fx-font-size: 13px; -fx-background-radius: 20; -fx-border-radius: 20; -fx-cursor: hand; -fx-padding: 8 18; -fx-font-weight: bold;" />
-                <Button text="Dossiers" onAction="#versDossiers"
+                <Button fx:id="btnNavDossiers" text="Dossiers" onAction="#versDossiers"
                         style="-fx-background-color: transparent; -fx-text-fill: #94a3b8; -fx-font-size: 13px; -fx-border-color: transparent; -fx-cursor: hand; -fx-padding: 8 14;" />
-                <Button text="Commandes" onAction="#versCommandes"
+                <Button fx:id="btnNavCommandes" text="Commandes" onAction="#versCommandes"
                         style="-fx-background-color: transparent; -fx-text-fill: #94a3b8; -fx-font-size: 13px; -fx-border-color: transparent; -fx-cursor: hand; -fx-padding: 8 14;" />
-                <Button text="Planning" onAction="#versPlanning"
+                <Button fx:id="btnNavPlanning" text="Planning" onAction="#versPlanning"
                         style="-fx-background-color: transparent; -fx-text-fill: #94a3b8; -fx-font-size: 13px; -fx-border-color: transparent; -fx-cursor: hand; -fx-padding: 8 14;" />
-                <Button text="Catalogue" onAction="#versFicheProduit"
+                <Button fx:id="btnNavCatalogue" text="Catalogue" onAction="#versFicheProduit"
                         style="-fx-background-color: transparent; -fx-text-fill: #94a3b8; -fx-font-size: 13px; -fx-border-color: transparent; -fx-cursor: hand; -fx-padding: 8 14;" />
-                <Button text="Utilisateurs" onAction="#versUtilisateurs"
+                <Button fx:id="btnNavUtilisateurs" text="Utilisateurs" onAction="#versUtilisateurs"
                         style="-fx-background-color: transparent; -fx-text-fill: #94a3b8; -fx-font-size: 13px; -fx-border-color: transparent; -fx-cursor: hand; -fx-padding: 8 14;" />
                 <Button text="Mon espace" onAction="#versMonEspace"
                         style="-fx-background-color: rgba(99,102,241,0.15); -fx-text-fill: #818cf8; -fx-font-size: 13px; -fx-background-radius: 20; -fx-border-radius: 20; -fx-border-color: rgba(99,102,241,0.5); -fx-border-width: 1; -fx-cursor: hand; -fx-padding: 8 18;" />

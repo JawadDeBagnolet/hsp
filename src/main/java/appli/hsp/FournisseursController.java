@@ -1,6 +1,7 @@
 package appli.hsp;
 
 import appli.StartApplication;
+import appli.hsp.utils.NavbarHelper;
 import appli.hsp.utils.NavigationHelper;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -33,11 +34,17 @@ public class FournisseursController {
     @FXML
     private Label fournisseurSelectionneLabel;
 
+    @FXML private Button btnNavSecretariat;
+    @FXML private Button btnNavDossiers;
+    @FXML private Button btnNavCommandes;
+    @FXML private Button btnNavUtilisateurs;
+
     private FournisseurRepository fournisseurRepository;
     private ProduitRepository produitRepository;
 
     @FXML
     public void initialize() {
+        NavbarHelper.appliquerNavbar(btnNavSecretariat, btnNavDossiers, null, null, btnNavCommandes, null, null, null, btnNavUtilisateurs, null);
         System.out.println("Initialisation du FournisseursController...");
         
         fournisseurRepository = new FournisseurRepository();
