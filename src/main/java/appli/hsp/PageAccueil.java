@@ -232,6 +232,18 @@ public class PageAccueil {
     }
 
     @FXML
+    public void versFournisseurs(ActionEvent event) {
+        try {
+            StartApplication.changeScene("fournisseursView");
+        } catch (Exception e) {
+            ErrorHandler.handleException(
+                new LPRSException(ErrorCode.NAVIGATION_ERROR, "Impossible d'accéder à la gestion des fournisseurs", e),
+                "Navigation vers Fournisseurs"
+            );
+        }
+    }
+
+    @FXML
     public void versFournisseursProduits(ActionEvent event) {
         try {
             StartApplication.changeScene("fournisseursProduitsView");

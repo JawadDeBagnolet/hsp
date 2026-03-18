@@ -3,9 +3,13 @@ package appli.hsp;
 import appli.StartApplication;
 import appli.hsp.utils.NavbarHelper;
 import appli.hsp.utils.NavigationHelper;
-import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import modele.Fournisseur;
 import modele.Produit;
 import repository.FournisseurRepository;
@@ -13,305 +17,352 @@ import repository.ProduitRepository;
 
 public class FournisseursController {
 
-    @FXML
-    private TextField nomFournisseurField;
+    // ── Formulaire fournisseur ─────────────────────────────────────
+    @FXML private TextField nomFournisseurField;
+    @FXML private TextField emailFournisseurField;
+    @FXML private TextField telephoneFournisseurField;
+    @FXML private Button    btnAjouter;
+    @FXML private Label     messageLabel;
 
-    @FXML
-    private TextField emailFournisseurField;
+    // ── Table fournisseurs ─────────────────────────────────────────
+    @FXML private TableView<Fournisseur>         fournisseursTable;
+    @FXML private TableColumn<Fournisseur, String>  colNom;
+    @FXML private TableColumn<Fournisseur, String>  colEmail;
+    @FXML private TableColumn<Fournisseur, Integer> colTel;
+    @FXML private TableColumn<Fournisseur, Void>    colActions;
 
-    @FXML
-    private TextField telephoneFournisseurField;
+    // ── Panneau produits ───────────────────────────────────────────
+    @FXML private Label  fournisseurSelectionneLabel;
+    @FXML private VBox   formProduitBox;
+    @FXML private Button btnNouveauProduit;
+    @FXML private Label  messageProduitLabel;
 
-    @FXML
-    private Label messageLabel;
+    @FXML private TextField nomProduitField;
+    @FXML private TextField descProduitField;
+    @FXML private TextField prixProduitField;
+    @FXML private TextField quantiteProduitField;
+    @FXML private Button    btnAjouterProduit;
 
-    @FXML
-    private ListView<Fournisseur> fournisseursListView;
+    // ── Table produits ─────────────────────────────────────────────
+    @FXML private TableView<Produit>            produitsTable;
+    @FXML private TableColumn<Produit, String>  colProduitNom;
+    @FXML private TableColumn<Produit, Double>  colProduitPrix;
+    @FXML private TableColumn<Produit, Integer> colProduitQuantite;
+    @FXML private TableColumn<Produit, Void>    colProduitActions;
 
-    @FXML
-    private ListView<Produit> produitsListView;
-
-    @FXML
-    private Label fournisseurSelectionneLabel;
-
+    // ── Navbar ─────────────────────────────────────────────────────
     @FXML private Button btnNavSecretariat;
     @FXML private Button btnNavDossiers;
     @FXML private Button btnNavCommandes;
     @FXML private Button btnNavUtilisateurs;
 
-    private FournisseurRepository fournisseurRepository;
-    private ProduitRepository produitRepository;
+    // ── État ───────────────────────────────────────────────────────
+    private final FournisseurRepository fournisseurRepo = new FournisseurRepository();
+    private final ProduitRepository     produitRepo     = new ProduitRepository();
+    private final ObservableList<Fournisseur> fournisseursData = FXCollections.observableArrayList();
+    private final ObservableList<Produit>     produitsData     = FXCollections.observableArrayList();
 
+    private Fournisseur fournisseurEnEdition = null;
+    private Fournisseur fournisseurSelectionne = null;
+    private Produit     produitEnEdition = null;
+
+    // ══════════════════════════════════════════════════════════════
     @FXML
     public void initialize() {
-        NavbarHelper.appliquerNavbar(btnNavSecretariat, btnNavDossiers, null, null, btnNavCommandes, null, null, null, btnNavUtilisateurs, null);
-        System.out.println("Initialisation du FournisseursController...");
-        
-        fournisseurRepository = new FournisseurRepository();
-        produitRepository = new ProduitRepository();
-        
-        // Vérifier que les éléments FXML sont bien injectés
-        if (nomFournisseurField == null || emailFournisseurField == null || telephoneFournisseurField == null) {
-            System.err.println("ERREUR: Champs du formulaire non injectés !");
-            return;
-        }
-        
-        if (fournisseursListView == null || produitsListView == null) {
-            System.err.println("ERREUR: ListViews non injectées !");
-            return;
-        }
-        
-        System.out.println("Tous les éléments FXML sont correctement injectés");
-        
-        // Initialiser la liste des fournisseurs
-        chargerListeFournisseurs();
-        
-        // Personnaliser l'affichage des fournisseurs
-        fournisseursListView.setCellFactory(param -> new javafx.scene.control.ListCell<Fournisseur>() {
-            @Override
-            protected void updateItem(Fournisseur fournisseur, boolean empty) {
-                super.updateItem(fournisseur, empty);
-                if (empty || fournisseur == null) {
-                    setText(null);
-                    setStyle("");
-                } else {
-                    String texte = String.format("🏢 %s - 📧 %s - 📞 %d",
-                        fournisseur.getNom(),
-                        fournisseur.getEmail(),
-                        fournisseur.getTel());
-                    setText(texte);
-                    setStyle("-fx-background-color: #f8f9fa; -fx-border-color: #dee2e6; -fx-border-width: 0 0 1 0; -fx-padding: 8;");
-                }
+        NavbarHelper.appliquerNavbar(btnNavSecretariat, btnNavDossiers, null, null,
+                btnNavCommandes, null, null, null, btnNavUtilisateurs, null);
+
+        // Colonnes fournisseurs
+        colNom.setCellValueFactory(new PropertyValueFactory<>("nom"));
+        colEmail.setCellValueFactory(new PropertyValueFactory<>("email"));
+        colTel.setCellValueFactory(new PropertyValueFactory<>("tel"));
+        colActions.setCellFactory(col -> new TableCell<>() {
+            private final Button mod = bouton("Modifier", "#3b82f6");
+            private final Button sup = bouton("Supprimer", "#ef4444");
+            private final HBox box = new HBox(6, mod, sup);
+            {
+                mod.setOnAction(e -> passerEnModeEditionFournisseur(getTableView().getItems().get(getIndex())));
+                sup.setOnAction(e -> supprimerFournisseur(getTableView().getItems().get(getIndex())));
+            }
+            @Override protected void updateItem(Void v, boolean empty) {
+                super.updateItem(v, empty);
+                setGraphic(empty ? null : box);
             }
         });
-        
-        // Personnaliser l'affichage des produits
-        produitsListView.setCellFactory(param -> new javafx.scene.control.ListCell<Produit>() {
-            @Override
-            protected void updateItem(Produit produit, boolean empty) {
-                super.updateItem(produit, empty);
-                if (empty || produit == null) {
-                    setText(null);
-                    setStyle("");
-                } else {
-                    String texte = String.format("📦 %s - 💰 %.2f€ - 📊 Quantité: %d",
-                        produit.getNom(),
-                        produit.getPrix(),
-                        produit.getQuantite());
-                    setText(texte);
-                    setStyle("-fx-background-color: #f8f9fa; -fx-border-color: #dee2e6; -fx-border-width: 0 0 1 0; -fx-padding: 8;");
-                }
+
+        // Colonnes produits
+        colProduitNom.setCellValueFactory(new PropertyValueFactory<>("nom"));
+        colProduitPrix.setCellValueFactory(new PropertyValueFactory<>("prix"));
+        colProduitQuantite.setCellValueFactory(new PropertyValueFactory<>("quantite"));
+        colProduitActions.setCellFactory(col -> new TableCell<>() {
+            private final Button mod = bouton("Modifier", "#3b82f6");
+            private final Button sup = bouton("Supprimer", "#ef4444");
+            private final HBox box = new HBox(6, mod, sup);
+            {
+                mod.setOnAction(e -> passerEnModeEditionProduit(getTableView().getItems().get(getIndex())));
+                sup.setOnAction(e -> supprimerProduit(getTableView().getItems().get(getIndex())));
+            }
+            @Override protected void updateItem(Void v, boolean empty) {
+                super.updateItem(v, empty);
+                setGraphic(empty ? null : box);
             }
         });
-        
-        // Gérer la sélection d'un fournisseur
-        fournisseursListView.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal != null) {
-                chargerProduitsDuFournisseur(newVal);
-                fournisseurSelectionneLabel.setText("Produits de: " + newVal.getNom());
-            } else {
-                produitsListView.getItems().clear();
-                fournisseurSelectionneLabel.setText("Veuillez sélectionner un fournisseur pour voir ses produits");
+
+        fournisseursTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        produitsTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        fournisseursTable.setItems(fournisseursData);
+        produitsTable.setItems(produitsData);
+
+        // Sélection fournisseur → charge ses produits
+        fournisseursTable.getSelectionModel().selectedItemProperty().addListener((obs, old, sel) -> {
+            if (sel != null) {
+                fournisseurSelectionne = sel;
+                fournisseurSelectionneLabel.setText("Produits de : " + sel.getNom());
+                afficherBoutonNouveauProduit(true);
+                chargerProduits(sel);
             }
         });
-        
+
+        chargerFournisseurs();
         messageLabel.setText("");
-        System.out.println("Initialisation terminée avec succès");
     }
+
+    // ── CRUD Fournisseur ───────────────────────────────────────────
 
     @FXML
     private void handleAjouterFournisseur() {
-        System.out.println("=== DÉBUT AJOUT FOURNISSEUR ===");
-        
-        try {
-            // Validation des champs
-            if (nomFournisseurField.getText().trim().isEmpty()) {
-                afficherMessage("Veuillez entrer le nom du fournisseur", "error");
-                return;
-            }
-            
-            if (emailFournisseurField.getText().trim().isEmpty()) {
-                afficherMessage("Veuillez entrer l'email du fournisseur", "error");
-                return;
-            }
-            
-            if (telephoneFournisseurField.getText().trim().isEmpty()) {
-                afficherMessage("Veuillez entrer le téléphone du fournisseur", "error");
-                return;
-            }
-            
-            // Validation du format du téléphone
-            int telephone;
-            try {
-                telephone = Integer.parseInt(telephoneFournisseurField.getText().trim());
-            } catch (NumberFormatException e) {
-                afficherMessage("Le téléphone doit être un nombre valide", "error");
-                return;
-            }
-            
-            // Créer le fournisseur
-            Fournisseur nouveauFournisseur = new Fournisseur(
-                nomFournisseurField.getText().trim(),
-                emailFournisseurField.getText().trim(),
-                telephone
-            );
-            
-            System.out.println("Fournisseur à ajouter: " + nouveauFournisseur.toString());
-            
-            // Sauvegarder dans la base de données
-            boolean succes = fournisseurRepository.ajouterFournisseur(nouveauFournisseur);
-            
-            if (succes) {
-                afficherMessage("Fournisseur ajouté avec succès!", "success");
-                viderChamps();
-                chargerListeFournisseurs();
-            } else {
-                afficherMessage("Erreur lors de l'ajout du fournisseur", "error");
-            }
-            
-        } catch (Exception e) {
-            System.err.println("Erreur générale lors de l'ajout du fournisseur: " + e.getMessage());
-            e.printStackTrace();
-            afficherMessage("Erreur: " + e.getMessage(), "error");
+        String nom   = nomFournisseurField.getText().trim();
+        String email = emailFournisseurField.getText().trim();
+        String telStr = telephoneFournisseurField.getText().trim();
+
+        if (nom.isEmpty() || email.isEmpty() || telStr.isEmpty()) {
+            afficherMessage("Veuillez remplir tous les champs", "error"); return;
         }
-        
-        System.out.println("=== FIN AJOUT FOURNISSEUR ===");
+        int tel;
+        try { tel = Integer.parseInt(telStr); }
+        catch (NumberFormatException e) { afficherMessage("Téléphone invalide", "error"); return; }
+
+        if (fournisseurEnEdition != null) {
+            fournisseurEnEdition.setNom(nom);
+            fournisseurEnEdition.setEmail(email);
+            fournisseurEnEdition.setTel(tel);
+            boolean ok = fournisseurRepo.modifierFournisseur(fournisseurEnEdition);
+            afficherMessage(ok ? "Fournisseur modifié" : "Erreur modification", ok ? "success" : "error");
+            fournisseurEnEdition = null;
+            btnAjouter.setText("Ajouter le fournisseur");
+        } else {
+            boolean ok = fournisseurRepo.ajouterFournisseur(new Fournisseur(nom, email, tel));
+            if (!ok) { afficherMessage("Erreur lors de l'ajout", "error"); return; }
+            afficherMessage("Fournisseur ajouté", "success");
+        }
+        viderChampsFournisseur();
+        chargerFournisseurs();
     }
 
     @FXML
     private void handleViderChamps() {
-        viderChamps();
-        afficherMessage("Champs vidés", "info");
+        viderChampsFournisseur();
+        fournisseurEnEdition = null;
+        btnAjouter.setText("Ajouter le fournisseur");
+        afficherMessage("", "info");
     }
 
-    private void chargerListeFournisseurs() {
-        try {
-            System.out.println("Chargement de la liste des fournisseurs...");
-            if (fournisseurRepository != null) {
-                java.util.List<Fournisseur> fournisseurs = fournisseurRepository.getAllFournisseurs();
-                System.out.println("Nombre de fournisseurs récupérés: " + fournisseurs.size());
-                
-                if (fournisseursListView != null) {
-                    fournisseursListView.getItems().clear();
-                    fournisseursListView.getItems().addAll(fournisseurs);
-                    System.out.println("Liste des fournisseurs mise à jour dans la ListView");
-                } else {
-                    System.err.println("ERREUR: fournisseursListView est null !");
+    private void passerEnModeEditionFournisseur(Fournisseur f) {
+        fournisseurEnEdition = f;
+        nomFournisseurField.setText(f.getNom());
+        emailFournisseurField.setText(f.getEmail());
+        telephoneFournisseurField.setText(String.valueOf(f.getTel()));
+        btnAjouter.setText("Enregistrer les modifications");
+        afficherMessage("Modification de : " + f.getNom(), "info");
+    }
+
+    private void supprimerFournisseur(Fournisseur f) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirmation");
+        alert.setHeaderText("Supprimer le fournisseur");
+        alert.setContentText("Supprimer \"" + f.getNom() + "\" ?");
+        alert.showAndWait().ifPresent(r -> {
+            if (r == ButtonType.OK) {
+                boolean ok = fournisseurRepo.supprimerFournisseur(f.getIdFournisseur());
+                afficherMessage(ok ? "Fournisseur supprimé" : "Erreur suppression", ok ? "success" : "error");
+                if (ok) {
+                    produitsData.clear();
+                    fournisseurSelectionne = null;
+                    fournisseurSelectionneLabel.setText("Sélectionnez un fournisseur");
+                    afficherBoutonNouveauProduit(false);
+                    cacherFormProduit();
                 }
-            } else {
-                System.err.println("ERREUR: fournisseurRepository est null !");
+                chargerFournisseurs();
             }
-        } catch (Exception e) {
-            System.err.println("Erreur lors du chargement des fournisseurs: " + e.getMessage());
-            e.printStackTrace();
+        });
+    }
+
+    // ── CRUD Produit ───────────────────────────────────────────────
+
+    @FXML
+    private void handleNouveauProduit() {
+        produitEnEdition = null;
+        viderChampsProduit();
+        btnAjouterProduit.setText("Ajouter");
+        afficherFormProduit(true);
+    }
+
+    @FXML
+    private void handleAjouterProduit() {
+        if (fournisseurSelectionne == null) {
+            afficherMessageProduit("Sélectionnez d'abord un fournisseur", "error"); return;
+        }
+        String nom  = nomProduitField.getText().trim();
+        String desc = descProduitField.getText().trim();
+        String prixStr = prixProduitField.getText().trim();
+        String qteStr  = quantiteProduitField.getText().trim();
+
+        if (nom.isEmpty() || prixStr.isEmpty() || qteStr.isEmpty()) {
+            afficherMessageProduit("Nom, prix et quantité sont requis", "error"); return;
+        }
+        double prix; int qte;
+        try { prix = Double.parseDouble(prixStr.replace(",", ".")); }
+        catch (NumberFormatException e) { afficherMessageProduit("Prix invalide", "error"); return; }
+        try { qte = Integer.parseInt(qteStr); }
+        catch (NumberFormatException e) { afficherMessageProduit("Quantité invalide", "error"); return; }
+
+        if (produitEnEdition != null) {
+            produitEnEdition.setNom(nom);
+            produitEnEdition.setDescription(desc);
+            produitEnEdition.setPrix(prix);
+            produitEnEdition.setQuantite(qte);
+            boolean ok = produitRepo.modifierProduit(produitEnEdition);
+            afficherMessage(ok ? "Produit modifié" : "Erreur modification", ok ? "success" : "error");
+            produitEnEdition = null;
+            btnAjouterProduit.setText("Ajouter");
+        } else {
+            Produit p = new Produit(nom, desc, prix, qte, fournisseurSelectionne.getIdFournisseur());
+            boolean ok = produitRepo.ajouterProduit(p);
+            if (!ok) { afficherMessageProduit("Erreur lors de l'ajout", "error"); return; }
+            afficherMessage("Produit ajouté", "success");
+        }
+        viderChampsProduit();
+        afficherFormProduit(false);
+        chargerProduits(fournisseurSelectionne);
+    }
+
+    @FXML
+    private void handleAnnulerProduit() {
+        viderChampsProduit();
+        produitEnEdition = null;
+        btnAjouterProduit.setText("Ajouter");
+        afficherFormProduit(false);
+        afficherMessageProduit("", "info");
+    }
+
+    private void passerEnModeEditionProduit(Produit p) {
+        produitEnEdition = p;
+        nomProduitField.setText(p.getNom());
+        descProduitField.setText(p.getDescription() != null ? p.getDescription() : "");
+        prixProduitField.setText(String.valueOf(p.getPrix()));
+        quantiteProduitField.setText(String.valueOf(p.getQuantite()));
+        btnAjouterProduit.setText("Enregistrer");
+        afficherFormProduit(true);
+        afficherMessageProduit("Modification de : " + p.getNom(), "info");
+    }
+
+    private void supprimerProduit(Produit p) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirmation");
+        alert.setHeaderText("Supprimer le produit");
+        alert.setContentText("Supprimer \"" + p.getNom() + "\" ?");
+        alert.showAndWait().ifPresent(r -> {
+            if (r == ButtonType.OK) {
+                boolean ok = produitRepo.supprimerProduit(p.getIdProduit());
+                afficherMessage(ok ? "Produit supprimé" : "Erreur suppression", ok ? "success" : "error");
+                if (fournisseurSelectionne != null) chargerProduits(fournisseurSelectionne);
+            }
+        });
+    }
+
+    // ── Helpers ────────────────────────────────────────────────────
+
+    private void chargerFournisseurs() {
+        fournisseursData.setAll(fournisseurRepo.getAllFournisseurs());
+    }
+
+    private void chargerProduits(Fournisseur f) {
+        produitsData.setAll(produitRepo.getProduitsParFournisseur(f.getIdFournisseur()));
+    }
+
+    private void afficherFormProduit(boolean visible) {
+        formProduitBox.setVisible(visible);
+        formProduitBox.setManaged(visible);
+        btnNouveauProduit.setVisible(!visible);
+        btnNouveauProduit.setManaged(!visible);
+    }
+
+    private void cacherFormProduit() {
+        formProduitBox.setVisible(false);
+        formProduitBox.setManaged(false);
+        btnNouveauProduit.setVisible(false);
+        btnNouveauProduit.setManaged(false);
+    }
+
+    private void afficherBoutonNouveauProduit(boolean visible) {
+        btnNouveauProduit.setVisible(visible);
+        btnNouveauProduit.setManaged(visible);
+        if (!visible) {
+            formProduitBox.setVisible(false);
+            formProduitBox.setManaged(false);
         }
     }
 
-    private void chargerProduitsDuFournisseur(Fournisseur fournisseur) {
-        try {
-            System.out.println("Chargement des produits du fournisseur: " + fournisseur.getNom());
-            if (produitRepository != null) {
-                java.util.List<Produit> produits = produitRepository.getProduitsParFournisseur(fournisseur.getIdFournisseur());
-                System.out.println("Nombre de produits récupérés: " + produits.size());
-                
-                if (produitsListView != null) {
-                    produitsListView.getItems().clear();
-                    produitsListView.getItems().addAll(produits);
-                    System.out.println("Liste des produits mise à jour dans la ListView");
-                } else {
-                    System.err.println("ERREUR: produitsListView est null !");
-                }
-            } else {
-                System.err.println("ERREUR: produitRepository est null !");
-            }
-        } catch (Exception e) {
-            System.err.println("Erreur lors du chargement des produits: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
-
-    private void viderChamps() {
+    private void viderChampsFournisseur() {
         nomFournisseurField.clear();
         emailFournisseurField.clear();
         telephoneFournisseurField.clear();
     }
 
-    private void afficherMessage(String message, String type) {
-        if (messageLabel != null) {
-            messageLabel.setText(message);
-            if ("error".equals(type)) {
-                messageLabel.setStyle("-fx-text-fill: #e74c3c;");
-            } else if ("success".equals(type)) {
-                messageLabel.setStyle("-fx-text-fill: #2ecc71;");
-            } else {
-                messageLabel.setStyle("-fx-text-fill: #3498db;"); // info
-            }
-        } else {
-            System.out.println("Message: " + message + " (type: " + type + ")");
-        }
+    private void viderChampsProduit() {
+        nomProduitField.clear();
+        descProduitField.clear();
+        prixProduitField.clear();
+        quantiteProduitField.clear();
     }
 
-    // Méthodes de navigation
-    @FXML
-    private void versAccueil() {
-        try {
-            StartApplication.changeScene("pageAccueil");
-        } catch (Exception e) {
-            System.err.println("Erreur: " + e.getMessage());
-        }
+    private void afficherMessage(String msg, String type) {
+        if (messageLabel == null) return;
+        messageLabel.setText(msg);
+        messageLabel.setStyle(switch (type) {
+            case "error"   -> "-fx-text-fill: #ef4444; -fx-font-weight: bold;";
+            case "success" -> "-fx-text-fill: #10b981; -fx-font-weight: bold;";
+            default        -> "-fx-text-fill: #818cf8; -fx-font-weight: bold;";
+        });
     }
 
-    @FXML
-    private void versPatients() {
-        try {
-            StartApplication.changeScene("patientsView");
-        } catch (Exception e) {
-            System.err.println("Erreur: " + e.getMessage());
-        }
+    private void afficherMessageProduit(String msg, String type) {
+        if (messageProduitLabel == null) return;
+        messageProduitLabel.setText(msg);
+        messageProduitLabel.setStyle(switch (type) {
+            case "error"   -> "-fx-text-fill: #ef4444; -fx-font-weight: bold;";
+            case "success" -> "-fx-text-fill: #10b981; -fx-font-weight: bold;";
+            default        -> "-fx-text-fill: #818cf8; -fx-font-weight: bold;";
+        });
     }
 
-    @FXML
-    private void versDossiers() {
-        try {
-            StartApplication.changeScene("dossierEnChargeView");
-        } catch (Exception e) {
-            System.err.println("Erreur: " + e.getMessage());
-        }
+    private Button bouton(String texte, String couleur) {
+        Button b = new Button(texte);
+        b.setStyle("-fx-background-color: " + couleur + "; -fx-text-fill: white; -fx-background-radius: 5;"
+                + " -fx-cursor: hand; -fx-padding: 4 8; -fx-font-size: 11px;");
+        return b;
     }
 
-    @FXML
-    private void versCommandes() {
-        try {
-            NavigationHelper.versCommandes();
-        } catch (Exception e) {
-            System.err.println("Erreur navigation vers commandes: " + e.getMessage());
-        }
-    }
+    // ── Navigation ─────────────────────────────────────────────────
+    @FXML private void versAccueil()       { naviguer("pageAccueil"); }
+    @FXML private void versPatients()      { naviguer("patientsView"); }
+    @FXML private void versDossiers()      { naviguer("dossierEnChargeView"); }
+    @FXML private void versCommandes()     { try { NavigationHelper.versCommandes(); } catch (Exception e) { e.printStackTrace(); } }
+    @FXML private void versUtilisateurs()  { naviguer("pageUtilisateurs"); }
+    @FXML private void versMonEspace()     { naviguer("pageMonEspace"); }
+    @FXML private void deconnexion()       { naviguer("helloView"); }
 
-    @FXML
-    private void versUtilisateurs() {
-        try {
-            StartApplication.changeScene("pageUtilisateurs");
-        } catch (Exception e) {
-            System.err.println("Erreur: " + e.getMessage());
-        }
-    }
-
-    @FXML
-    private void versMonEspace() {
-        try {
-            StartApplication.changeScene("pageMonEspace");
-        } catch (Exception e) {
-            System.err.println("Erreur: " + e.getMessage());
-        }
-    }
-
-    @FXML
-    private void deconnexion() {
-        try {
-            StartApplication.changeScene("helloView");
-        } catch (Exception e) {
-            System.err.println("Erreur: " + e.getMessage());
-        }
+    private void naviguer(String page) {
+        try { StartApplication.changeScene(page); } catch (Exception e) { e.printStackTrace(); }
     }
 }
