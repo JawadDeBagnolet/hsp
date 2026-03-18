@@ -12,7 +12,7 @@ import java.util.List;
 public class VisiteInfirmerieRepository {
 
     public boolean ajouterVisite(VisiteInfirmerie visite) {
-        String sql = "INSERT INTO visite_infirmerie (id_eleve, date_visite, heure_visite, motif, id_infirmier) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO visite_infirmerie (id_eleve, date_visite, heure_visite, motif, traitement, statut, id_infirmier) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection cnx = Database.getConnexion();
              PreparedStatement stmt = cnx.prepareStatement(sql)) {
@@ -21,10 +21,12 @@ public class VisiteInfirmerieRepository {
             stmt.setDate(2, Date.valueOf(visite.getDateVisite()));
             stmt.setTime(3, Time.valueOf(visite.getHeureVisite()));
             stmt.setString(4, visite.getMotif());
+            stmt.setString(5, visite.getTraitement());
+            stmt.setString(6, visite.getStatut() != null ? visite.getStatut() : "Terminée");
             if (visite.getIdInfirmier() == null) {
-                stmt.setNull(5, Types.INTEGER);
+                stmt.setNull(7, Types.INTEGER);
             } else {
-                stmt.setInt(5, visite.getIdInfirmier());
+                stmt.setInt(7, visite.getIdInfirmier());
             }
 
             return stmt.executeUpdate() > 0;
@@ -104,7 +106,7 @@ public class VisiteInfirmerieRepository {
     }
 
     public boolean modifierVisite(VisiteInfirmerie visite) {
-        String sql = "UPDATE visite_infirmerie SET id_eleve = ?, date_visite = ?, heure_visite = ?, motif = ?, id_infirmier = ? WHERE id_visite = ?";
+        String sql = "UPDATE visite_infirmerie SET id_eleve = ?, date_visite = ?, heure_visite = ?, motif = ?, traitement = ?, statut = ?, id_infirmier = ? WHERE id_visite = ?";
 
         try (Connection cnx = Database.getConnexion();
              PreparedStatement stmt = cnx.prepareStatement(sql)) {
@@ -113,12 +115,14 @@ public class VisiteInfirmerieRepository {
             stmt.setDate(2, Date.valueOf(visite.getDateVisite()));
             stmt.setTime(3, Time.valueOf(visite.getHeureVisite()));
             stmt.setString(4, visite.getMotif());
+            stmt.setString(5, visite.getTraitement());
+            stmt.setString(6, visite.getStatut() != null ? visite.getStatut() : "Terminée");
             if (visite.getIdInfirmier() == null) {
-                stmt.setNull(5, Types.INTEGER);
+                stmt.setNull(7, Types.INTEGER);
             } else {
-                stmt.setInt(5, visite.getIdInfirmier());
+                stmt.setInt(7, visite.getIdInfirmier());
             }
-            stmt.setInt(6, visite.getIdVisite());
+            stmt.setInt(8, visite.getIdVisite());
 
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -153,6 +157,11 @@ public class VisiteInfirmerieRepository {
         if (t != null) visite.setHeureVisite(t.toLocalTime());
 
         visite.setMotif(rs.getString("motif"));
+        try { visite.setTraitement(rs.getString("traitement")); } catch (SQLException ignored) {}
+        try {
+            String s = rs.getString("statut");
+            visite.setStatut(s != null ? s : "Terminée");
+        } catch (SQLException ignored) { visite.setStatut("Terminée"); }
 
         int idInf = rs.getInt("id_infirmier");
         visite.setIdInfirmier(rs.wasNull() ? null : idInf);
