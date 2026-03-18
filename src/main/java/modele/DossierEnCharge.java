@@ -1,101 +1,47 @@
 package modele;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 
 public class DossierEnCharge {
     private int idDossier;
-    private LocalDate dateArrivee;
-    private LocalTime heureArrivee;
-    private String symptomes;
-    private int niveauGravite;
-    private int refUser;
     private int idEleve;
+    private String antecedents;
+    private String allergies;
+    private String traitementsChroniques;
+    private LocalDate dateCreation;
 
-    public DossierEnCharge(int idDossier, LocalDate dateArrivee, LocalTime heureArrivee, String symptomes, int niveauGravite, int refUser, int idEleve) {
+    public DossierEnCharge(int idEleve, String antecedents, String allergies, String traitementsChroniques) {
+        this.idEleve = idEleve;
+        this.antecedents = antecedents != null ? antecedents : "";
+        this.allergies = allergies != null ? allergies : "";
+        this.traitementsChroniques = traitementsChroniques != null ? traitementsChroniques : "";
+        this.dateCreation = LocalDate.now();
+    }
+
+    public DossierEnCharge(int idDossier, int idEleve, String antecedents, String allergies, String traitementsChroniques, LocalDate dateCreation) {
         this.idDossier = idDossier;
-        this.dateArrivee = dateArrivee;
-        this.heureArrivee = heureArrivee;
-        this.symptomes = symptomes;
-        this.niveauGravite = niveauGravite;
-        this.refUser = refUser;
         this.idEleve = idEleve;
+        this.antecedents = antecedents != null ? antecedents : "";
+        this.allergies = allergies != null ? allergies : "";
+        this.traitementsChroniques = traitementsChroniques != null ? traitementsChroniques : "";
+        this.dateCreation = dateCreation;
     }
 
-    public DossierEnCharge(LocalDate dateArrivee, LocalTime heureArrivee, String symptomes, int niveauGravite, int idEleve) {
-        this.dateArrivee = dateArrivee;
-        this.heureArrivee = heureArrivee;
-        this.symptomes = symptomes;
-        this.niveauGravite = niveauGravite;
-        this.idEleve = idEleve;
-    }
+    public int getIdDossier() { return idDossier; }
+    public void setIdDossier(int idDossier) { this.idDossier = idDossier; }
 
-    public int getIdDossier() {
-        return idDossier;
-    }
+    public int getIdEleve() { return idEleve; }
+    public void setIdEleve(int idEleve) { this.idEleve = idEleve; }
 
-    public void setIdDossier(int idDossier) {
-        this.idDossier = idDossier;
-    }
+    public String getAntecedents() { return antecedents; }
+    public void setAntecedents(String antecedents) { this.antecedents = antecedents; }
 
-    public LocalDate getDateArrivee() {
-        return dateArrivee;
-    }
+    public String getAllergies() { return allergies; }
+    public void setAllergies(String allergies) { this.allergies = allergies; }
 
-    public void setDateArrivee(LocalDate dateArrivee) {
-        this.dateArrivee = dateArrivee;
-    }
+    public String getTraitementsChroniques() { return traitementsChroniques; }
+    public void setTraitementsChroniques(String traitementsChroniques) { this.traitementsChroniques = traitementsChroniques; }
 
-    public LocalTime getHeureArrivee() {
-        return heureArrivee;
-    }
-
-    public void setHeureArrivee(LocalTime heureArrivee) {
-        this.heureArrivee = heureArrivee;
-    }
-
-    public String getSymptomes() {
-        return symptomes;
-    }
-
-    public void setSymptomes(String symptomes) {
-        this.symptomes = symptomes;
-    }
-
-    public int getNiveauGravite() {
-        return niveauGravite;
-    }
-
-    public void setNiveauGravite(int niveauGravite) {
-        this.niveauGravite = niveauGravite;
-    }
-
-    public int getRefUser() {
-        return refUser;
-    }
-
-    public void setRefUser(int refUser) {
-        this.refUser = refUser;
-    }
-
-    public int getIdEleve() {
-        return idEleve;
-    }
-
-    public void setIdEleve(int idEleve) {
-        this.idEleve = idEleve;
-    }
-
-    @Override
-    public String toString() {
-        return "DossierEnCharge{" +
-                "idDossier=" + idDossier +
-                ", dateArrivee=" + dateArrivee +
-                ", heureArrivee=" + heureArrivee +
-                ", symptomes='" + symptomes + '\'' +
-                ", niveauGravite=" + niveauGravite +
-                ", refUser=" + refUser +
-                ", idEleve=" + idEleve +
-                '}';
-    }
+    public LocalDate getDateCreation() { return dateCreation; }
+    public void setDateCreation(LocalDate dateCreation) { this.dateCreation = dateCreation; }
 }

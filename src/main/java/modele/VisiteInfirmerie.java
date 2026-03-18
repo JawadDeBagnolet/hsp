@@ -12,24 +12,30 @@ public class VisiteInfirmerie {
     private LocalDate dateVisite;
     private LocalTime heureVisite;
     private String motif;
+    private String traitement;
+    private String statut;
     private Integer idInfirmier;
 
     public VisiteInfirmerie() {}
 
-    public VisiteInfirmerie(int idEleve, LocalDate dateVisite, LocalTime heureVisite, String motif, Integer idInfirmier) {
+    public VisiteInfirmerie(int idEleve, LocalDate dateVisite, LocalTime heureVisite, String motif, String traitement, String statut, Integer idInfirmier) {
         this.idEleve = idEleve;
         this.dateVisite = dateVisite;
         this.heureVisite = heureVisite;
         this.motif = motif;
+        this.traitement = traitement;
+        this.statut = statut != null ? statut : "Terminée";
         this.idInfirmier = idInfirmier;
     }
 
-    public VisiteInfirmerie(int idVisite, int idEleve, LocalDate dateVisite, LocalTime heureVisite, String motif, Integer idInfirmier) {
+    public VisiteInfirmerie(int idVisite, int idEleve, LocalDate dateVisite, LocalTime heureVisite, String motif, String traitement, String statut, Integer idInfirmier) {
         this.idVisite = idVisite;
         this.idEleve = idEleve;
         this.dateVisite = dateVisite;
         this.heureVisite = heureVisite;
         this.motif = motif;
+        this.traitement = traitement;
+        this.statut = statut != null ? statut : "Terminée";
         this.idInfirmier = idInfirmier;
     }
 
@@ -54,6 +60,12 @@ public class VisiteInfirmerie {
     public String getMotif() { return motif; }
     public void setMotif(String motif) { this.motif = motif; }
 
+    public String getTraitement() { return traitement; }
+    public void setTraitement(String traitement) { this.traitement = traitement; }
+
+    public String getStatut() { return statut; }
+    public void setStatut(String statut) { this.statut = statut; }
+
     public Integer getIdInfirmier() { return idInfirmier; }
     public void setIdInfirmier(Integer idInfirmier) { this.idInfirmier = idInfirmier; }
 
@@ -76,7 +88,8 @@ public class VisiteInfirmerie {
         String eleveInfo = (prenomEleve != null && nomEleve != null)
             ? prenomEleve + " " + nomEleve
             : "Élève #" + idEleve;
+        String statutInfo = statut != null ? " | " + statut : "";
         return "ID: " + idVisite + " | " + eleveInfo + " | " + getDateFormatee() + " " + getHeureFormatee() +
-               (motif != null && !motif.isEmpty() ? " | " + motif : "");
+               (motif != null && !motif.isEmpty() ? " | " + motif : "") + statutInfo;
     }
 }
