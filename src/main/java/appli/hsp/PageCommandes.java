@@ -98,7 +98,15 @@ public class PageCommandes implements Initializable {
             @Override
             protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);
-                setGraphic(empty ? null : creerBtn);
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    Demande d = getTableView().getItems().get(getIndex());
+                    boolean traitee = "Traitée".equals(d.getStatut());
+                    creerBtn.setDisable(traitee);
+                    creerBtn.setOpacity(traitee ? 0.4 : 1.0);
+                    setGraphic(creerBtn);
+                }
             }
         });
 

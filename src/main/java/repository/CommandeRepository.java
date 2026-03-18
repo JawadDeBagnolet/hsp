@@ -150,6 +150,9 @@ public class CommandeRepository {
         int idFournisseur = 0;
         try { idFournisseur = rs.getInt("id_fournisseur"); } catch (SQLException ignored) {}
 
+        int idDemande = 0;
+        try { idDemande = rs.getInt("id_demande"); } catch (SQLException ignored) {}
+
         return new Commande(
             rs.getInt("id_commande"),
             rs.getInt("id_user"),
@@ -157,7 +160,8 @@ public class CommandeRepository {
             rs.getString("libelle"),
             idFournisseur,
             date,
-            statut
+            statut,
+            idDemande
         );
     }
 }

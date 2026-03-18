@@ -50,7 +50,7 @@ public class CommandeProduitRepository {
                                           List<LigneCommandeProduit> lignes, int idDemande) {
         if (lignes == null || lignes.isEmpty()) return -1;
 
-        String insertCommande = "INSERT INTO commande (id_user, numCommande, libelle, id_fournisseur, date_commande, statut) VALUES (?, ?, ?, ?, ?, ?)";
+        String insertCommande = "INSERT INTO commande (id_user, numCommande, libelle, id_fournisseur, date_commande, statut, id_demande) VALUES (?, ?, ?, ?, ?, ?, ?)";
         String insertLigne = "INSERT INTO commande_produit (id_commande, id_produit, qte) VALUES (?, ?, ?)";
         String updateDemande = "UPDATE demande SET statut = 'Traitée' WHERE id_demande = ?";
         String maxNum = "SELECT COALESCE(MAX(numCommande), 0) + 1 FROM commande";
@@ -75,6 +75,7 @@ public class CommandeProduitRepository {
                 stmt.setInt(4, idFournisseur);
                 stmt.setObject(5, LocalDateTime.now());
                 stmt.setString(6, "En attente");
+                stmt.setInt(7, idDemande > 0 ? idDemande : 0);
 
                 if (stmt.executeUpdate() <= 0) { cnx.rollback(); return -1; }
 

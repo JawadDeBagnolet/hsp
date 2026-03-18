@@ -214,10 +214,11 @@ public class CommandeController {
             }
             return new javafx.beans.property.SimpleStringProperty(getUserRole(cellData.getValue().getIdUser()));
         });
-        statutColumn.setCellValueFactory(cellData -> {
-            // Afficher "Demande produit" comme statut pour toutes les demandes
-            return new javafx.beans.property.SimpleStringProperty("Demande produit");
-        });
+        statutColumn.setCellValueFactory(cellData ->
+            new javafx.beans.property.SimpleStringProperty(
+                cellData.getValue() != null ? cellData.getValue().getStatut() : ""
+            )
+        );
 
         idColumn.setCellFactory(col -> new TableCell<>() {
             @Override
@@ -529,24 +530,14 @@ public class CommandeController {
 
     @FXML
     void handleModifier(ActionEvent event) {
-        if (demandeSelectionnee == null) {
-            return;
-        }
-
-        TextInputDialog dialog = new TextInputDialog(String.valueOf(demandeSelectionnee.getQuantite()));
-        dialog.setTitle("Modifier quantité");
-        dialog.setHeaderText(null);
-        dialog.setContentText("Nouvelle quantité:");
-        dialog.showAndWait().ifPresent(val -> {
-            try {
-                int qte = Integer.parseInt(val.trim());
-                demandeSelectionnee.setQuantite(qte);
-                if (demandeRepository.modifierDemande(demandeSelectionnee)) {
-                    loadCommandes();
-                }
-            } catch (NumberFormatException ignored) {
-            }
-        });
+        // La quantité totale d'une demande est calculée depuis les lignes demande_produit.
+        // La modifier directement ici créerait une incohérence avec la table demande_produit.
+        // Pour modifier une demande, il faut la supprimer et en créer une nouvelle.
+        Alert info = new Alert(Alert.AlertType.INFORMATION);
+        info.setTitle("Modification non disponible");
+        info.setHeaderText(null);
+        info.setContentText("Pour modifier une demande, supprimez-la et créez-en une nouvelle.");
+        info.showAndWait();
     }
 
     @FXML
@@ -670,7 +661,7 @@ public class CommandeController {
         patientLabel.setText(getUserLabel(d.getIdUser()));
         roleLabel.setText(getUserRole(d.getIdUser()));
         medecinLabel.setText("Total: " + d.getQuantite() + " unités");
-        statutLabel.setText("Demande produit");
+        statutLabel.setText(d.getStatut());
 
         // Charger et afficher les produits de la commande
         System.out.println("Chargement des produits pour la demande " + d.getIdDemande());
