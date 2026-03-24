@@ -73,7 +73,7 @@
                         <TableColumn fx:id="colMotif"    prefWidth="250" text="Motif"   style="-fx-font-weight: bold;"/>
                         <TableColumn fx:id="colStatut"       prefWidth="170" text="Statut"       style="-fx-font-weight: bold; -fx-alignment: CENTER;"/>
                         <TableColumn fx:id="colPrescription" prefWidth="200" text="Prescription"  style="-fx-font-weight: bold;"/>
-                        <TableColumn fx:id="colActions"      prefWidth="160" text="Actions"       style="-fx-font-weight: bold; -fx-alignment: CENTER;"/>
+                        <TableColumn fx:id="colActions"      prefWidth="190" text="Actions"       style="-fx-font-weight: bold; -fx-alignment: CENTER;"/>
                     </columns>
                     <placeholder>
                         <Label text="Aucun ticket" style="-fx-text-fill: #64748b; -fx-font-size: 14px;"/>

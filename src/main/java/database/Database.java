@@ -94,6 +94,42 @@ public class Database {
                         System.out.println("Migration : colonne ticket.prescription ajoutée.");
                     }
                 }
+
+                // visite_infirmerie.traitement (colonne manquante dans le schema initial)
+                try (ResultSet rs = meta.getColumns(null, null, "visite_infirmerie", "traitement")) {
+                    if (!rs.next()) {
+                        stmt.executeUpdate("ALTER TABLE `visite_infirmerie` ADD COLUMN `traitement` TEXT DEFAULT NULL");
+                        System.out.println("Migration : colonne visite_infirmerie.traitement ajoutée.");
+                    }
+                }
+
+                // visite_infirmerie.statut (colonne manquante dans le schema initial)
+                try (ResultSet rs = meta.getColumns(null, null, "visite_infirmerie", "statut")) {
+                    if (!rs.next()) {
+                        stmt.executeUpdate("ALTER TABLE `visite_infirmerie` ADD COLUMN `statut` VARCHAR(50) NOT NULL DEFAULT 'Terminée'");
+                        System.out.println("Migration : colonne visite_infirmerie.statut ajoutée.");
+                    }
+                }
+
+                // table dossier_medical
+                try (ResultSet rs = meta.getTables(null, null, "dossier_medical", null)) {
+                    if (!rs.next()) {
+                        stmt.executeUpdate(
+                            "CREATE TABLE `dossier_medical` (" +
+                            "  `id_dossier` INT NOT NULL AUTO_INCREMENT," +
+                            "  `id_eleve` INT NOT NULL UNIQUE," +
+                            "  `antecedents` TEXT DEFAULT NULL," +
+                            "  `allergies` TEXT DEFAULT NULL," +
+                            "  `traitements_chroniques` TEXT DEFAULT NULL," +
+                            "  `date_creation` DATE NOT NULL," +
+                            "  `date_modification` DATETIME DEFAULT NULL," +
+                            "  PRIMARY KEY (`id_dossier`)," +
+                            "  KEY `fk_dossier_eleve` (`id_eleve`)" +
+                            ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4"
+                        );
+                        System.out.println("Migration : table dossier_medical créée.");
+                    }
+                }
             }
             migrationDone = true;
         } catch (SQLException e) {

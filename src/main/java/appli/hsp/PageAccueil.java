@@ -79,9 +79,9 @@ public class PageAccueil {
         afficher(btnTickets, isAdmin || isInfirmier || isSecretaire);
         afficher(cardTickets, isAdmin || isInfirmier || isSecretaire);
 
-        // Infirmerie (visites) : ADMIN, INFIRMIER, SECRETAIRE
-        afficher(btnInfirmerie, isAdmin || isInfirmier || isSecretaire);
-        afficher(cardInfirmerie, isAdmin || isInfirmier || isSecretaire);
+        // Infirmerie (visites) : masqué pour tous
+        afficher(btnInfirmerie, false);
+        afficher(cardInfirmerie, false);
 
         // Planning : ADMIN, SECRETAIRE
         afficher(btnPlanning, isAdmin || isSecretaire);

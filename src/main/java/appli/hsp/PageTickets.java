@@ -13,15 +13,18 @@ import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
 import modele.FichePatient;
 import modele.FicheProduit;
 import modele.Ticket;
+import modele.VisiteInfirmerie;
 import repository.FichePatientRepository;
 import repository.FicheProduitRepository;
 import repository.TicketRepository;
+import repository.VisiteInfirmerieRepository;
 
 import java.net.URL;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -48,7 +51,8 @@ public class PageTickets implements Initializable {
     private final TicketRepository ticketRepo           = new TicketRepository();
     private final FicheProduitRepository produitRepo    = new FicheProduitRepository();
     private final FichePatientRepository eleveRepo      = new FichePatientRepository();
-    private final ObservableList<Ticket> data  = FXCollections.observableArrayList();
+    private final VisiteInfirmerieRepository visiteRepo = new VisiteInfirmerieRepository();
+    private final ObservableList<Ticket> data           = FXCollections.observableArrayList();
     private static final DateTimeFormatter FMT = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
     private static final List<String> STATUTS = List.of(
@@ -66,6 +70,7 @@ public class PageTickets implements Initializable {
         String role = SessionManager.getUtilisateurConnecte() != null
                 ? SessionManager.getUtilisateurConnecte().getRole() : "";
         boolean estSecretaire = "SECRETAIRE".equals(role) || "ADMIN".equals(role);
+
         btnNouveauTicket.setVisible(estSecretaire);
         btnNouveauTicket.setManaged(estSecretaire);
 
@@ -164,7 +169,13 @@ public class PageTickets implements Initializable {
         statutCombo.setValue(t.getStatut());
         statutCombo.setPrefWidth(260);
 
-        // --- Notes libres ---
+        // --- Statut visite ---
+        ComboBox<String> statutVisiteCombo = new ComboBox<>();
+        statutVisiteCombo.getItems().addAll("Terminée", "En cours", "Urgences");
+        statutVisiteCombo.setValue("Terminée");
+        statutVisiteCombo.setPrefWidth(160);
+
+        // --- Traitement / Notes ---
         TextArea notesArea = new TextArea(t.getPrescription() != null ? t.getPrescription() : "");
         notesArea.setPromptText("Notes, observations...");
         notesArea.setPrefRowCount(3);
@@ -241,15 +252,18 @@ public class PageTickets implements Initializable {
         // --- Assemblage ---
         GridPane grid = new GridPane();
         grid.setHgap(12); grid.setVgap(10);
-        grid.add(new Label("Action :"), 0, 0);
+        grid.add(new Label("Statut ticket :"), 0, 0);
         grid.add(statutCombo, 1, 0);
-        grid.add(new Label("Produits donnés :"), 0, 1);
-        grid.add(produitsTable, 0, 2, 2, 1);
-        grid.add(btnsProd, 0, 3, 2, 1);
-        grid.add(new Label("Notes :"), 0, 4);
-        grid.add(notesArea, 0, 5, 2, 1);
+        grid.add(new Label("Statut visite :"), 0, 1);
+        grid.add(statutVisiteCombo, 1, 1);
+        grid.add(new Label("Produits donnés :"), 0, 2);
+        grid.add(produitsTable, 0, 3, 2, 1);
+        grid.add(btnsProd, 0, 4, 2, 1);
+        grid.add(new Label("Traitement :"), 0, 5);
+        grid.add(notesArea, 0, 6, 2, 1);
         GridPane.setHgrow(notesArea, Priority.ALWAYS);
         GridPane.setHgrow(produitsTable, Priority.ALWAYS);
+        GridPane.setHgrow(statutVisiteCombo, Priority.ALWAYS);
 
         dialog.getDialogPane().setContent(grid);
         dialog.getDialogPane().setPrefWidth(440);
@@ -281,11 +295,28 @@ public class PageTickets implements Initializable {
             if (!notes.isEmpty()) sb.append(notes);
 
             String statut = statutCombo.getValue();
-            ticketRepo.updateStatutEtPrescription(t.getIdTicket(), statut,
-                    sb.isEmpty() ? null : sb.toString().trim());
+            String prescription = sb.isEmpty() ? null : sb.toString().trim();
+            ticketRepo.updateStatutEtPrescription(t.getIdTicket(), statut, prescription);
+
+            // Créer automatiquement une visite infirmerie à partir du ticket
+            Integer idInfirmier = SessionManager.getUtilisateurConnecte() != null
+                    ? SessionManager.getUtilisateurConnecte().getIdUser() : null;
+            VisiteInfirmerie visite = new VisiteInfirmerie(
+                    t.getIdEleve(),
+                    LocalDate.now(),
+                    LocalTime.now(),
+                    t.getMotif(),
+                    prescription,
+                    statutVisiteCombo.getValue(),
+                    idInfirmier
+            );
+            visiteRepo.ajouterVisite(visite);
+
             charger();
         });
     }
+
+    // ======================== TICKETS ========================
 
     @FXML
     private void handleNouveauTicket(ActionEvent e) {

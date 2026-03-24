@@ -33,7 +33,7 @@ public class NavbarHelper {
         setVisible(btnSecretariat,  isAdmin || isSecretaire);
         setVisible(btnDossiers,     isAdmin || isInfirmier || isSecretaire);
         setVisible(btnTickets,      isAdmin || isInfirmier || isSecretaire);
-        setVisible(btnInfirmerie,   isAdmin || isInfirmier || isSecretaire);
+        setVisible(btnInfirmerie,   false); // page visites infirmerie masquée
         setVisible(btnCommandes,    isAdmin || isGestionnaire);
         setVisible(btnPlanning,     isAdmin || isSecretaire);
         setVisible(btnCatalogue,    isAdmin || isGestionnaire);
