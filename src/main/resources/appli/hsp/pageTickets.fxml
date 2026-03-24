@@ -59,6 +59,8 @@
                             style="-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-background-radius: 5; -fx-cursor: hand; -fx-padding: 6 14;"/>
                     <Button text="Rafraîchir" onAction="#handleRafraichir"
                             style="-fx-background-color: #6366f1; -fx-text-fill: white; -fx-background-radius: 5; -fx-cursor: hand; -fx-padding: 6 14;"/>
+                    <Button fx:id="btnNouveauTicket" text="+ Nouveau ticket" onAction="#handleNouveauTicket"
+                            style="-fx-background-color: #10b981; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5; -fx-cursor: hand; -fx-padding: 6 16;"/>
                 </HBox>
 
                 <!-- Tableau tickets -->

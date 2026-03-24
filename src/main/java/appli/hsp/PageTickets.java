@@ -1,5 +1,6 @@
 package appli.hsp;
 
+import appli.SessionManager;
 import appli.StartApplication;
 import appli.hsp.utils.NavbarHelper;
 import appli.hsp.utils.NavigationHelper;
@@ -13,8 +14,10 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import modele.FichePatient;
 import modele.FicheProduit;
 import modele.Ticket;
+import repository.FichePatientRepository;
 import repository.FicheProduitRepository;
 import repository.TicketRepository;
 
@@ -34,6 +37,7 @@ public class PageTickets implements Initializable {
     @FXML private TableColumn<Ticket, String>  colPrescription;
     @FXML private TableColumn<Ticket, Void>    colActions;
     @FXML private ComboBox<String>             filtreStatutCombo;
+    @FXML private Button                       btnNouveauTicket;
 
     @FXML private Button btnNavSecretariat;
     @FXML private Button btnNavCommandes;
@@ -43,6 +47,7 @@ public class PageTickets implements Initializable {
 
     private final TicketRepository ticketRepo           = new TicketRepository();
     private final FicheProduitRepository produitRepo    = new FicheProduitRepository();
+    private final FichePatientRepository eleveRepo      = new FichePatientRepository();
     private final ObservableList<Ticket> data  = FXCollections.observableArrayList();
     private static final DateTimeFormatter FMT = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
@@ -57,6 +62,13 @@ public class PageTickets implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         NavbarHelper.appliquerNavbar(btnNavSecretariat, null, null, null, btnNavCommandes, btnNavPlanning, btnNavCatalogue, null, null, btnNavDemandes);
         filtreStatutCombo.setItems(FXCollections.observableArrayList(STATUTS));
+
+        String role = SessionManager.getUtilisateurConnecte() != null
+                ? SessionManager.getUtilisateurConnecte().getRole() : "";
+        boolean estSecretaire = "SECRETAIRE".equals(role) || "ADMIN".equals(role);
+        btnNouveauTicket.setVisible(estSecretaire);
+        btnNouveauTicket.setManaged(estSecretaire);
+
         setupTable();
         charger();
     }
@@ -93,16 +105,21 @@ public class PageTickets implements Initializable {
             }
         });
 
+        String role = SessionManager.getUtilisateurConnecte() != null
+                ? SessionManager.getUtilisateurConnecte().getRole() : "";
+        boolean peutTraiter = "INFIRMIER".equals(role) || "ADMIN".equals(role);
+
         colActions.setCellFactory(param -> new TableCell<>() {
-            private final Button statutBtn   = new Button("Action");
+            private final Button actionBtn    = new Button("Prendre en charge");
             private final Button supprimerBtn = new Button("Supprimer");
-            private final HBox box = new HBox(6, statutBtn, supprimerBtn);
+            private final HBox boxInfirmier  = new HBox(6, actionBtn, supprimerBtn);
+            private final HBox boxSecretaire = new HBox(6, supprimerBtn);
 
             {
-                statutBtn.setStyle("-fx-background-color: #10b981; -fx-text-fill: white; -fx-background-radius: 5; -fx-cursor: hand; -fx-padding: 5 10;");
+                actionBtn.setStyle("-fx-background-color: #10b981; -fx-text-fill: white; -fx-background-radius: 5; -fx-cursor: hand; -fx-padding: 5 10;");
                 supprimerBtn.setStyle("-fx-background-color: #ef4444; -fx-text-fill: white; -fx-background-radius: 5; -fx-cursor: hand; -fx-padding: 5 10;");
 
-                statutBtn.setOnAction(e -> {
+                actionBtn.setOnAction(e -> {
                     Ticket t = getTableView().getItems().get(getIndex());
                     choisirStatut(t);
                 });
@@ -114,7 +131,7 @@ public class PageTickets implements Initializable {
 
             @Override protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);
-                setGraphic(empty ? null : box);
+                setGraphic(empty ? null : (peutTraiter ? boxInfirmier : boxSecretaire));
             }
         });
 
@@ -267,6 +284,65 @@ public class PageTickets implements Initializable {
             ticketRepo.updateStatutEtPrescription(t.getIdTicket(), statut,
                     sb.isEmpty() ? null : sb.toString().trim());
             charger();
+        });
+    }
+
+    @FXML
+    private void handleNouveauTicket(ActionEvent e) {
+        List<FichePatient> eleves = eleveRepo.getAllFichePatients();
+        if (eleves.isEmpty()) {
+            new Alert(Alert.AlertType.WARNING, "Aucun élève enregistré.", ButtonType.OK).showAndWait();
+            return;
+        }
+
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setTitle("Nouveau ticket infirmerie");
+        dialog.setHeaderText("Envoyer un élève à l'infirmerie");
+        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+
+        ComboBox<FichePatient> eleveCombo = new ComboBox<>(FXCollections.observableArrayList(eleves));
+        eleveCombo.setCellFactory(cb -> new ListCell<>() {
+            @Override protected void updateItem(FichePatient f, boolean empty) {
+                super.updateItem(f, empty);
+                setText(empty || f == null ? null : f.getPrenom() + " " + f.getNom());
+            }
+        });
+        eleveCombo.setButtonCell(new ListCell<>() {
+            @Override protected void updateItem(FichePatient f, boolean empty) {
+                super.updateItem(f, empty);
+                setText(empty || f == null ? null : f.getPrenom() + " " + f.getNom());
+            }
+        });
+        eleveCombo.setValue(eleves.get(0));
+        eleveCombo.setPrefWidth(240);
+
+        TextArea motifArea = new TextArea();
+        motifArea.setPromptText("Motif de l'envoi à l'infirmerie...");
+        motifArea.setPrefRowCount(3);
+        motifArea.setWrapText(true);
+
+        Label statutLabel = new Label(Ticket.STATUT_ATTENTE);
+        statutLabel.setStyle("-fx-text-fill: #92400e; -fx-background-color: #fef3c7; -fx-padding: 4 8; -fx-background-radius: 4; -fx-font-weight: bold;");
+
+        GridPane grid = new GridPane();
+        grid.setHgap(12); grid.setVgap(10);
+        grid.add(new Label("Élève :"),  0, 0); grid.add(eleveCombo,  1, 0);
+        grid.add(new Label("Motif :"),  0, 1); grid.add(motifArea,   1, 1);
+        grid.add(new Label("Statut :"), 0, 2); grid.add(statutLabel, 1, 2);
+        dialog.getDialogPane().setContent(grid);
+        dialog.getDialogPane().setPrefWidth(420);
+
+        dialog.showAndWait().ifPresent(btn -> {
+            if (btn != ButtonType.OK) return;
+            FichePatient eleve = eleveCombo.getValue();
+            String motif = motifArea.getText().trim();
+            if (eleve == null || motif.isEmpty()) {
+                new Alert(Alert.AlertType.WARNING, "Veuillez sélectionner un élève et saisir un motif.", ButtonType.OK).showAndWait();
+                return;
+            }
+            int idSecretaire = SessionManager.getUtilisateurConnecte().getIdUser();
+            int idTicket = ticketRepo.creerTicket(eleve.getIdFichePatient(), idSecretaire, motif);
+            if (idTicket > 0) charger();
         });
     }
 
